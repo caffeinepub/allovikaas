@@ -2,9 +2,13 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-generate-or-add-any-missing-local-svg-icon-assets-required-by-the-current-category-and-local-skilled-workers-subcategory-taxonomy-using-a-consistent-simple-icon-style-and-the-exact-filenames-referenced-by-the-frontend",
-      "featureTitle": "Generate or add any missing local SVG icon assets required by the current category and Local Skilled Workers subcategory taxonomy, using a consistent simple icon style and the exact filenames referenced by the frontend.",
-      "files": [],
+      "featureId": "feature-ensure-the-backend-worker-taxonomy-returned-by-backend-main-mo-getallcategories-includes-tailoring-related-subcategories-including-blouse-stitching-and-saree-work-saree-falls-pico-as-applicable-so-they-appear-as-selectable-subcategory-dropdown-options-under-the-correct-parent-category-in-the-frontend-worker-registration-and-worker-search-filters",
+      "featureTitle": "Ensure the backend worker taxonomy returned by backend/main.mo:getAllCategories() includes Tailoring-related subcategories (including \"Blouse Stitching\" and \"Saree Work\"/\"Saree Falls/Pico\" as applicable) so they appear as selectable Subcategory dropdown options under the correct parent category in the frontend Worker Registration and Worker Search filters.",
+      "files": [
+        "frontend/src/hooks/useWorkerTaxonomy.ts",
+        "frontend/src/pages/WorkerRegistrationPage.tsx",
+        "frontend/src/pages/WorkerSearchResultsPage.tsx"
+      ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
@@ -12,10 +16,79 @@
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
         "blob-storage@4.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-65"
+        "REQ-90"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-the-login-authentication-requirement-for-submitting-worker-registrations-update-backend-main-mo-submitworkerregistration-to-allow-anonymous-callers-to-submit-a-worker-registration-without-trapping-while-keeping-the-admin-panel-protected-by-internet-identity-and-admin-authorization",
+      "featureTitle": "Remove the login/authentication requirement for submitting worker registrations: update backend/main.mo:submitWorkerRegistration to allow anonymous callers to submit a worker registration without trapping, while keeping the Admin Panel protected by Internet Identity and admin authorization.",
+      "files": [
+        "frontend/src/components/admin/AdminGuard.tsx",
+        "frontend/src/pages/WorkerRegistrationPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-91"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-and-standardize-category-subcategory-icon-rendering-so-all-category-and-subcategory-icons-are-local-generated-assets-no-external-urls-and-remove-broken-image-placeholders-by-ensuring-the-frontend-uses-existing-safeiconimage-fallback-behavior-consistently-with-a-single-local-fallback-svg-file",
+      "featureTitle": "Fix and standardize category/subcategory icon rendering so all category and subcategory icons are local generated assets (no external URLs), and remove broken image placeholders by ensuring the frontend uses existing SafeIconImage fallback behavior consistently with a single local fallback SVG file.",
+      "files": [
+        "frontend/src/components/common/SafeIconImage.tsx",
+        "frontend/src/config/localSkilledWorkers.ts",
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-93"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-improve-overall-ux-clarity-for-local-users-in-the-worker-registration-and-search-flows-without-adding-new-product-features-reduce-confusion-by-ensuring-category-subcategory-selection-is-straightforward-clear-placeholders-disabled-enabled-states-and-safe-empty-state-messaging-while-preserving-existing-layout-structure-and-mobile-first-readability",
+      "featureTitle": "Improve overall UX clarity for local users in the Worker Registration and Search flows without adding new product features: reduce confusion by ensuring category/subcategory selection is straightforward (clear placeholders, disabled/enabled states, and safe empty-state messaging) while preserving existing layout structure and mobile-first readability.",
+      "files": [
+        "frontend/src/hooks/useWorkerTaxonomy.ts",
+        "frontend/src/pages/WorkerRegistrationPage.tsx",
+        "frontend/src/pages/WorkerSearchResultsPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-94"
       ],
       "confidence": "high"
     }

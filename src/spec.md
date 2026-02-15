@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Fix all broken category/subcategory icons by using local SVG assets only, ensuring icons never load from external URLs and always fall back gracefully without changing the existing layout.
+**Goal:** Add Tailoring subcategory dropdown support, allow anonymous worker registration while keeping admin-only publishing, and standardize local icon rendering with a robust fallback.
 
 **Planned changes:**
-- Audit the frontend for every category/subcategory icon usage (img src, CSS background-image, etc.) and replace any http/https or stale paths with local `/assets/generated/*.svg` references.
-- Route all category and subcategory icon rendering through the existing `SafeIconImage` (or equivalent centralized icon component) so invalid/missing sources automatically render the local fallback icon.
-- Add/generate any missing local SVG icon files under `frontend/public/assets/generated` using the exact filenames referenced by the frontend.
+- Update backend taxonomy returned by `getAllCategories()` to include Tailoring subcategories (including “Blouse Stitching” and a saree-related option) under the correct parent category so they populate frontend Subcategory dropdowns.
+- Allow anonymous submissions in `submitWorkerRegistration` while keeping the Admin Panel and admin actions protected via Internet Identity/admin authorization.
+- Enforce admin-approval gating so newly submitted workers remain pending and excluded from public browse/search results until approved.
+- Fix/standardize frontend category/subcategory icons to use only local generated assets, and ensure `SafeIconImage` consistently falls back to a single local fallback SVG (no broken placeholders).
+- Improve Worker Registration and Search UX clarity for category/subcategory selection (clear placeholders, correct disabled/enabled states, safe empty-state messaging) without adding new flows or routes.
 
-**User-visible outcome:** Category and subcategory icon grids (e.g., Home page and Local Skilled Workers subcategories) show consistent local SVG icons with no broken-image placeholders, and missing/invalid icons display a fallback icon—while the layout remains unchanged.
+**User-visible outcome:** Users can register workers without logging in; Tailoring subcategories appear correctly in registration and search filters; unapproved workers stay hidden until an admin approves them; and category/subcategory icons render reliably from local assets with a working fallback and clearer dropdown behavior.

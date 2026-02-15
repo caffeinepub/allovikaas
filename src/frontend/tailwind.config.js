@@ -70,6 +70,7 @@ export default {
                 md: '0 4px 8px 0 rgba(0,0,0,0.10)',
                 lg: '0 8px 16px 0 rgba(0,0,0,0.12)',
                 xl: '0 12px 24px 0 rgba(0,0,0,0.15)',
+                '2xl': '0 20px 40px 0 rgba(0,0,0,0.18)',
             },
             keyframes: {
                 'accordion-down': {

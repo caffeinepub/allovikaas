@@ -8,6 +8,7 @@ import WorkerSearchResultsPage from './pages/WorkerSearchResultsPage';
 import WorkerRegistrationPage from './pages/WorkerRegistrationPage';
 import JobRequestPage from './pages/JobRequestPage';
 import AdminPanelPage from './pages/AdminPanelPage';
+import BlogPage from './pages/BlogPage';
 
 const queryClient = new QueryClient();
 
@@ -33,10 +34,23 @@ const indexRoute = createRoute({
   component: HomePage,
 });
 
+type SearchParams = {
+  area?: string;
+  category?: string;
+  subcategory?: string;
+};
+
 const searchRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/search',
   component: WorkerSearchResultsPage,
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    return {
+      area: typeof search.area === 'string' ? search.area : undefined,
+      category: typeof search.category === 'string' ? search.category : undefined,
+      subcategory: typeof search.subcategory === 'string' ? search.subcategory : undefined,
+    };
+  },
 });
 
 const registerRoute = createRoute({
@@ -57,12 +71,19 @@ const adminRoute = createRoute({
   component: AdminPanelPage,
 });
 
+const blogRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/blog',
+  component: BlogPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   searchRoute,
   registerRoute,
   jobRequestRoute,
   adminRoute,
+  blogRoute,
 ]);
 
 const router = createRouter({ routeTree });

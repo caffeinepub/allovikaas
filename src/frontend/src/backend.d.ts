@@ -14,6 +14,10 @@ export class ExternalBlob {
     static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
+export interface UserApprovalInfo {
+    status: ApprovalStatus;
+    principal: Principal;
+}
 export type Time = bigint;
 export interface CategoryMapping {
     category: string;
@@ -21,7 +25,7 @@ export interface CategoryMapping {
 }
 export interface JobPost {
     id: bigint;
-    status: Variant_pending_approved_rejected;
+    status: ApprovalStatus;
     workType: string;
     salary: string;
     area: string;
@@ -60,19 +64,19 @@ export interface UserProfile {
     email?: string;
     phone?: string;
 }
+export enum ApprovalStatus {
+    pending = "pending",
+    approved = "approved",
+    rejected = "rejected"
+}
 export enum UserRole {
     admin = "admin",
     user = "user",
     guest = "guest"
 }
-export enum Variant_pending_approved_rejected {
-    pending = "pending",
-    approved = "approved",
-    rejected = "rejected"
-}
 export interface backendInterface {
-    approveJobPost(jobId: bigint): Promise<void>;
-    approveWorker(workerId: bigint): Promise<void>;
+    approveJobPost(jobId: bigint): Promise<boolean>;
+    approveWorker(workerId: bigint): Promise<boolean>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createJobPost(workType: string, area: string, dateTime: Time, salary: string, description: string, phone: string): Promise<string>;
     featureWorker(workerId: bigint): Promise<void>;
@@ -87,21 +91,24 @@ export interface backendInterface {
     getJobPostById(id: bigint): Promise<JobPost | null>;
     getPendingJobPosts(): Promise<Array<JobPost>>;
     getPendingWorkers(): Promise<Array<Worker>>;
-    getSafeCategoryWorkers(category: string): Promise<Array<Worker>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getWorkerById(id: bigint): Promise<Worker | null>;
     getWorkersByCategory(category: string): Promise<Array<Worker>>;
     getWorkersBySubcategory(subcategory: string): Promise<Array<Worker>>;
     isCallerAdmin(): Promise<boolean>;
+    isCallerApproved(): Promise<boolean>;
+    listApprovals(): Promise<Array<UserApprovalInfo>>;
     markWorkerVerified(workerId: bigint): Promise<void>;
-    rejectJobPost(jobId: bigint): Promise<void>;
-    rejectWorker(workerId: bigint, reason: string): Promise<void>;
+    rejectJobPost(jobId: bigint): Promise<boolean>;
+    rejectWorker(workerId: bigint, reason: string): Promise<boolean>;
     repairDataIntegrity(): Promise<string>;
-    safeQueryWorker(id: bigint): Promise<Worker | null>;
+    requestApproval(): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     searchWorkersByArea(area: string): Promise<Array<Worker>>;
     searchWorkersByAreaAndCategory(area: string, category: string): Promise<Array<Worker>>;
     searchWorkersByAreaAndSubcategory(area: string, subcategory: string): Promise<Array<Worker>>;
+    setApproval(user: Principal, status: ApprovalStatus): Promise<void>;
     submitWorkerRegistration(name: string, phone: string, category: string, subcategory: string, area: string, experience: string, workingHours: string, photo: ExternalBlob, comments: string | null): Promise<string>;
     unfeatureWorker(workerId: bigint): Promise<void>;
+    upgradeToAdmin(): Promise<boolean>;
 }

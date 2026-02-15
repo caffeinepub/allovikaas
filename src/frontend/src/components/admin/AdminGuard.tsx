@@ -10,7 +10,7 @@ interface AdminGuardProps {
 
 export default function AdminGuard({ children }: AdminGuardProps) {
   const { identity, login, loginStatus } = useInternetIdentity();
-  const { data: isAdmin, isLoading: isCheckingAdmin, isError } = useIsCallerAdmin();
+  const { data: isAdmin, isLoading: isCheckingAdmin } = useIsCallerAdmin();
 
   if (!identity) {
     return (
@@ -51,15 +51,16 @@ export default function AdminGuard({ children }: AdminGuardProps) {
     );
   }
 
-  // Treat errors or non-admin status as access denied
-  if (isError || !isAdmin) {
+  if (!isAdmin) {
     return (
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-md mx-auto bg-card rounded-2xl shadow-xl p-8 text-center space-y-6">
           <ShieldAlert className="h-16 w-16 text-destructive mx-auto" />
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Access Denied</h2>
-            <p className="text-muted-foreground">You do not have permission to access the admin panel.</p>
+            <p className="text-muted-foreground">
+              You do not have permission to access the admin panel.
+            </p>
           </div>
         </div>
       </div>

@@ -70,6 +70,15 @@ export const UserProfile = IDL.Record({
   'email' : IDL.Opt(IDL.Text),
   'phone' : IDL.Opt(IDL.Text),
 });
+export const ApprovalStatus = IDL.Variant({
+  'pending' : IDL.Null,
+  'approved' : IDL.Null,
+  'rejected' : IDL.Null,
+});
+export const UserApprovalInfo = IDL.Record({
+  'status' : ApprovalStatus,
+  'principal' : IDL.Principal,
+});
 
 export const idlService = IDL.Service({
   '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -99,8 +108,8 @@ export const idlService = IDL.Service({
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'approveJobPost' : IDL.Func([IDL.Nat], [], []),
-  'approveWorker' : IDL.Func([IDL.Nat], [], []),
+  'approveJobPost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'approveWorker' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'createJobPost' : IDL.Func(
       [IDL.Text, IDL.Text, Time, IDL.Text, IDL.Text, IDL.Text],
@@ -119,7 +128,6 @@ export const idlService = IDL.Service({
   'getJobPostById' : IDL.Func([IDL.Nat], [IDL.Opt(JobPost)], ['query']),
   'getPendingJobPosts' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
   'getPendingWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
-  'getSafeCategoryWorkers' : IDL.Func([IDL.Text], [IDL.Vec(Worker)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -133,11 +141,13 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'isCallerApproved' : IDL.Func([], [IDL.Bool], ['query']),
+  'listApprovals' : IDL.Func([], [IDL.Vec(UserApprovalInfo)], ['query']),
   'markWorkerVerified' : IDL.Func([IDL.Nat], [], []),
-  'rejectJobPost' : IDL.Func([IDL.Nat], [], []),
-  'rejectWorker' : IDL.Func([IDL.Nat, IDL.Text], [], []),
+  'rejectJobPost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'rejectWorker' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Bool], []),
   'repairDataIntegrity' : IDL.Func([], [IDL.Text], []),
-  'safeQueryWorker' : IDL.Func([IDL.Nat], [IDL.Opt(Worker)], ['query']),
+  'requestApproval' : IDL.Func([], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'searchWorkersByArea' : IDL.Func([IDL.Text], [IDL.Vec(Worker)], ['query']),
   'searchWorkersByAreaAndCategory' : IDL.Func(
@@ -150,6 +160,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(Worker)],
       ['query'],
     ),
+  'setApproval' : IDL.Func([IDL.Principal, ApprovalStatus], [], []),
   'submitWorkerRegistration' : IDL.Func(
       [
         IDL.Text,
@@ -166,6 +177,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'unfeatureWorker' : IDL.Func([IDL.Nat], [], []),
+  'upgradeToAdmin' : IDL.Func([], [IDL.Bool], []),
 });
 
 export const idlInitArgs = [];
@@ -233,6 +245,15 @@ export const idlFactory = ({ IDL }) => {
     'email' : IDL.Opt(IDL.Text),
     'phone' : IDL.Opt(IDL.Text),
   });
+  const ApprovalStatus = IDL.Variant({
+    'pending' : IDL.Null,
+    'approved' : IDL.Null,
+    'rejected' : IDL.Null,
+  });
+  const UserApprovalInfo = IDL.Record({
+    'status' : ApprovalStatus,
+    'principal' : IDL.Principal,
+  });
   
   return IDL.Service({
     '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -262,8 +283,8 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'approveJobPost' : IDL.Func([IDL.Nat], [], []),
-    'approveWorker' : IDL.Func([IDL.Nat], [], []),
+    'approveJobPost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'approveWorker' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'createJobPost' : IDL.Func(
         [IDL.Text, IDL.Text, Time, IDL.Text, IDL.Text, IDL.Text],
@@ -282,11 +303,6 @@ export const idlFactory = ({ IDL }) => {
     'getJobPostById' : IDL.Func([IDL.Nat], [IDL.Opt(JobPost)], ['query']),
     'getPendingJobPosts' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
     'getPendingWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
-    'getSafeCategoryWorkers' : IDL.Func(
-        [IDL.Text],
-        [IDL.Vec(Worker)],
-        ['query'],
-      ),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -300,11 +316,13 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'isCallerApproved' : IDL.Func([], [IDL.Bool], ['query']),
+    'listApprovals' : IDL.Func([], [IDL.Vec(UserApprovalInfo)], ['query']),
     'markWorkerVerified' : IDL.Func([IDL.Nat], [], []),
-    'rejectJobPost' : IDL.Func([IDL.Nat], [], []),
-    'rejectWorker' : IDL.Func([IDL.Nat, IDL.Text], [], []),
+    'rejectJobPost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'rejectWorker' : IDL.Func([IDL.Nat, IDL.Text], [IDL.Bool], []),
     'repairDataIntegrity' : IDL.Func([], [IDL.Text], []),
-    'safeQueryWorker' : IDL.Func([IDL.Nat], [IDL.Opt(Worker)], ['query']),
+    'requestApproval' : IDL.Func([], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'searchWorkersByArea' : IDL.Func([IDL.Text], [IDL.Vec(Worker)], ['query']),
     'searchWorkersByAreaAndCategory' : IDL.Func(
@@ -317,6 +335,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Worker)],
         ['query'],
       ),
+    'setApproval' : IDL.Func([IDL.Principal, ApprovalStatus], [], []),
     'submitWorkerRegistration' : IDL.Func(
         [
           IDL.Text,
@@ -333,6 +352,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'unfeatureWorker' : IDL.Func([IDL.Nat], [], []),
+    'upgradeToAdmin' : IDL.Func([], [IDL.Bool], []),
   });
 };
 

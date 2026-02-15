@@ -7,42 +7,44 @@ interface SafeIconImageProps {
   fallbackSrc?: string;
 }
 
-const DEFAULT_FALLBACK = '/assets/generated/icon-fallback.dim_128x128.svg';
-
-export default function SafeIconImage({
-  src,
-  alt,
-  className = '',
-  fallbackSrc = DEFAULT_FALLBACK,
-}: SafeIconImageProps) {
-  // Check if src is empty/whitespace/undefined immediately
-  const isInvalidSrc = !src || typeof src !== 'string' || src.trim() === '';
-  const initialSrc = isInvalidSrc ? fallbackSrc : src;
-  
-  const [imgSrc, setImgSrc] = useState(initialSrc);
+/**
+ * SafeIconImage component with enhanced validation and error handling.
+ * - Validates src before rendering to prevent broken image placeholders
+ * - Falls back to a default SVG icon on error or invalid src
+ * - Resets error state when src prop changes
+ * - Prevents infinite error loops with single-attempt recovery
+ */
+export default function SafeIconImage({ src, alt, className = '', fallbackSrc = '/assets/generated/icon-fallback.dim_128x128.svg' }: SafeIconImageProps) {
+  const [imgSrc, setImgSrc] = useState<string>(src);
   const [hasError, setHasError] = useState(false);
 
-  // Reset error state when src or fallbackSrc changes
+  // Reset error state when src changes
   useEffect(() => {
-    const newSrc = !src || typeof src !== 'string' || src.trim() === '' ? fallbackSrc : src;
-    setImgSrc(newSrc);
-    setHasError(false);
+    // Validate src before setting
+    if (!src || typeof src !== 'string' || src.trim() === '') {
+      setImgSrc(fallbackSrc);
+      setHasError(true);
+    } else {
+      setImgSrc(src);
+      setHasError(false);
+    }
   }, [src, fallbackSrc]);
 
   const handleError = () => {
-    // Only switch to fallback once to prevent infinite loops
+    // Only attempt fallback once to prevent infinite loops
     if (!hasError && imgSrc !== fallbackSrc) {
-      setHasError(true);
       setImgSrc(fallbackSrc);
+      setHasError(true);
     }
   };
 
   return (
     <img
       src={imgSrc}
-      alt={alt || 'Icon'}
+      alt={alt}
       className={className}
       onError={handleError}
+      loading="lazy"
     />
   );
 }

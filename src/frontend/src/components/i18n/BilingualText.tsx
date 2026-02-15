@@ -17,8 +17,8 @@ export default function BilingualText({
 }: BilingualTextProps) {
   return (
     <div className={containerClassName}>
-      <div className={englishClassName}>{english}</div>
       <div className={regionalClassName}>{regional}</div>
+      <div className={englishClassName}>{english}</div>
     </div>
   );
 }

@@ -1,126 +1,130 @@
 {
   "kind": "build_request",
-  "title": "Fix broken category/subcategory icons using local SVGs only (no external images)",
-  "priority": "normal",
+  "title": "Add Tailoring subcategory dropdown support, fix local icon system, and allow anonymous worker registration with admin-only publishing",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-63",
-      "text": "Audit the frontend to find every category/subcategory icon reference used in the UI and ensure all icon sources are local SVG files under frontend/public/assets/generated (no external URLs and no internet fetching). Update any stale/broken icon paths so they point to existing local SVG filenames.",
-      "target": "frontend",
+      "id": "REQ-90",
+      "text": "Ensure the backend worker taxonomy returned by backend/main.mo:getAllCategories() includes Tailoring-related subcategories (including \"Blouse Stitching\" and \"Saree Work\"/\"Saree Falls/Pico\" as applicable) so they appear as selectable Subcategory dropdown options under the correct parent category in the frontend Worker Registration and Worker Search filters.",
+      "target": "both",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Replace all broken images with built-in SVG icons.",
-          "Do not fetch images from internet.",
-          "Every category and subcategory must have a simple icon."
+          "Tailoring போன்ற பெரிய categoryகளின் கீழ், blouse stitching, saree work போன்ற subcategories dropdown-ஆக வரட்டும்."
         ]
       },
       "acceptanceCriteria": [
-        "No icon <img> src (or CSS background-image) references an http/https URL anywhere in the app.",
-        "All category and subcategory icon references resolve to files under /assets/generated/*.svg.",
-        "All icon filenames referenced in code exist in frontend/public/assets/generated."
+        "In Worker Registration, selecting the relevant Tailoring parent category enables a Subcategory dropdown that includes \"Blouse Stitching\" and the saree-related subcategory option.",
+        "In Worker Search Results filters, selecting the relevant Tailoring parent category enables a Subcategory dropdown that includes \"Blouse Stitching\" and the saree-related subcategory option.",
+        "Backend getAllCategories() returns these Tailoring subcategories under the correct parent category mapping (not under an unrelated category)."
       ]
     },
     {
-      "id": "REQ-64",
-      "text": "Ensure all category and subcategory icons render through the existing SafeIconImage component (or an equivalent centralized icon component) so broken/missing/empty icon sources always render the local fallback SVG icon instead of a broken image placeholder, while keeping the existing layout unchanged.",
-      "target": "frontend",
+      "id": "REQ-91",
+      "text": "Remove the login/authentication requirement for submitting worker registrations: update backend/main.mo:submitWorkerRegistration to allow anonymous callers to submit a worker registration without trapping, while keeping the Admin Panel protected by Internet Identity and admin authorization.",
+      "target": "both",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Replace all broken images with built-in SVG icons.",
-          "Keep layout unchanged."
+          "Login authentication remove பண்ணி, எல்லோரும் register பண்ணலாம்"
         ]
       },
       "acceptanceCriteria": [
-        "If an icon src is empty, whitespace, invalid, or the file fails to load, the UI renders /assets/generated/icon-fallback.dim_128x128.svg.",
-        "No broken-image placeholders appear on the Home page category grid or Local Skilled Workers subcategory grid.",
-        "No changes to spacing, grid columns, card sizes, or typography on pages where icons appear (layout remains unchanged)."
+        "An anonymous user (not logged in) can submit the Worker Registration form successfully and receives the success confirmation state.",
+        "backend/main.mo:submitWorkerRegistration does not Runtime.trap for non-authenticated callers.",
+        "Admin-only endpoints (approve/reject/feature/verify, admin lists) remain restricted and still trap/deny for non-admins."
       ]
     },
     {
-      "id": "REQ-65",
-      "text": "Generate or add any missing local SVG icon assets required by the current category and Local Skilled Workers subcategory taxonomy, using a consistent simple icon style and the exact filenames referenced by the frontend.",
+      "id": "REQ-92",
+      "text": "Keep admin-approval gating for public visibility: ensure newly submitted worker registrations remain non-public (pending) and are not returned by any public worker browsing/search endpoints until an admin approves them.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "ஆனா admin approve ஆன பிறகு மட்டும் public-ஆக காண்பியுங்கள்."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A newly submitted worker registration is not returned by public search endpoints (area/category/subcategory) until approved.",
+        "After an admin approves a worker, the worker becomes visible in public search results matching the filters.",
+        "Worker status transitions remain consistent (#pendingVerification -> #approved/#rejected) and are enforced by the query filters."
+      ]
+    },
+    {
+      "id": "REQ-93",
+      "text": "Fix and standardize category/subcategory icon rendering so all category and subcategory icons are local generated assets (no external URLs), and remove broken image placeholders by ensuring the frontend uses existing SafeIconImage fallback behavior consistently with a single local fallback SVG file.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1"
         ],
         "quotes": [
-          "Every category and subcategory must have a simple icon."
+          "எல்லா categoryக்கும் சரியான icons local-ஆக generate பண்ணி set பண்ணுங்க."
         ]
       },
       "acceptanceCriteria": [
-        "All required SVG icon files exist under frontend/public/assets/generated with the exact filenames referenced by the code.",
-        "All icons are simple SVGs (no embedded external image links) and render correctly at small sizes (e.g., 64–96px) without clipping.",
-        "The fallback icon file /assets/generated/icon-fallback.dim_128x128.svg exists and is used automatically when needed."
+        "All icons used on the Home page category grid and Local Skilled Workers subcategory grid load from frontend/public/assets/generated/* and render correctly.",
+        "SafeIconImage uses a local SVG fallback file (not a .png) that exists at the configured path.",
+        "No broken image placeholders appear when an icon is missing/invalid; the fallback icon renders instead."
+      ]
+    },
+    {
+      "id": "REQ-94",
+      "text": "Improve overall UX clarity for local users in the Worker Registration and Search flows without adding new product features: reduce confusion by ensuring category/subcategory selection is straightforward (clear placeholders, disabled/enabled states, and safe empty-state messaging) while preserving existing layout structure and mobile-first readability.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Overall, site user-friendlyயாகவும், local audience-க்கு புரியும்படியாகவும் AI design பண்ணட்டும்."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When no category is selected, the subcategory dropdown is clearly disabled and shows an appropriate placeholder state.",
+        "If taxonomy data is missing or empty, the UI remains usable using safe fallbacks (no crashes) and communicates a clear next step to the user.",
+        "No new flows (booking/payment/chat) are introduced; existing navigation and routes remain intact."
       ]
     }
   ],
   "constraints": [
-    "Do not fetch icons/images from the internet at runtime.",
-    "Keep the existing UI layout unchanged (no changes to grids, spacing, sizing, or component structure beyond swapping/fixing icon sources and fallback behavior).",
-    "Do not modify files under frontend/src/components/ui or other frontend immutable paths listed in SYSTEM_CONTEXT."
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo changes if state migration is required.",
+    "Do not modify any frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui/*.",
+    "Do not remove Internet Identity/admin authorization requirements for accessing the Admin Panel; the login removal applies only to worker registration submission.",
+    "Do not introduce booking, payment, or in-app chat; contact remains Call/WhatsApp only."
   ],
   "nonGoals": [
-    "No backend changes.",
-    "No changes to category/subcategory taxonomy labels or translations.",
-    "No redesign or restyling beyond icon asset/path fixes and fallback behavior."
+    "Adding new third-party authentication providers or alternative login methods beyond Internet Identity for admin access.",
+    "Introducing any external image hosting or external icon URLs.",
+    "Changing the overall information architecture or adding new pages/routes beyond what is necessary to support the requested dropdowns and icon fixes."
   ],
   "imageRequirements": {
     "required": [
-      "Simple generic fallback icon (icon-fallback.dim_128x128.svg)",
-      "Simple construction icon (icon-construction.dim_128x128.svg)",
-      "Simple agriculture icon (icon-agriculture.dim_128x128.svg)",
-      "Simple home services icon (icon-home-services.dim_128x128.svg)",
-      "Simple transport icon (icon-transport.dim_128x128.svg)",
-      "Simple events and cooking icon (icon-events-cooking.dim_128x128.svg)",
-      "Simple daily helpers icon (icon-daily-helpers.dim_128x128.svg)",
-      "Simple repairs icon (icon-repairs.dim_128x128.svg)",
-      "Simple supplies icon (icon-supplies.dim_128x128.svg)",
-      "Simple mason icon (icon-mason.dim_128x128.svg)",
-      "Simple coolie helper icon (icon-coolie-helper.dim_128x128.svg)",
-      "Simple centring worker icon (icon-centring-worker.dim_128x128.svg)",
-      "Simple bar bending worker icon (icon-bar-bending-worker.dim_128x128.svg)",
-      "Simple door maker icon (icon-door-maker.dim_128x128.svg)",
-      "Simple window maker icon (icon-window-maker.dim_128x128.svg)",
-      "Simple carpenter icon (icon-carpenter.dim_128x128.svg)",
-      "Simple grill / gate fabricator icon (icon-grill-gate-fabricator.dim_128x128.svg)",
-      "Simple welder icon (icon-welder.dim_128x128.svg)",
-      "Simple tree cutter icon (icon-tree-cutter.dim_128x128.svg)",
-      "Simple coconut tree climber icon (icon-coconut-tree-climber.dim_128x128.svg)",
-      "Simple coconut picker icon (icon-coconut-picker.dim_128x128.svg)",
-      "Simple firewood cutter icon (icon-firewood-cutter.dim_128x128.svg)",
-      "Simple basket maker icon (icon-basket-maker.dim_128x128.svg)",
-      "Simple rope maker icon (icon-rope-maker.dim_128x128.svg)",
-      "Simple mat weaver icon (icon-mat-weaver.dim_128x128.svg)",
-      "Simple pot maker icon (icon-pot-maker.dim_128x128.svg)",
-      "Simple house maid icon (icon-house-maid.dim_128x128.svg)",
-      "Simple one day cooking worker icon (icon-one-day-cooking-worker.dim_128x128.svg)",
-      "Simple function cooking team icon (icon-function-cooking-team.dim_128x128.svg)",
-      "Simple cleaning worker icon (icon-cleaning-worker.dim_128x128.svg)",
-      "Simple tailor icon (icon-tailor.dim_128x128.svg)",
-      "Simple aari worker icon (icon-aari-worker.dim_128x128.svg)",
-      "Simple blouse designer icon (icon-blouse-designer.dim_128x128.svg)",
-      "Simple saree falls/pico worker icon (icon-saree-falls-pico-worker.dim_128x128.svg)",
-      "Simple ironing service icon (icon-ironing-service.dim_128x128.svg)",
-      "Simple farm labour icon (icon-farm-labour.dim_128x128.svg)",
-      "Simple planting worker icon (icon-planting-worker.dim_128x128.svg)",
-      "Simple harvest worker icon (icon-harvest-worker.dim_128x128.svg)",
-      "Simple sprayer worker icon (icon-sprayer-worker.dim_128x128.svg)"
+      "Fallback icon (icon-fallback.dim_128x128.svg)",
+      "Construction category icon (icon-construction.dim_128x128.svg)",
+      "Agriculture category icon (icon-agriculture.dim_128x128.svg)",
+      "Home services category icon (icon-home-services.dim_128x128.svg)",
+      "Transport category icon (icon-transport.dim_128x128.svg)",
+      "Events & cooking category icon (icon-events-cooking.dim_128x128.svg)",
+      "Daily helpers category icon (icon-daily-helpers.dim_128x128.svg)",
+      "Repairs category icon (icon-repairs.dim_128x128.svg)",
+      "Supplies category icon (icon-supplies.dim_128x128.svg)",
+      "Blouse stitching icon (icon-blouse-designer.dim_128x128.svg)",
+      "Saree work icon (icon-saree-falls-pico-worker.dim_128x128.svg)"
     ],
     "edits": []
   },
   "userProfileUpdate": {
     "goalsToAdd": [],
     "goalsToRemove": [],
-    "preferencesToAdd": [
-      "Use local SVG icons only; never fetch icons/images from the internet."
-    ],
+    "preferencesToAdd": [],
     "preferencesToRemove": [],
     "miscToAdd": [],
     "miscToRemove": [],

@@ -6,6 +6,7 @@ import { SiWhatsapp } from 'react-icons/si';
 import { Worker } from '@/backend';
 import { useI18n } from '../i18n/I18nProvider';
 import BilingualText from '../i18n/BilingualText';
+import { getBilingualSubcategoryLabel } from '@/utils/bilingualTaxonomy';
 
 interface WorkerCardProps {
   worker: Worker;
@@ -26,7 +27,7 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
   const comments = worker?.comments || null;
 
   // Safe photo URL access
-  let photoUrl = '/assets/generated/icon-fallback.dim_128x128.png';
+  let photoUrl = '/assets/generated/icon-fallback.dim_128x128.svg';
   try {
     if (worker?.photo && typeof worker.photo.getDirectURL === 'function') {
       photoUrl = worker.photo.getDirectURL();
@@ -45,6 +46,9 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
   const experienceText = t('worker.experience');
   const availabilityText = t('worker.availability');
 
+  // Get bilingual subcategory label
+  const subLabel = subcategory ? getBilingualSubcategoryLabel(subcategory, t) : null;
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200 border-2 border-border">
       <CardContent className="p-0">
@@ -58,7 +62,7 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = '/assets/generated/icon-fallback.dim_128x128.png';
+                  target.src = '/assets/generated/icon-fallback.dim_128x128.svg';
                 }}
               />
               {verified && (
@@ -73,23 +77,33 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
           <div className="flex-1 min-w-0 space-y-3">
             <div>
               <h3 className="text-lg font-bold text-foreground truncate">{name}</h3>
-              <p className="text-sm text-muted-foreground">
-                {category}{subcategory ? ` - ${subcategory}` : ''}
-              </p>
+              {subLabel ? (
+                <BilingualText
+                  english={<p className="text-sm text-muted-foreground">{subLabel.en}</p>}
+                  regional={<p className="text-xs text-muted-foreground">{subLabel.regional}</p>}
+                  regionalClassName="text-xs text-muted-foreground mt-0.5"
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">{category}</p>
+              )}
               <p className="text-sm text-muted-foreground mt-1">📍 {area}</p>
             </div>
 
             <div className="space-y-1 text-sm">
               <div className="flex items-start gap-2">
-                <span className="text-muted-foreground min-w-[80px]">
-                  <BilingualText english={experienceText.en} regional={experienceText.regional} />:
-                </span>
+                <BilingualText
+                  english={<span className="text-muted-foreground min-w-[80px]">{experienceText.en}:</span>}
+                  regional={<span className="text-xs text-muted-foreground min-w-[80px]">{experienceText.regional}:</span>}
+                  regionalClassName="text-xs text-muted-foreground"
+                />
                 <span className="text-foreground font-medium">{experience}</span>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-muted-foreground min-w-[80px]">
-                  <BilingualText english={availabilityText.en} regional={availabilityText.regional} />:
-                </span>
+                <BilingualText
+                  english={<span className="text-muted-foreground min-w-[80px]">{availabilityText.en}:</span>}
+                  regional={<span className="text-xs text-muted-foreground min-w-[80px]">{availabilityText.regional}:</span>}
+                  regionalClassName="text-xs text-muted-foreground"
+                />
                 <span className="text-foreground font-medium">{workingHours}</span>
               </div>
             </div>
@@ -103,7 +117,11 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
             {verified && (
               <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
                 <CheckCircle2 className="h-3 w-3 mr-1" />
-                <BilingualText english={verifiedText.en} regional={verifiedText.regional} />
+                <BilingualText
+                  english={<span>{verifiedText.en}</span>}
+                  regional={<span className="text-xs">{verifiedText.regional}</span>}
+                  regionalClassName="text-xs"
+                />
               </Badge>
             )}
           </div>
@@ -119,7 +137,11 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
             >
               <a href={`tel:${phoneNumber}`}>
                 <Phone className="h-4 w-4 mr-2" />
-                <BilingualText english={callText.en} regional={callText.regional} />
+                <BilingualText
+                  english={<span>{callText.en}</span>}
+                  regional={<span className="text-xs">{callText.regional}</span>}
+                  regionalClassName="text-xs"
+                />
               </a>
             </Button>
             <Button
@@ -134,7 +156,11 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
                 rel="noopener noreferrer"
               >
                 <SiWhatsapp className="h-4 w-4 mr-2" />
-                <BilingualText english={whatsappText.en} regional={whatsappText.regional} />
+                <BilingualText
+                  english={<span>{whatsappText.en}</span>}
+                  regional={<span className="text-xs">{whatsappText.regional}</span>}
+                  regionalClassName="text-xs"
+                />
               </a>
             </Button>
           </div>

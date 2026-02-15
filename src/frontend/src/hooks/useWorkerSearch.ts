@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { Worker } from '@/backend';
 import { logError } from '@/utils/errors';
+import { normalizeKey } from '@/utils/normalizeTaxonomy';
 
 /**
  * Validates and sanitizes a worker object to ensure it has all required fields
@@ -29,6 +30,18 @@ function sanitizeWorker(worker: any): Worker | null {
   }
 }
 
+/**
+ * Checks if a worker is approved for public display
+ */
+function isWorkerApproved(worker: Worker): boolean {
+  try {
+    return worker.status.__kind__ === 'approved';
+  } catch (error) {
+    logError('isWorkerApproved', error);
+    return false;
+  }
+}
+
 export function useWorkerSearch(area: string, category: string, subcategory: string) {
   const { actor, isFetching } = useActor();
 
@@ -40,10 +53,10 @@ export function useWorkerSearch(area: string, category: string, subcategory: str
       try {
         let workers: Worker[] = [];
 
-        // Sanitize input parameters
-        const safeArea = area?.trim() || '';
-        const safeCategory = category?.trim() || '';
-        const safeSubcategory = subcategory?.trim() || '';
+        // Normalize and sanitize input parameters (trim + collapse whitespace)
+        const safeArea = area?.trim().replace(/\s+/g, ' ') || '';
+        const safeCategory = category?.trim().replace(/\s+/g, ' ') || '';
+        const safeSubcategory = subcategory?.trim().replace(/\s+/g, ' ') || '';
 
         // Priority: subcategory > category > area
         if (safeSubcategory) {
@@ -76,10 +89,11 @@ export function useWorkerSearch(area: string, category: string, subcategory: str
           return [];
         }
 
-        // Sanitize each worker to ensure data integrity
+        // Sanitize each worker and filter to approved only
         const sanitizedWorkers = workers
           .map(sanitizeWorker)
-          .filter((w): w is Worker => w !== null);
+          .filter((w): w is Worker => w !== null)
+          .filter(isWorkerApproved);
 
         return sanitizedWorkers;
       } catch (error) {

@@ -1,258 +1,159 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix broken category/subcategory icons by using local generated SVG assets with SafeIconImage fallback",
+  "title": "Tailoring subcategory dropdowns, local icon standardization, and anonymous worker registration UX fixes (frontend-only)",
   "requirements": [
     {
-      "id": "REQ-63",
-      "summary": "Audit and update all category/subcategory icon references so they only point to existing local SVGs under frontend/public/assets/generated (no external URLs).",
+      "id": "REQ-90",
+      "summary": "Ensure Tailoring subcategories (Blouse Stitching, saree-related) appear under the correct Tailoring parent category in Registration and Search subcategory dropdowns, with safe fallback taxonomy.",
       "acceptanceCriteria": [
-        "No icon <img> src (or CSS background-image) references an http/https URL anywhere in the app.",
-        "All category and subcategory icon references resolve to files under /assets/generated/*.svg.",
-        "All icon filenames referenced in code exist in frontend/public/assets/generated."
+        "In Worker Registration, selecting the relevant Tailoring parent category enables a Subcategory dropdown that includes \"Blouse Stitching\" and the saree-related subcategory option.",
+        "In Worker Search Results filters, selecting the relevant Tailoring parent category enables a Subcategory dropdown that includes \"Blouse Stitching\" and the saree-related subcategory option.",
+        "Backend getAllCategories() returns these Tailoring subcategories under the correct parent category mapping (not under an unrelated category)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/HomePage.tsx",
+          "path": "frontend/src/hooks/useWorkerTaxonomy.ts",
           "operation": "modify",
-          "description": "Audit the category grid and Local Skilled Workers subcategory grid icon sources; ensure every icon src is a local /assets/generated/*.svg path (not .png, not http/https) and update any stale/broken filenames to match the generated SVG assets. Verify the component's usage instructions before implementing."
+          "description": "Extend frontend fallback taxonomy to include a Tailoring parent category with subcategories including \"Blouse Stitching\" and the saree-related option (e.g., \"Saree Work\" and/or \"Saree Falls/Pico\"), and ensure the hook continues to safely merge/dedupe backend taxonomy so these appear in dropdowns even if backend data is missing."
         },
         {
-          "path": "frontend/src/config/localSkilledWorkers.ts",
+          "path": "frontend/src/pages/WorkerRegistrationPage.tsx",
           "operation": "modify",
-          "description": "Audit all Local Skilled Workers subcategory icon paths; ensure every icon points to a local /assets/generated/*.svg filename that exists (and update any stale/broken paths). Verify the component's usage instructions before implementing."
+          "description": "Ensure the Registration Subcategory dropdown is populated from taxonomy for Tailoring, and add a safe empty-state option/message when a selected category has zero subcategories (while keeping the dropdown disabled until a category is chosen)."
         },
         {
-          "path": "frontend/src/components/common/SafeIconImage.tsx",
+          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
           "operation": "modify",
-          "description": "Harden SafeIconImage so any http/https src (or any src outside /assets/generated/*.svg) is treated as invalid and replaced with the local fallback; keep the rendered <img> and className behavior unchanged to preserve layout. Verify the component's usage instructions before implementing."
+          "description": "Ensure the Search filters subcategory dropdown correctly reflects Tailoring subcategories from taxonomy, resets subcategory on category change, and handles Tailoring-related canonicalization without breaking URL-synced filters."
         }
       ]
     },
     {
-      "id": "REQ-64",
-      "summary": "Centralize icon rendering through SafeIconImage so missing/invalid icon sources always render the local fallback SVG without layout changes.",
+      "id": "REQ-91",
+      "summary": "Remove any frontend login/auth gating from Worker Registration submission flow while keeping Admin Panel behavior intact.",
       "acceptanceCriteria": [
-        "If an icon src is empty, whitespace, invalid, or the file fails to load, the UI renders /assets/generated/icon-fallback.dim_128x128.svg.",
-        "No broken-image placeholders appear on the Home page category grid or Local Skilled Workers subcategory grid.",
-        "No changes to spacing, grid columns, card sizes, or typography on pages where icons appear (layout remains unchanged)."
+        "An anonymous user (not logged in) can submit the Worker Registration form successfully and receives the success confirmation state.",
+        "backend/main.mo:submitWorkerRegistration does not Runtime.trap for non-authenticated callers.",
+        "Admin-only endpoints (approve/reject/feature/verify, admin lists) remain restricted and still trap/deny for non-admins."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/HomePage.tsx",
+          "path": "frontend/src/pages/WorkerRegistrationPage.tsx",
           "operation": "modify",
-          "description": "Confirm all category and subcategory icons on this page are rendered using the existing SafeIconImage component (no raw <img> tags or CSS background-image for these icons), preserving all existing wrappers, sizes, and className values to keep layout unchanged. Verify the component's usage instructions before implementing."
+          "description": "Confirm the Worker Registration page does not prompt for Internet Identity login, does not rely on admin-only guards, and presents a user-friendly error if submission fails (without instructing the user to log in)."
         },
         {
-          "path": "frontend/src/components/common/SafeIconImage.tsx",
+          "path": "frontend/src/components/admin/AdminGuard.tsx",
           "operation": "modify",
-          "description": "Ensure SafeIconImage reliably falls back to /assets/generated/icon-fallback.dim_128x128.svg for empty/whitespace/invalid src and for load errors, without changing element structure or layout-affecting attributes. Verify the component's usage instructions before implementing."
+          "description": "Verify Admin Panel protection remains unchanged and isolated to admin routes only (no shared guard logic inadvertently blocking public registration)."
         }
       ]
     },
     {
-      "id": "REQ-65",
-      "summary": "Add any missing local SVG icon assets (including fallback) for the current category and Local Skilled Workers subcategory taxonomy, using the exact filenames referenced by the frontend.",
+      "id": "REQ-93",
+      "summary": "Standardize category/subcategory icon rendering to local generated assets only, and ensure SafeIconImage uses a single local fallback SVG to prevent broken images.",
       "acceptanceCriteria": [
-        "All required SVG icon files exist under frontend/public/assets/generated with the exact filenames referenced by the code.",
-        "All icons are simple SVGs (no embedded external image links) and render correctly at small sizes (e.g., 64–96px) without clipping.",
-        "The fallback icon file /assets/generated/icon-fallback.dim_128x128.svg exists and is used automatically when needed."
+        "All icons used on the Home page category grid and Local Skilled Workers subcategory grid load from frontend/public/assets/generated/* and render correctly.",
+        "SafeIconImage uses a local SVG fallback file (not a .png) that exists at the configured path.",
+        "No broken image placeholders appear when an icon is missing/invalid; the fallback icon renders instead."
       ],
       "file_operations": [
         {
           "path": "frontend/public/assets/generated/icon-fallback.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local fallback SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated fallback SVG asset at frontend/public/assets/generated/icon-fallback.dim_128x128.svg and ensure it is the single shared fallback used across the app."
         },
         {
           "path": "frontend/public/assets/generated/icon-construction.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-construction.dim_128x128.svg for the Home page category grid."
         },
         {
           "path": "frontend/public/assets/generated/icon-agriculture.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-agriculture.dim_128x128.svg for the Home page category grid."
         },
         {
           "path": "frontend/public/assets/generated/icon-home-services.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-home-services.dim_128x128.svg for the Home page category grid."
         },
         {
           "path": "frontend/public/assets/generated/icon-transport.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-transport.dim_128x128.svg for the Home page category grid."
         },
         {
           "path": "frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg for the Home page category grid."
         },
         {
           "path": "frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg for the Home page category grid."
         },
         {
           "path": "frontend/public/assets/generated/icon-repairs.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-repairs.dim_128x128.svg for the Home page category grid."
         },
         {
           "path": "frontend/public/assets/generated/icon-supplies.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-mason.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-coolie-helper.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-centring-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-bar-bending-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-door-maker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-window-maker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-carpenter.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-grill-gate-fabricator.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-welder.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-tree-cutter.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-coconut-tree-climber.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-coconut-picker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-firewood-cutter.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-basket-maker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-rope-maker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-mat-weaver.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-pot-maker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-house-maid.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-one-day-cooking-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-function-cooking-team.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-cleaning-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-tailor.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-aari-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-supplies.dim_128x128.svg for the Home page category grid."
         },
         {
           "path": "frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg for Tailoring subcategory icon usage."
         },
         {
           "path": "frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg",
           "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg for Tailoring subcategory icon usage."
         },
         {
-          "path": "frontend/public/assets/generated/icon-ironing-service.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "path": "frontend/src/components/common/SafeIconImage.tsx",
+          "operation": "modify",
+          "description": "Switch SafeIconImage default fallback from the .png to the local SVG at frontend/public/assets/generated/icon-fallback.dim_128x128.svg, and keep the existing onError swap behavior to prevent broken image placeholders."
         },
         {
-          "path": "frontend/public/assets/generated/icon-farm-labour.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Update the Home page category grid icon paths to use the local generated SVGs (frontend/public/assets/generated/icon-*.dim_128x128.svg) and ensure SafeIconImage fallbackSrc is also set to the SVG fallback asset."
         },
         {
-          "path": "frontend/public/assets/generated/icon-planting-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "path": "frontend/src/config/localSkilledWorkers.ts",
+          "operation": "modify",
+          "description": "Audit and standardize Local Skilled Workers subcategory icon paths so they reference local generated assets under frontend/public/assets/generated/* (no external URLs), and ensure Tailoring icons use the new SVGs (icon-blouse-designer.dim_128x128.svg, icon-saree-falls-pico-worker.dim_128x128.svg)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-94",
+      "summary": "Improve UX clarity for Worker Registration and Worker Search category/subcategory selection with clear placeholders, disabled states, and safe empty-state messaging (no new flows/routes).",
+      "acceptanceCriteria": [
+        "When no category is selected, the subcategory dropdown is clearly disabled and shows an appropriate placeholder state.",
+        "If taxonomy data is missing or empty, the UI remains usable using safe fallbacks (no crashes) and communicates a clear next step to the user.",
+        "No new flows (booking/payment/chat) are introduced; existing navigation and routes remain intact."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/WorkerRegistrationPage.tsx",
+          "operation": "modify",
+          "description": "Refine category/subcategory selection UX: keep subcategory disabled until category selection, ensure placeholders are unambiguous, and add a safe empty-state message when taxonomy is unavailable/empty or a category has no subcategories."
         },
         {
-          "path": "frontend/public/assets/generated/icon-harvest-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
+          "operation": "modify",
+          "description": "Refine search filter UX: show a clearer placeholder when no category is selected (and keep subcategory disabled), handle missing/empty taxonomy without crashes, and provide a helpful empty-state message for users."
         },
         {
-          "path": "frontend/public/assets/generated/icon-sprayer-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+          "path": "frontend/src/hooks/useWorkerTaxonomy.ts",
+          "operation": "modify",
+          "description": "Strengthen safe fallback behavior messaging support by ensuring taxonomy always returns stable categories/subcategories structures (even when backend data is empty), so the UI can reliably render disabled/empty states without errors."
         }
       ]
     }

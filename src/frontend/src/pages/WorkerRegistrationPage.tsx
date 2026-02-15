@@ -12,6 +12,8 @@ import BilingualText from '@/components/i18n/BilingualText';
 import { useNavigate } from '@tanstack/react-router';
 import { useWorkerTaxonomy, getSubcategoriesForCategory } from '@/hooks/useWorkerTaxonomy';
 import { getBilingualCategoryLabel, getBilingualSubcategoryLabel } from '@/utils/bilingualTaxonomy';
+import { logError } from '@/utils/errors';
+import PageShell from '@/components/layout/PageShell';
 
 export default function WorkerRegistrationPage() {
   const { actor } = useActor();
@@ -37,7 +39,6 @@ export default function WorkerRegistrationPage() {
 
   const registerTitle = t('register.title');
   const registerHelper = t('register.helper');
-  const successMessage = t('register.success');
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -140,7 +141,7 @@ export default function WorkerRegistrationPage() {
         setComments('');
       }
     } catch (err: any) {
-      console.error('Registration error:', err);
+      logError('WorkerRegistration.handleSubmit', err);
       setError(err.message || 'Failed to submit registration. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -159,44 +160,63 @@ export default function WorkerRegistrationPage() {
 
   if (isSuccess) {
     return (
-      <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
+      <PageShell>
         <div className="max-w-2xl mx-auto">
-          <div className="bg-card rounded-3xl shadow-2xl p-8 md:p-12 text-center space-y-6">
+          <div className="bg-card rounded-2xl shadow-xl p-8 md:p-10 text-center space-y-5">
             <div className="flex justify-center">
-              <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-6">
-                <CheckCircle2 className="h-16 w-16 text-green-600 dark:text-green-400" />
+              <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-5">
+                <CheckCircle2 className="h-14 w-14 text-green-600 dark:text-green-400" />
               </div>
             </div>
             <div className="space-y-3">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                Registration Submitted!
-              </h2>
               <BilingualText
-                english={<p className="text-lg text-muted-foreground">{successMessage.en}</p>}
-                regional={<p className="text-base text-muted-foreground">{successMessage.regional}</p>}
-                regionalClassName="text-base mt-2 opacity-80"
+                english={<h2 className="text-3xl md:text-4xl font-bold text-foreground">Registration Submitted!</h2>}
+                regional={<p className="text-2xl md:text-3xl font-bold text-foreground">பதிவு சமர்ப்பிக்கப்பட்டது!</p>}
+                regionalClassName="text-2xl md:text-3xl font-bold text-foreground mt-2"
               />
+              <BilingualText
+                english={<p className="text-lg text-muted-foreground">Your registration has been received successfully.</p>}
+                regional={<p className="text-base text-muted-foreground">உங்கள் பதிவு வெற்றிகரமாக பெறப்பட்டது.</p>}
+                regionalClassName="text-base text-muted-foreground mt-1"
+              />
+              <div className="bg-muted/50 rounded-xl p-4 mt-3">
+                <BilingualText
+                  english={<p className="text-sm text-muted-foreground">Your profile will be publicly visible after admin approval. We'll review your submission shortly.</p>}
+                  regional={<p className="text-xs text-muted-foreground">நிர்வாக ஒப்புதலுக்குப் பிறகு உங்கள் சுயவிவரம் பொதுவில் காணப்படும். நாங்கள் விரைவில் உங்கள் சமர்ப்பிப்பை மதிப்பாய்வு செய்வோம்.</p>}
+                  regionalClassName="text-xs text-muted-foreground mt-1"
+                />
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-3">
               <Button
                 onClick={() => setIsSuccess(false)}
                 variant="outline"
                 className="flex-1"
                 size="lg"
               >
-                Register Another Worker
+                <BilingualText
+                  english={<span>Register Another Worker</span>}
+                  regional={<span className="text-sm">மற்றொரு தொழிலாளியை பதிவு செய்யுங்கள்</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
               </Button>
               <Button
                 onClick={() => navigate({ to: '/' })}
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                className="flex-1 bg-primary hover:bg-primary-dark text-primary-foreground"
                 size="lg"
               >
-                Go to Home
+                <BilingualText
+                  english={<span>Go to Home</span>}
+                  regional={<span className="text-sm">முகப்புக்கு செல்லவும்</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
               </Button>
             </div>
           </div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
@@ -226,248 +246,241 @@ export default function WorkerRegistrationPage() {
   const buttonSubmit = t('register.button.submit');
   const buttonSubmitting = t('register.button.submitting');
 
+  const subcategoryDisabled = !category || availableSubcategories.length === 0;
+  const subcategoryPlaceholder = !category 
+    ? selectCategoryFirst.en 
+    : availableSubcategories.length === 0 
+    ? 'No subcategories available' 
+    : selectSubcategory.en;
+
   return (
-    <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
+    <PageShell variant="compact">
       <div className="max-w-3xl mx-auto">
-        <div className="text-center space-y-3 mb-8">
+        <div className="text-center space-y-2 mb-6">
           <BilingualText
             english={<h1 className="text-3xl md:text-4xl font-bold text-foreground">{registerTitle.en}</h1>}
-            regional={<p className="text-xl md:text-2xl font-semibold text-foreground/90">{registerTitle.regional}</p>}
-            regionalClassName="text-xl md:text-2xl mt-2"
+            regional={<p className="text-2xl md:text-3xl font-semibold text-foreground">{registerTitle.regional}</p>}
+            regionalClassName="text-2xl md:text-3xl font-semibold text-foreground mt-2"
           />
           <BilingualText
-            english={<p className="text-lg text-muted-foreground">{registerHelper.en}</p>}
-            regional={<p className="text-base text-muted-foreground">{registerHelper.regional}</p>}
-            regionalClassName="text-base mt-1 opacity-80"
+            english={<p className="text-base md:text-lg text-muted-foreground">{registerHelper.en}</p>}
+            regional={<p className="text-sm md:text-base text-muted-foreground">{registerHelper.regional}</p>}
+            regionalClassName="text-sm md:text-base text-muted-foreground mt-1"
           />
         </div>
 
-        <div className="bg-card rounded-3xl shadow-xl p-6 md:p-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-card rounded-2xl shadow-xl p-5 md:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="bg-destructive/10 border border-destructive/30 text-destructive rounded-xl p-4">
-                <p className="text-sm font-medium">{error}</p>
+              <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
+                <p className="text-sm text-destructive font-medium">{error}</p>
               </div>
             )}
 
-            {/* Name */}
             <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="name" className="text-base font-medium">{fieldName.en} <span className="text-destructive">*</span></Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldName.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
-              />
+              <Label htmlFor="name" className="text-base font-semibold">
+                <BilingualText
+                  english={<span>{fieldName.en}</span>}
+                  regional={<span className="text-sm">{fieldName.regional}</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
+              </Label>
               <Input
                 id="name"
-                type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={placeholderName.en}
-                className="h-12"
-                disabled={isSubmitting}
+                className="h-11"
               />
             </div>
 
-            {/* Phone */}
             <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="phone" className="text-base font-medium">{fieldPhone.en} <span className="text-destructive">*</span></Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldPhone.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
-              />
+              <Label htmlFor="phone" className="text-base font-semibold">
+                <BilingualText
+                  english={<span>{fieldPhone.en}</span>}
+                  regional={<span className="text-sm">{fieldPhone.regional}</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
+              </Label>
               <Input
                 id="phone"
-                type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder={placeholderPhone.en}
-                className="h-12"
-                disabled={isSubmitting}
+                className="h-11"
               />
             </div>
 
-            {/* Category */}
-            <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="category" className="text-base font-medium">{fieldCategory.en} <span className="text-destructive">*</span></Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldCategory.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
-              />
-              <Select
-                value={category}
-                onValueChange={handleCategoryChange}
-                disabled={isSubmitting || taxonomy.isLoading}
-              >
-                <SelectTrigger className="h-12">
-                  <SelectValue placeholder={taxonomy.isLoading ? loadingCategories.en : selectCategory.en} />
-                </SelectTrigger>
-                <SelectContent>
-                  {taxonomy.categories.map((cat) => {
-                    const catLabel = getBilingualCategoryLabel(cat, t);
-                    return (
-                      <SelectItem key={cat} value={cat}>
-                        <BilingualText
-                          english={<span>{catLabel.en}</span>}
-                          regional={<span className="text-xs">{catLabel.regional}</span>}
-                          regionalClassName="text-xs mt-0.5 opacity-80"
-                          containerClassName="flex flex-col items-start"
-                        />
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="category" className="text-base font-semibold">
+                  <BilingualText
+                    english={<span>{fieldCategory.en}</span>}
+                    regional={<span className="text-sm">{fieldCategory.regional}</span>}
+                    containerClassName="flex flex-col"
+                    regionalClassName="text-sm mt-0.5"
+                  />
+                </Label>
+                <Select value={category} onValueChange={handleCategoryChange} disabled={taxonomy.isLoading}>
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder={taxonomy.isLoading ? loadingCategories.en : selectCategory.en} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {taxonomy.categories.map((cat) => {
+                      const label = getBilingualCategoryLabel(cat, t);
+                      return (
+                        <SelectItem key={cat} value={cat}>
+                          <div className="flex flex-col">
+                            <span>{label.en}</span>
+                            <span className="text-xs text-muted-foreground">{label.regional}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Subcategory */}
-            <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="subcategory" className="text-base font-medium">{fieldSubcategory.en} <span className="text-destructive">*</span></Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldSubcategory.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
-              />
-              <Select
-                value={subcategory}
-                onValueChange={setSubcategory}
-                disabled={!category || availableSubcategories.length === 0 || isSubmitting || taxonomy.isLoading}
-              >
-                <SelectTrigger className="h-12">
-                  <SelectValue placeholder={category ? selectSubcategory.en : selectCategoryFirst.en} />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableSubcategories.map((sub) => {
-                    const subLabel = getBilingualSubcategoryLabel(sub, t);
-                    return (
-                      <SelectItem key={sub} value={sub}>
-                        <BilingualText
-                          english={<span>{subLabel.en}</span>}
-                          regional={<span className="text-xs">{subLabel.regional}</span>}
-                          regionalClassName="text-xs mt-0.5 opacity-80"
-                          containerClassName="flex flex-col items-start"
-                        />
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Area */}
-            <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="area" className="text-base font-medium">{fieldArea.en} <span className="text-destructive">*</span></Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldArea.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
-              />
-              <Input
-                id="area"
-                type="text"
-                value={area}
-                onChange={(e) => setArea(e.target.value)}
-                placeholder={placeholderArea.en}
-                className="h-12"
-                disabled={isSubmitting}
-              />
-            </div>
-
-            {/* Experience */}
-            <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="experience" className="text-base font-medium">{fieldExperience.en}</Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldExperience.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
-              />
-              <Input
-                id="experience"
-                type="text"
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                placeholder={placeholderExperience.en}
-                className="h-12"
-                disabled={isSubmitting}
-              />
-            </div>
-
-            {/* Working Hours */}
-            <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="workingHours" className="text-base font-medium">{fieldWorkingHours.en}</Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldWorkingHours.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
-              />
-              <Input
-                id="workingHours"
-                type="text"
-                value={workingHours}
-                onChange={(e) => setWorkingHours(e.target.value)}
-                placeholder={placeholderWorkingHours.en}
-                className="h-12"
-                disabled={isSubmitting}
-              />
-            </div>
-
-            {/* Photo Upload */}
-            <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="photo" className="text-base font-medium">{fieldPhoto.en} <span className="text-destructive">*</span></Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldPhoto.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
-              />
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-12"
-                    onClick={() => document.getElementById('photo')?.click()}
-                    disabled={isSubmitting}
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
-                    {buttonChoosePhoto.en}
-                  </Button>
-                  {photoFile && (
-                    <span className="text-sm text-muted-foreground">{photoFile.name}</span>
-                  )}
-                </div>
-                <input
-                  id="photo"
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  className="hidden"
-                  disabled={isSubmitting}
-                />
-                {photoPreview && (
-                  <div className="relative w-32 h-32 rounded-xl overflow-hidden border-2 border-border">
-                    <img
-                      src={photoPreview}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
+              <div className="space-y-2">
+                <Label htmlFor="subcategory" className="text-base font-semibold">
+                  <BilingualText
+                    english={<span>{fieldSubcategory.en}</span>}
+                    regional={<span className="text-sm">{fieldSubcategory.regional}</span>}
+                    containerClassName="flex flex-col"
+                    regionalClassName="text-sm mt-0.5"
+                  />
+                </Label>
+                <Select value={subcategory} onValueChange={setSubcategory} disabled={subcategoryDisabled}>
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder={subcategoryPlaceholder} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableSubcategories.map((sub) => {
+                      const label = getBilingualSubcategoryLabel(sub, t);
+                      return (
+                        <SelectItem key={sub} value={sub}>
+                          <div className="flex flex-col">
+                            <span>{label.en}</span>
+                            <span className="text-xs text-muted-foreground">{label.regional}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            {/* Comments */}
             <div className="space-y-2">
-              <BilingualText
-                english={<Label htmlFor="comments" className="text-base font-medium">{fieldComments.en}</Label>}
-                regional={<span className="text-sm text-muted-foreground">{fieldComments.regional}</span>}
-                regionalClassName="text-sm mt-1 opacity-80"
+              <Label htmlFor="area" className="text-base font-semibold">
+                <BilingualText
+                  english={<span>{fieldArea.en}</span>}
+                  regional={<span className="text-sm">{fieldArea.regional}</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
+              </Label>
+              <Input
+                id="area"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                placeholder={placeholderArea.en}
+                className="h-11"
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="experience" className="text-base font-semibold">
+                  <BilingualText
+                    english={<span>{fieldExperience.en}</span>}
+                    regional={<span className="text-sm">{fieldExperience.regional}</span>}
+                    containerClassName="flex flex-col"
+                    regionalClassName="text-sm mt-0.5"
+                  />
+                </Label>
+                <Input
+                  id="experience"
+                  value={experience}
+                  onChange={(e) => setExperience(e.target.value)}
+                  placeholder={placeholderExperience.en}
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="workingHours" className="text-base font-semibold">
+                  <BilingualText
+                    english={<span>{fieldWorkingHours.en}</span>}
+                    regional={<span className="text-sm">{fieldWorkingHours.regional}</span>}
+                    containerClassName="flex flex-col"
+                    regionalClassName="text-sm mt-0.5"
+                  />
+                </Label>
+                <Input
+                  id="workingHours"
+                  value={workingHours}
+                  onChange={(e) => setWorkingHours(e.target.value)}
+                  placeholder={placeholderWorkingHours.en}
+                  className="h-11"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="photo" className="text-base font-semibold">
+                <BilingualText
+                  english={<span>{fieldPhoto.en}</span>}
+                  regional={<span className="text-sm">{fieldPhoto.regional}</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
+              </Label>
+              <div className="flex items-center gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('photo')?.click()}
+                  className="h-11"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {buttonChoosePhoto.en}
+                </Button>
+                {photoPreview && (
+                  <img src={photoPreview} alt="Preview" className="h-16 w-16 object-cover rounded-lg border-2 border-border" />
+                )}
+              </div>
+              <input
+                id="photo"
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="comments" className="text-base font-semibold">
+                <BilingualText
+                  english={<span>{fieldComments.en}</span>}
+                  regional={<span className="text-sm">{fieldComments.regional}</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
+              </Label>
               <Textarea
                 id="comments"
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
                 placeholder={placeholderComments.en}
-                className="min-h-24"
-                disabled={isSubmitting}
+                rows={3}
+                className="resize-none"
               />
             </div>
 
-            {/* Upload Progress */}
-            {isSubmitting && uploadProgress > 0 && (
+            {uploadProgress > 0 && uploadProgress < 100 && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Uploading photo...</span>
@@ -482,11 +495,10 @@ export default function WorkerRegistrationPage() {
               </div>
             )}
 
-            {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
-              disabled={isSubmitting || taxonomy.isLoading}
+              disabled={isSubmitting}
+              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary-dark text-primary-foreground"
             >
               {isSubmitting ? (
                 <>
@@ -494,12 +506,17 @@ export default function WorkerRegistrationPage() {
                   {buttonSubmitting.en}
                 </>
               ) : (
-                buttonSubmit.en
+                <BilingualText
+                  english={<span>{buttonSubmit.en}</span>}
+                  regional={<span className="text-sm">{buttonSubmit.regional}</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
               )}
             </Button>
           </form>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

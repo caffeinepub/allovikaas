@@ -1,125 +1,181 @@
-// Local Skilled Workers Category Configuration
-// Single source of truth for the Local Skilled Workers taxonomy
-
-export interface SubcategoryItem {
-  label: string;
-  icon: string;
-}
-
-export interface CategoryGroup {
-  groupName: string;
-  subcategories: SubcategoryItem[];
-}
-
 export const LOCAL_SKILLED_WORKERS_CATEGORY = 'Local Skilled Workers';
 
-export const LOCAL_SKILLED_WORKERS_GROUPS: CategoryGroup[] = [
+export interface LocalSkilledWorker {
+  subcategory: string;
+  icon: string;
+  label: {
+    en: string;
+    regional: string;
+  };
+}
+
+const localSkilledWorkers: LocalSkilledWorker[] = [
   {
-    groupName: 'Construction Related',
-    subcategories: [
-      { label: 'Mason', icon: '/assets/generated/icon-mason.dim_128x128.svg' },
-      { label: 'Coolie Helper', icon: '/assets/generated/icon-coolie-helper.dim_128x128.svg' },
-      { label: 'Centring Worker', icon: '/assets/generated/icon-centring-worker.dim_128x128.svg' },
-      { label: 'Bar Bending Worker', icon: '/assets/generated/icon-bar-bending-worker.dim_128x128.svg' },
-    ],
+    subcategory: 'Mason',
+    icon: '/assets/generated/icon-mason.dim_128x128.svg',
+    label: { en: 'Mason', regional: 'கொத்தனார்' },
   },
   {
-    groupName: 'Wood & Metal',
-    subcategories: [
-      { label: 'Door Maker', icon: '/assets/generated/icon-door-maker.dim_128x128.svg' },
-      { label: 'Window Maker', icon: '/assets/generated/icon-window-maker.dim_128x128.svg' },
-      { label: 'Carpenter', icon: '/assets/generated/icon-carpenter.dim_128x128.svg' },
-      { label: 'Grill / Gate Fabricator', icon: '/assets/generated/icon-grill-gate-fabricator.dim_128x128.svg' },
-      { label: 'Welder', icon: '/assets/generated/icon-welder.dim_128x128.svg' },
-    ],
+    subcategory: 'Coolie/Helper',
+    icon: '/assets/generated/icon-coolie-helper.dim_128x128.svg',
+    label: { en: 'Coolie/Helper', regional: 'கூலி/உதவியாளர்' },
   },
   {
-    groupName: 'Tree & Land Works',
-    subcategories: [
-      { label: 'Tree Cutter', icon: '/assets/generated/icon-tree-cutter.dim_128x128.svg' },
-      { label: 'Coconut Tree Climber', icon: '/assets/generated/icon-coconut-tree-climber.dim_128x128.svg' },
-      { label: 'Coconut Picker', icon: '/assets/generated/icon-coconut-picker.dim_128x128.svg' },
-      { label: 'Firewood Cutter', icon: '/assets/generated/icon-firewood-cutter.dim_128x128.svg' },
-    ],
+    subcategory: 'Centring Worker',
+    icon: '/assets/generated/icon-centring-worker.dim_128x128.svg',
+    label: { en: 'Centring Worker', regional: 'சென்டரிங் தொழிலாளி' },
   },
   {
-    groupName: 'Handcraft & Small Work',
-    subcategories: [
-      { label: 'Basket Maker', icon: '/assets/generated/icon-basket-maker.dim_128x128.svg' },
-      { label: 'Rope Maker', icon: '/assets/generated/icon-rope-maker.dim_128x128.svg' },
-      { label: 'Mat Weaver', icon: '/assets/generated/icon-mat-weaver.dim_128x128.svg' },
-      { label: 'Pot Maker', icon: '/assets/generated/icon-pot-maker.dim_128x128.svg' },
-    ],
+    subcategory: 'Bar Bending Worker',
+    icon: '/assets/generated/icon-bar-bending-worker.dim_128x128.svg',
+    label: { en: 'Bar Bending Worker', regional: 'பார் பெண்டிங் தொழிலாளி' },
   },
   {
-    groupName: 'Home & Daily Help',
-    subcategories: [
-      { label: 'House Maid', icon: '/assets/generated/icon-house-maid.dim_128x128.svg' },
-      { label: 'One Day Cooking Worker', icon: '/assets/generated/icon-one-day-cooking-worker.dim_128x128.svg' },
-      { label: 'Function Cooking Team', icon: '/assets/generated/icon-function-cooking-team.dim_128x128.svg' },
-      { label: 'Cleaning Worker', icon: '/assets/generated/icon-cleaning-worker.dim_128x128.svg' },
-    ],
+    subcategory: 'Door Maker',
+    icon: '/assets/generated/icon-door-maker.dim_128x128.svg',
+    label: { en: 'Door Maker', regional: 'கதவு தயாரிப்பாளர்' },
   },
   {
-    groupName: 'Clothing & Tailoring',
-    subcategories: [
-      { label: 'Tailor', icon: '/assets/generated/icon-tailor.dim_128x128.svg' },
-      { label: 'Aari Worker', icon: '/assets/generated/icon-aari-worker.dim_128x128.svg' },
-      { label: 'Blouse Designer', icon: '/assets/generated/icon-blouse-designer.dim_128x128.svg' },
-      { label: 'Saree Falls/Pico Worker', icon: '/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg' },
-      { label: 'Ironing Service', icon: '/assets/generated/icon-ironing-service.dim_128x128.svg' },
-    ],
+    subcategory: 'Window Maker',
+    icon: '/assets/generated/icon-window-maker.dim_128x128.svg',
+    label: { en: 'Window Maker', regional: 'ஜன்னல் தயாரிப்பாளர்' },
   },
   {
-    groupName: 'Agriculture Workers',
-    subcategories: [
-      { label: 'Farm Labour', icon: '/assets/generated/icon-farm-labour.dim_128x128.svg' },
-      { label: 'Planting Worker', icon: '/assets/generated/icon-planting-worker.dim_128x128.svg' },
-      { label: 'Harvest Worker', icon: '/assets/generated/icon-harvest-worker.dim_128x128.svg' },
-      { label: 'Sprayer Worker', icon: '/assets/generated/icon-sprayer-worker.dim_128x128.svg' },
-    ],
+    subcategory: 'Carpenter',
+    icon: '/assets/generated/icon-carpenter.dim_128x128.svg',
+    label: { en: 'Carpenter', regional: 'தச்சர்' },
+  },
+  {
+    subcategory: 'Grill/Gate Fabricator',
+    icon: '/assets/generated/icon-grill-gate-fabricator.dim_128x128.svg',
+    label: { en: 'Grill/Gate Fabricator', regional: 'கிரில்/கேட் தயாரிப்பாளர்' },
+  },
+  {
+    subcategory: 'Welder',
+    icon: '/assets/generated/icon-welder.dim_128x128.svg',
+    label: { en: 'Welder', regional: 'வெல்டர்' },
+  },
+  {
+    subcategory: 'Tree Cutter',
+    icon: '/assets/generated/icon-tree-cutter.dim_128x128.svg',
+    label: { en: 'Tree Cutter', regional: 'மரம் வெட்டுபவர்' },
+  },
+  {
+    subcategory: 'Coconut Tree Climber',
+    icon: '/assets/generated/icon-coconut-tree-climber.dim_128x128.svg',
+    label: { en: 'Coconut Tree Climber', regional: 'தென்னை மரம் ஏறுபவர்' },
+  },
+  {
+    subcategory: 'Coconut Picker',
+    icon: '/assets/generated/icon-coconut-picker.dim_128x128.svg',
+    label: { en: 'Coconut Picker', regional: 'தேங்காய் பறிப்பவர்' },
+  },
+  {
+    subcategory: 'Firewood Cutter',
+    icon: '/assets/generated/icon-firewood-cutter.dim_128x128.svg',
+    label: { en: 'Firewood Cutter', regional: 'விறகு வெட்டுபவர்' },
+  },
+  {
+    subcategory: 'Basket Maker',
+    icon: '/assets/generated/icon-basket-maker.dim_128x128.svg',
+    label: { en: 'Basket Maker', regional: 'கூடை தயாரிப்பாளர்' },
+  },
+  {
+    subcategory: 'Rope Maker',
+    icon: '/assets/generated/icon-rope-maker.dim_128x128.svg',
+    label: { en: 'Rope Maker', regional: 'கயிறு தயாரிப்பாளர்' },
+  },
+  {
+    subcategory: 'Mat Weaver',
+    icon: '/assets/generated/icon-mat-weaver.dim_128x128.svg',
+    label: { en: 'Mat Weaver', regional: 'பாய் நெசவாளர்' },
+  },
+  {
+    subcategory: 'Pot Maker',
+    icon: '/assets/generated/icon-pot-maker.dim_128x128.svg',
+    label: { en: 'Pot Maker', regional: 'பானை தயாரிப்பாளர்' },
+  },
+  {
+    subcategory: 'House Maid',
+    icon: '/assets/generated/icon-house-maid.dim_128x128.svg',
+    label: { en: 'House Maid', regional: 'வீட்டு வேலையாள்' },
+  },
+  {
+    subcategory: 'One Day Cooking Worker',
+    icon: '/assets/generated/icon-one-day-cooking-worker.dim_128x128.svg',
+    label: { en: 'One Day Cooking Worker', regional: 'ஒரு நாள் சமையல் தொழிலாளி' },
+  },
+  {
+    subcategory: 'Function Cooking Team',
+    icon: '/assets/generated/icon-function-cooking-team.dim_128x128.svg',
+    label: { en: 'Function Cooking Team', regional: 'விழா சமையல் குழு' },
+  },
+  {
+    subcategory: 'Cleaning Worker',
+    icon: '/assets/generated/icon-cleaning-worker.dim_128x128.svg',
+    label: { en: 'Cleaning Worker', regional: 'சுத்தம் செய்யும் தொழிலாளி' },
+  },
+  {
+    subcategory: 'Tailor',
+    icon: '/assets/generated/icon-tailor.dim_128x128.svg',
+    label: { en: 'Tailor', regional: 'தையல்காரர்' },
+  },
+  {
+    subcategory: 'Aari Worker',
+    icon: '/assets/generated/icon-aari-worker.dim_128x128.svg',
+    label: { en: 'Aari Worker', regional: 'ஆரி வேலை செய்பவர்' },
+  },
+  {
+    subcategory: 'Blouse Designer',
+    icon: '/assets/generated/icon-blouse-designer.dim_128x128.svg',
+    label: { en: 'Blouse Designer', regional: 'ரவிக்கை வடிவமைப்பாளர்' },
+  },
+  {
+    subcategory: 'Saree Falls/Pico Worker',
+    icon: '/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg',
+    label: { en: 'Saree Falls/Pico Worker', regional: 'புடவை ஃபால்ஸ்/பிகோ தொழிலாளி' },
+  },
+  {
+    subcategory: 'Ironing Service',
+    icon: '/assets/generated/icon-ironing-service.dim_128x128.svg',
+    label: { en: 'Ironing Service', regional: 'இஸ்திரி சேவை' },
+  },
+  {
+    subcategory: 'Farm Labour',
+    icon: '/assets/generated/icon-farm-labour.dim_128x128.svg',
+    label: { en: 'Farm Labour', regional: 'விவசாய தொழிலாளி' },
+  },
+  {
+    subcategory: 'Planting Worker',
+    icon: '/assets/generated/icon-planting-worker.dim_128x128.svg',
+    label: { en: 'Planting Worker', regional: 'நடவு தொழிலாளி' },
+  },
+  {
+    subcategory: 'Harvest Worker',
+    icon: '/assets/generated/icon-harvest-worker.dim_128x128.svg',
+    label: { en: 'Harvest Worker', regional: 'அறுவடை தொழிலாளி' },
+  },
+  {
+    subcategory: 'Sprayer Worker',
+    icon: '/assets/generated/icon-sprayer-worker.dim_128x128.svg',
+    label: { en: 'Sprayer Worker', regional: 'தெளிப்பு தொழிலாளி' },
   },
 ];
 
-// Flatten all subcategories for easy access
-export const getAllLocalSkilledWorkersSubcategories = (): string[] => {
-  try {
-    return LOCAL_SKILLED_WORKERS_GROUPS.flatMap((group) =>
-      (group.subcategories || []).map((sub) => sub?.label || '').filter(Boolean)
-    );
-  } catch (error) {
-    console.error('Error getting subcategories:', error);
-    return [];
-  }
-};
+export function getLocalSkilledWorkersSubcategories(): LocalSkilledWorker[] {
+  return localSkilledWorkers;
+}
 
-// Get icon for a specific subcategory with safe fallback
-export const getSubcategoryIcon = (subcategoryLabel: string): string => {
-  try {
-    if (!subcategoryLabel) {
-      return '/assets/generated/icon-fallback.dim_128x128.svg';
-    }
-    
-    for (const group of LOCAL_SKILLED_WORKERS_GROUPS) {
-      if (!group.subcategories) continue;
-      const found = group.subcategories.find((sub) => sub?.label === subcategoryLabel);
-      if (found?.icon) return found.icon;
-    }
-  } catch (error) {
-    console.error('Error getting subcategory icon:', error);
-  }
-  
-  // Default fallback icon
-  return '/assets/generated/icon-fallback.dim_128x128.svg';
-};
+export function getAllLocalSkilledWorkersSubcategories(): string[] {
+  return localSkilledWorkers.map((worker) => worker.subcategory);
+}
 
-// Get subcategory label safely
-export const getSubcategoryLabel = (subcategoryLabel: string): string => {
-  try {
-    if (!subcategoryLabel) return 'Worker';
-    return subcategoryLabel;
-  } catch (error) {
-    console.error('Error getting subcategory label:', error);
-    return 'Worker';
-  }
-};
+export function getLocalSkilledWorkerIcon(subcategory: string): string {
+  const worker = localSkilledWorkers.find((w) => w.subcategory === subcategory);
+  return worker?.icon || '/assets/generated/icon-fallback.dim_128x128.svg';
+}
+
+export function getLocalSkilledWorkerLabel(subcategory: string): { en: string; regional: string } {
+  const worker = localSkilledWorkers.find((w) => w.subcategory === subcategory);
+  return worker?.label || { en: subcategory, regional: subcategory };
+}

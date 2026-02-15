@@ -10,13 +10,14 @@ export function useAdminWorkerMutations() {
     mutationFn: async (workerId: bigint) => {
       if (!actor) {
         logError('approveWorker', 'Actor not available');
-        return;
+        return false;
       }
       try {
-        await actor.approveWorker(workerId);
+        const result = await actor.approveWorker(workerId);
+        return result;
       } catch (error) {
         logError('approveWorker', error);
-        throw error;
+        return false;
       }
     },
     onSuccess: () => {
@@ -33,13 +34,14 @@ export function useAdminWorkerMutations() {
     mutationFn: async ({ workerId, reason }: { workerId: bigint; reason: string }) => {
       if (!actor) {
         logError('rejectWorker', 'Actor not available');
-        return;
+        return false;
       }
       try {
-        await actor.rejectWorker(workerId, reason);
+        const result = await actor.rejectWorker(workerId, reason);
+        return result;
       } catch (error) {
         logError('rejectWorker', error);
-        throw error;
+        return false;
       }
     },
     onSuccess: () => {
@@ -61,7 +63,6 @@ export function useAdminWorkerMutations() {
         await actor.markWorkerVerified(workerId);
       } catch (error) {
         logError('markVerified', error);
-        throw error;
       }
     },
     onSuccess: () => {
@@ -83,7 +84,6 @@ export function useAdminWorkerMutations() {
         await actor.featureWorker(workerId);
       } catch (error) {
         logError('featureWorker', error);
-        throw error;
       }
     },
     onSuccess: () => {
@@ -105,7 +105,6 @@ export function useAdminWorkerMutations() {
         await actor.unfeatureWorker(workerId);
       } catch (error) {
         logError('unfeatureWorker', error);
-        throw error;
       }
     },
     onSuccess: () => {
@@ -134,13 +133,14 @@ export function useAdminJobMutations() {
     mutationFn: async (jobId: bigint) => {
       if (!actor) {
         logError('approveJob', 'Actor not available');
-        return;
+        return false;
       }
       try {
-        await actor.approveJobPost(jobId);
+        const result = await actor.approveJobPost(jobId);
+        return result;
       } catch (error) {
         logError('approveJob', error);
-        throw error;
+        return false;
       }
     },
     onSuccess: () => {
@@ -157,13 +157,14 @@ export function useAdminJobMutations() {
     mutationFn: async (jobId: bigint) => {
       if (!actor) {
         logError('rejectJob', 'Actor not available');
-        return;
+        return false;
       }
       try {
-        await actor.rejectJobPost(jobId);
+        const result = await actor.rejectJobPost(jobId);
+        return result;
       } catch (error) {
         logError('rejectJob', error);
-        throw error;
+        return false;
       }
     },
     onSuccess: () => {
@@ -179,4 +180,32 @@ export function useAdminJobMutations() {
     approveJob,
     rejectJob,
   };
+}
+
+export function useAdminBootstrapMutation() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) {
+        logError('upgradeToAdmin', 'Actor not available');
+        return false;
+      }
+      try {
+        const result = await actor.upgradeToAdmin();
+        return result;
+      } catch (error) {
+        logError('upgradeToAdmin', error);
+        return false;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['is-admin'] });
+      queryClient.refetchQueries({ queryKey: ['is-admin'] });
+    },
+    onError: (error) => {
+      logError('upgradeToAdmin.onError', error);
+    },
+  });
 }

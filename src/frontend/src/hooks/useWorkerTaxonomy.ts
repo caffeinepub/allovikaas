@@ -6,8 +6,9 @@ import {
   getAllLocalSkilledWorkersSubcategories,
 } from '@/config/localSkilledWorkers';
 import { logError } from '@/utils/errors';
+import { deduplicateStrings, normalizeCategoryMapping } from '@/utils/normalizeTaxonomy';
 
-// Fallback taxonomy matching the old hardcoded values
+// Enhanced fallback taxonomy with Tailoring category and subcategories
 const FALLBACK_CATEGORIES = [
   'Construction',
   'Agriculture',
@@ -15,6 +16,7 @@ const FALLBACK_CATEGORIES = [
   'Transport',
   'Events & Cooking',
   'Daily Helpers',
+  'Tailoring',
   'Repairs',
   'Supplies',
   LOCAL_SKILLED_WORKERS_CATEGORY,
@@ -27,6 +29,7 @@ const FALLBACK_SUBCATEGORIES: Record<string, string[]> = {
   'Transport': ['Mini Lorry', 'Load Auto', 'JCB Operator', 'Water Tanker'],
   'Events & Cooking': ['Catering', 'Cook', 'Makeup Artist', 'Mehendi Artist', 'Tent Setup'],
   'Daily Helpers': ['House Help', 'Babysitter', 'Elder Care', 'Driver'],
+  'Tailoring': ['Blouse Stitching', 'Saree Work', 'Saree Falls/Pico', 'Aari Work', 'General Tailoring'],
   'Repairs': ['Mobile Repair', 'Appliance Repair', 'Bike Mechanic', 'Car Mechanic'],
   'Supplies': ['Water Supply', 'Gas Supply', 'Material Supply', 'Equipment Rental'],
   [LOCAL_SKILLED_WORKERS_CATEGORY]: getAllLocalSkilledWorkersSubcategories(),
@@ -43,6 +46,7 @@ export interface WorkerTaxonomy {
  * Hook to fetch worker taxonomy (categories and subcategories) from the backend.
  * Provides safe fallbacks when data is unavailable, empty, or contains unexpected values.
  * Ensures pages can still render and function even if the backend call fails.
+ * Deduplicates categories and subcategories using case-insensitive comparison.
  */
 export function useWorkerTaxonomy(): WorkerTaxonomy {
   const { actor, isFetching: actorFetching } = useActor();
@@ -69,7 +73,7 @@ export function useWorkerTaxonomy(): WorkerTaxonomy {
     retry: 2,
   });
 
-  // Build categories list and subcategories map from backend data
+  // Build categories list and subcategories map from backend data with deduplication
   const buildTaxonomy = (data: CategoryMapping[] | undefined): { categories: string[]; subcategoriesMap: Record<string, string[]> } => {
     // Guard against undefined or non-array data
     if (!data || !Array.isArray(data) || data.length === 0) {
@@ -79,10 +83,9 @@ export function useWorkerTaxonomy(): WorkerTaxonomy {
       };
     }
 
-    const categoriesSet = new Set<string>();
-    const subcategoriesMap: Record<string, string[]> = {};
+    const categoriesMap = new Map<string, string[]>();
 
-    // Process backend taxonomy with defensive checks
+    // Process backend taxonomy with defensive checks and deduplication
     try {
       data.forEach((mapping) => {
         // Validate mapping structure
@@ -92,31 +95,24 @@ export function useWorkerTaxonomy(): WorkerTaxonomy {
         
         if (mapping.category && typeof mapping.category === 'string' && mapping.category.trim()) {
           const categoryName = mapping.category.trim();
-          categoriesSet.add(categoryName);
           
-          // Validate and filter subcategories, removing duplicates
+          // Validate and deduplicate subcategories
+          let subcategories: string[] = [];
           if (Array.isArray(mapping.subcategories)) {
-            const subcatsSet = new Set<string>();
-            mapping.subcategories.forEach(sub => {
-              if (sub && typeof sub === 'string' && sub.trim()) {
-                subcatsSet.add(sub.trim());
-              }
-            });
-            
-            // Merge with existing subcategories for this category (in case of duplicates)
-            if (subcategoriesMap[categoryName]) {
-              const existingSet = new Set(subcategoriesMap[categoryName]);
-              subcatsSet.forEach(sub => existingSet.add(sub));
-              subcategoriesMap[categoryName] = Array.from(existingSet);
-            } else {
-              subcategoriesMap[categoryName] = Array.from(subcatsSet);
-            }
-          } else {
-            // Initialize empty array if no subcategories provided
-            if (!subcategoriesMap[categoryName]) {
-              subcategoriesMap[categoryName] = [];
-            }
+            subcategories = mapping.subcategories
+              .filter(sub => sub && typeof sub === 'string' && sub.trim())
+              .map(sub => sub.trim());
           }
+          
+          // Merge with existing subcategories for this category (in case of duplicate categories)
+          if (categoriesMap.has(categoryName)) {
+            const existing = categoriesMap.get(categoryName) || [];
+            subcategories = [...existing, ...subcategories];
+          }
+          
+          // Deduplicate subcategories
+          const normalized = normalizeCategoryMapping(categoryName, subcategories);
+          categoriesMap.set(categoryName, normalized.subcategories);
         }
       });
     } catch (error) {
@@ -129,22 +125,31 @@ export function useWorkerTaxonomy(): WorkerTaxonomy {
     }
 
     // Always ensure Local Skilled Workers category is present with all subcategories from config
-    categoriesSet.add(LOCAL_SKILLED_WORKERS_CATEGORY);
     const localSkilledSubcats = getAllLocalSkilledWorkersSubcategories();
     
     // Merge backend subcategories with config subcategories for Local Skilled Workers
-    if (subcategoriesMap[LOCAL_SKILLED_WORKERS_CATEGORY]) {
-      const mergedSet = new Set([
-        ...subcategoriesMap[LOCAL_SKILLED_WORKERS_CATEGORY],
-        ...localSkilledSubcats
-      ]);
-      subcategoriesMap[LOCAL_SKILLED_WORKERS_CATEGORY] = Array.from(mergedSet);
+    if (categoriesMap.has(LOCAL_SKILLED_WORKERS_CATEGORY)) {
+      const existing = categoriesMap.get(LOCAL_SKILLED_WORKERS_CATEGORY) || [];
+      const merged = [...existing, ...localSkilledSubcats];
+      const normalized = normalizeCategoryMapping(LOCAL_SKILLED_WORKERS_CATEGORY, merged);
+      categoriesMap.set(LOCAL_SKILLED_WORKERS_CATEGORY, normalized.subcategories);
     } else {
-      subcategoriesMap[LOCAL_SKILLED_WORKERS_CATEGORY] = localSkilledSubcats;
+      const normalized = normalizeCategoryMapping(LOCAL_SKILLED_WORKERS_CATEGORY, localSkilledSubcats);
+      categoriesMap.set(LOCAL_SKILLED_WORKERS_CATEGORY, normalized.subcategories);
     }
 
-    // Convert Set to Array for categories
-    const categories = Array.from(categoriesSet);
+    // Ensure Tailoring category is present with fallback subcategories if missing
+    if (!categoriesMap.has('Tailoring')) {
+      const normalized = normalizeCategoryMapping('Tailoring', FALLBACK_SUBCATEGORIES['Tailoring']);
+      categoriesMap.set('Tailoring', normalized.subcategories);
+    }
+
+    // Convert Map to arrays
+    const categories = Array.from(categoriesMap.keys());
+    const subcategoriesMap: Record<string, string[]> = {};
+    categoriesMap.forEach((subs, cat) => {
+      subcategoriesMap[cat] = subs;
+    });
 
     // If we got empty results after processing, fall back to hardcoded taxonomy
     if (categories.length === 0) {

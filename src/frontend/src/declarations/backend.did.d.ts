@@ -10,6 +10,9 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export type ApprovalStatus = { 'pending' : null } |
+  { 'approved' : null } |
+  { 'rejected' : null };
 export interface CategoryMapping {
   'category' : string,
   'subcategories' : Array<string>,
@@ -28,6 +31,10 @@ export interface JobPost {
   'dateTime' : Time,
 }
 export type Time = bigint;
+export interface UserApprovalInfo {
+  'status' : ApprovalStatus,
+  'principal' : Principal,
+}
 export interface UserProfile {
   'name' : string,
   'email' : [] | [string],
@@ -83,8 +90,8 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'approveJobPost' : ActorMethod<[bigint], undefined>,
-  'approveWorker' : ActorMethod<[bigint], undefined>,
+  'approveJobPost' : ActorMethod<[bigint], boolean>,
+  'approveWorker' : ActorMethod<[bigint], boolean>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'createJobPost' : ActorMethod<
     [string, string, Time, string, string, string],
@@ -102,17 +109,18 @@ export interface _SERVICE {
   'getJobPostById' : ActorMethod<[bigint], [] | [JobPost]>,
   'getPendingJobPosts' : ActorMethod<[], Array<JobPost>>,
   'getPendingWorkers' : ActorMethod<[], Array<Worker>>,
-  'getSafeCategoryWorkers' : ActorMethod<[string], Array<Worker>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getWorkerById' : ActorMethod<[bigint], [] | [Worker]>,
   'getWorkersByCategory' : ActorMethod<[string], Array<Worker>>,
   'getWorkersBySubcategory' : ActorMethod<[string], Array<Worker>>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'isCallerApproved' : ActorMethod<[], boolean>,
+  'listApprovals' : ActorMethod<[], Array<UserApprovalInfo>>,
   'markWorkerVerified' : ActorMethod<[bigint], undefined>,
-  'rejectJobPost' : ActorMethod<[bigint], undefined>,
-  'rejectWorker' : ActorMethod<[bigint, string], undefined>,
+  'rejectJobPost' : ActorMethod<[bigint], boolean>,
+  'rejectWorker' : ActorMethod<[bigint, string], boolean>,
   'repairDataIntegrity' : ActorMethod<[], string>,
-  'safeQueryWorker' : ActorMethod<[bigint], [] | [Worker]>,
+  'requestApproval' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'searchWorkersByArea' : ActorMethod<[string], Array<Worker>>,
   'searchWorkersByAreaAndCategory' : ActorMethod<
@@ -123,6 +131,7 @@ export interface _SERVICE {
     [string, string],
     Array<Worker>
   >,
+  'setApproval' : ActorMethod<[Principal, ApprovalStatus], undefined>,
   'submitWorkerRegistration' : ActorMethod<
     [
       string,
@@ -138,6 +147,7 @@ export interface _SERVICE {
     string
   >,
   'unfeatureWorker' : ActorMethod<[bigint], undefined>,
+  'upgradeToAdmin' : ActorMethod<[], boolean>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
