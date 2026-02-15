@@ -1,7 +1,7 @@
 // Utility to convert DB/system field keys into bilingual display labels
 // Used for form fields and dynamic labels
 
-import { getTranslation } from '@/components/i18n/translations';
+import { getTranslation, BilingualValue } from '@/components/i18n/translations';
 import { humanizeKey } from './humanizeLabel';
 
 /**
@@ -23,12 +23,15 @@ export function getBilingualFieldLabel(fieldKey: string): { en: string; regional
   ];
 
   for (const key of possibleKeys) {
-    const translation = getTranslation(key);
+    const translation: BilingualValue = getTranslation(key);
     
     // Check if we got a valid translation (not just the humanized fallback)
-    // getTranslation now returns { en, regional }
     if (translation && !translation.en.includes('.') && translation.en !== humanizeKey(key)) {
-      return translation;
+      // Map 'ta' to 'regional'
+      return {
+        en: translation.en,
+        regional: translation.ta,
+      };
     }
   }
 

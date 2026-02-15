@@ -15,10 +15,6 @@ import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import UserApproval "user-approval/approval";
 
-
-// Migration code for persistent state update.
-
-
 actor {
   let accessControlState = AccessControl.initState();
   let approvalState = UserApproval.initState(accessControlState);
@@ -234,7 +230,6 @@ actor {
     #rejected : Text;
   };
 
-  // EXTENSION: Add gpsLocation for workers as optional
   public type Location = {
     lat : Float;
     lon : Float;

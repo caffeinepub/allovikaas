@@ -1,5 +1,7 @@
 import { useI18n } from '@/components/i18n/I18nProvider';
-import { humanizeKey, createBilingualFallback, isValidTranslation } from './humanizeLabel';
+import { displayName } from './displayName';
+import { getCategoryLabel } from './categoryLabels';
+import { isValidTranslation } from './humanizeLabel';
 
 // Explicit mapping for known category variants to i18n keys
 const CATEGORY_KEY_MAP: Record<string, string> = {
@@ -68,6 +70,8 @@ const CATEGORY_KEY_MAP: Record<string, string> = {
   'beauty & wellness': 'beautywellness',
   'fitnessservices': 'fitnessservices',
   'fitness services': 'fitnessservices',
+  'securityservices': 'securityservices',
+  'security services': 'securityservices',
 };
 
 // Explicit mapping for known group variants to i18n keys
@@ -123,11 +127,19 @@ export function getBilingualCategoryLabel(category: string, t: ReturnType<typeof
       return translation;
     }
     
-    // Safe fallback: humanize the category value
-    return createBilingualFallback(cleanCategory);
+    // Safe fallback: use the centralized category label helper
+    const formatted = getCategoryLabel(cleanCategory);
+    return {
+      en: formatted,
+      regional: formatted,
+    };
   } catch (error) {
     console.error('Error getting bilingual category label:', error);
-    return createBilingualFallback(category || 'Category');
+    const formatted = getCategoryLabel(category || 'Category');
+    return {
+      en: formatted,
+      regional: formatted,
+    };
   }
 }
 
@@ -152,11 +164,19 @@ export function getBilingualSubcategoryLabel(subcategory: string, t: ReturnType<
       return translation;
     }
     
-    // Safe fallback: humanize the subcategory value
-    return createBilingualFallback(cleanSubcategory);
+    // Safe fallback: use the centralized displayName formatter (for subcategories, not categories)
+    const formatted = displayName(cleanSubcategory);
+    return {
+      en: formatted,
+      regional: formatted,
+    };
   } catch (error) {
     console.error('Error getting bilingual subcategory label:', error);
-    return createBilingualFallback(subcategory || 'Subcategory');
+    const formatted = displayName(subcategory || 'Subcategory');
+    return {
+      en: formatted,
+      regional: formatted,
+    };
   }
 }
 
@@ -195,10 +215,18 @@ export function getBilingualGroupLabel(group: string, t: ReturnType<typeof useI1
       return translation;
     }
     
-    // Safe fallback: humanize the group value
-    return createBilingualFallback(cleanGroup);
+    // Safe fallback: use the centralized displayName formatter
+    const formatted = displayName(cleanGroup);
+    return {
+      en: formatted,
+      regional: formatted,
+    };
   } catch (error) {
     console.error('Error getting bilingual group label:', error);
-    return createBilingualFallback(group || 'Group');
+    const formatted = displayName(group || 'Group');
+    return {
+      en: formatted,
+      regional: formatted,
+    };
   }
 }

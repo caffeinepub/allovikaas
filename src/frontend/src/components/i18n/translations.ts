@@ -72,20 +72,18 @@ export const translations: Record<TranslationKey, BilingualValue> = {
     ta: 'வலைப்பதிவு',
   },
 
-  // Registration page
+  // Registration - Field Labels
   'register.title': {
     en: 'Register as Worker',
-    ta: 'தொழிலாளராக பதிவு செய்யவும்',
+    ta: 'தொழிலாளியாக பதிவு செய்யவும்',
   },
-  'register.helper': {
-    en: 'Fill in your details to join our network',
-    ta: 'எங்கள் வலையமைப்பில் சேர உங்கள் விவரங்களை நிரப்பவும்',
+  'register.subtitle': {
+    en: 'Join our network of skilled workers',
+    ta: 'திறமையான தொழிலாளர்களின் எங்கள் வலையமைப்பில் சேரவும்',
   },
-
-  // Registration form fields
   'register.field.name': {
-    en: 'Full Name',
-    ta: 'முழு பெயர்',
+    en: 'Name',
+    ta: 'பெயர்',
   },
   'register.field.phone': {
     en: 'Phone Number',
@@ -93,11 +91,11 @@ export const translations: Record<TranslationKey, BilingualValue> = {
   },
   'register.field.category': {
     en: 'Category',
-    ta: 'வகை',
+    ta: 'பணி வகை',
   },
   'register.field.subcategory': {
-    en: 'Specialty',
-    ta: 'சிறப்பு',
+    en: 'Sub Category',
+    ta: 'உப வகை',
   },
   'register.field.area': {
     en: 'Area',
@@ -115,23 +113,23 @@ export const translations: Record<TranslationKey, BilingualValue> = {
     en: 'Photo',
     ta: 'புகைப்படம்',
   },
-  'register.field.comments': {
-    en: 'Additional Comments',
-    ta: 'கூடுதல் கருத்துகள்',
-  },
   'register.field.skills': {
-    en: 'Skills / Work Tags',
-    ta: 'திறன்கள் / வேலை குறிச்சொற்கள்',
+    en: 'Description',
+    ta: 'விவரம்',
+  },
+  'register.field.comments': {
+    en: 'Comments',
+    ta: 'கருத்துகள்',
   },
 
-  // Registration placeholders
+  // Registration - Placeholders
   'register.placeholder.name': {
     en: 'Enter your full name',
     ta: 'உங்கள் முழு பெயரை உள்ளிடவும்',
   },
   'register.placeholder.phone': {
-    en: '10-digit phone number',
-    ta: '10 இலக்க தொலைபேசி எண்',
+    en: 'Enter 10-digit phone number',
+    ta: '10 இலக்க தொலைபேசி எண்ணை உள்ளிடவும்',
   },
   'register.placeholder.area': {
     en: 'Enter your area or locality',
@@ -145,39 +143,37 @@ export const translations: Record<TranslationKey, BilingualValue> = {
     en: 'e.g., 9 AM - 6 PM',
     ta: 'எ.கா., காலை 9 - மாலை 6',
   },
+  'register.placeholder.skills': {
+    en: 'Describe your work and skills',
+    ta: 'உங்கள் வேலை மற்றும் திறன்களை விவரிக்கவும்',
+  },
   'register.placeholder.comments': {
     en: 'Any additional information',
-    ta: 'ஏதேனும் கூடுதல் தகவல்',
-  },
-  'register.placeholder.skills': {
-    en: 'Enter skills separated by commas',
-    ta: 'திறன்களை காற்புள்ளியால் பிரித்து உள்ளிடவும்',
+    ta: 'கூடுதல் தகவல்கள்',
   },
 
-  // Registration select options
+  // Registration - Select Options
   'register.select.category': {
     en: 'Select a category',
-    ta: 'ஒரு வகையை தேர்ந்தெடுக்கவும்',
+    ta: 'ஒரு வகையைத் தேர்ந்தெடுக்கவும்',
   },
   'register.select.subcategory': {
-    en: 'Select a specialty',
-    ta: 'ஒரு சிறப்பை தேர்ந்தெடுக்கவும்',
+    en: 'Select a subcategory',
+    ta: 'ஒரு துணை வகையைத் தேர்ந்தெடுக்கவும்',
   },
   'register.select.categoryFirst': {
     en: 'Select category first',
-    ta: 'முதலில் வகையை தேர்ந்தெடுக்கவும்',
+    ta: 'முதலில் வகையைத் தேர்ந்தெடுக்கவும்',
   },
-
-  // Registration loading states
   'register.loading.categories': {
     en: 'Loading categories...',
-    ta: 'வகைகளை ஏற்றுகிறது...',
+    ta: 'வகைகள் ஏற்றப்படுகின்றன...',
   },
 
-  // Registration buttons
+  // Registration - Buttons
   'register.button.choosePhoto': {
     en: 'Choose Photo',
-    ta: 'புகைப்படத்தை தேர்ந்தெடுக்கவும்',
+    ta: 'புகைப்படத்தைத் தேர்ந்தெடுக்கவும்',
   },
   'register.button.submit': {
     en: 'Submit Registration',
@@ -185,134 +181,204 @@ export const translations: Record<TranslationKey, BilingualValue> = {
   },
   'register.button.submitting': {
     en: 'Submitting...',
-    ta: 'சமர்ப்பிக்கிறது...',
+    ta: 'சமர்ப்பிக்கப்படுகிறது...',
   },
 
-  // Registration messages
-  'register.success': {
-    en: 'Registration submitted successfully!',
-    ta: 'பதிவு வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது!',
+  // Registration - Errors
+  'register.error.nameRequired': {
+    en: 'Name is required',
+    ta: 'பெயர் தேவை',
   },
-  'register.error': {
-    en: 'Failed to submit registration',
-    ta: 'பதிவை சமர்ப்பிக்க முடியவில்லை',
+  'register.error.phoneRequired': {
+    en: 'Phone number is required',
+    ta: 'தொலைபேசி எண் தேவை',
   },
-
-  // Search page
-  'search.title': {
-    en: 'Search Workers',
-    ta: 'தொழிலாளர்களை தேடுங்கள்',
+  'register.error.phoneInvalid': {
+    en: 'Please enter a valid 10-digit phone number',
+    ta: 'சரியான 10 இலக்க தொலைபேசி எண்ணை உள்ளிடவும்',
   },
-
-  // Search empty state
-  'search.empty.message': {
-    en: 'No workers found in your area yet. Try searching in nearby areas or post a work request.',
-    ta: 'உங்கள் பகுதியில் வேலைக்காரர்கள் இன்னும் சேரவில்லை. அருகிலுள்ள பகுதிகளில் தேடலாம் அல்லது வேலை பதிவு செய்யலாம்.',
+  'register.error.categoryRequired': {
+    en: 'Category is required',
+    ta: 'வகை தேவை',
   },
-  'search.empty.nearby.title': {
-    en: 'Workers Near You',
-    ta: 'உங்களுக்கு அருகில் உள்ள தொழிலாளர்கள்',
+  'register.error.subcategoryRequired': {
+    en: 'Subcategory is required',
+    ta: 'துணை வகை தேவை',
   },
-  'search.empty.suggestions.title': {
-    en: 'Related Suggestions',
-    ta: 'தொடர்புடைய பரிந்துரைகள்',
+  'register.error.areaRequired': {
+    en: 'Area is required',
+    ta: 'பகுதி தேவை',
   },
-  'search.empty.action.postJob': {
-    en: 'Post a Work Request',
-    ta: 'வேலை கோரிக்கை இடுங்கள்',
-  },
-  'search.empty.action.expandSearch': {
-    en: 'Expand Search Area',
-    ta: 'தேடல் பகுதியை விரிவாக்கவும்',
-  },
-  'search.empty.whatsapp.prompt': {
-    en: 'Need immediate help?',
-    ta: 'உங்களுக்கு உடனடி உதவி வேண்டுமா?',
-  },
-  'search.empty.whatsapp.button': {
-    en: 'WhatsApp Help',
-    ta: 'வாட்ஸ்அப் உதவி',
+  'register.error.photoRequired': {
+    en: 'Photo is required',
+    ta: 'புகைப்படம் தேவை',
   },
 
-  // Job posting page
-  'job.title': {
-    en: 'Post a Job',
-    ta: 'வேலை இடுகை',
-  },
-  'job.helper': {
-    en: 'Fill in the job details',
-    ta: 'வேலை விவரங்களை நிரப்பவும்',
+  // Registration - Helper Text
+  'register.helper': {
+    en: 'Fill in your details to join our worker network',
+    ta: 'எங்கள் தொழிலாளர் வலையமைப்பில் சேர உங்கள் விவரங்களை நிரப்பவும்',
   },
 
-  // Job form fields
-  'job.field.workType': {
-    en: 'Work Type',
-    ta: 'வேலை வகை',
+  // Legacy keys for backward compatibility
+  'register.form.name': {
+    en: 'Name',
+    ta: 'பெயர்',
   },
-  'job.field.area': {
+  'register.form.phone': {
+    en: 'Phone Number',
+    ta: 'தொலைபேசி எண்',
+  },
+  'register.form.category': {
+    en: 'Category',
+    ta: 'பணி வகை',
+  },
+  'register.form.subcategory': {
+    en: 'Sub Category',
+    ta: 'உப வகை',
+  },
+  'register.form.area': {
     en: 'Area',
     ta: 'பகுதி',
   },
-  'job.field.dateTime': {
+  'register.form.experience': {
+    en: 'Experience',
+    ta: 'அனுபவம்',
+  },
+  'register.form.workingHours': {
+    en: 'Working Hours',
+    ta: 'வேலை நேரம்',
+  },
+  'register.form.photo': {
+    en: 'Photo',
+    ta: 'புகைப்படம்',
+  },
+  'register.form.skills': {
+    en: 'Description',
+    ta: 'விவரம்',
+  },
+  'register.form.comments': {
+    en: 'Comments',
+    ta: 'கருத்துகள்',
+  },
+  'register.form.submit': {
+    en: 'Submit Registration',
+    ta: 'பதிவை சமர்ப்பிக்கவும்',
+  },
+
+  // Worker card
+  'worker.availability.callToConfirm': {
+    en: 'Call to confirm availability',
+    ta: 'கிடைக்கும் தன்மையை உறுதிப்படுத்த அழைக்கவும்',
+  },
+  'worker.trust.verified': {
+    en: 'Verified',
+    ta: 'சரிபார்க்கப்பட்டது',
+  },
+  'worker.trust.recentlyActive': {
+    en: 'Recently Active',
+    ta: 'சமீபத்தில் செயலில்',
+  },
+  'worker.action.call': {
+    en: 'Call',
+    ta: 'அழை',
+  },
+  'worker.action.whatsapp': {
+    en: 'WhatsApp',
+    ta: 'வாட்ஸ்அப்',
+  },
+
+  // Worker profile
+  'worker.profile.name': {
+    en: 'Name',
+    ta: 'பெயர்',
+  },
+  'worker.profile.work': {
+    en: 'Work',
+    ta: 'வேலை',
+  },
+  'worker.profile.area': {
+    en: 'Area',
+    ta: 'பகுதி',
+  },
+  'worker.profile.experience': {
+    en: 'Experience',
+    ta: 'அனுபவம்',
+  },
+  'worker.profile.workDescription': {
+    en: 'Work Description',
+    ta: 'வேலை விவரம்',
+  },
+  'worker.profile.availableTime': {
+    en: 'Available Time',
+    ta: 'கிடைக்கும் நேரம்',
+  },
+  'worker.profile.languages': {
+    en: 'Languages Spoken',
+    ta: 'பேசும் மொழிகள்',
+  },
+  'worker.profile.loading': {
+    en: 'Loading worker profile...',
+    ta: 'தொழிலாளி சுயவிவரம் ஏற்றப்படுகிறது...',
+  },
+  'worker.profile.notFound': {
+    en: 'Worker not found',
+    ta: 'தொழிலாளி கிடைக்கவில்லை',
+  },
+
+  // Search
+  'search.title': {
+    en: 'Search Results',
+    ta: 'தேடல் முடிவுகள்',
+  },
+  'search.noResults': {
+    en: 'No workers found',
+    ta: 'தொழிலாளர்கள் கிடைக்கவில்லை',
+  },
+  'search.loading': {
+    en: 'Searching...',
+    ta: 'தேடுகிறது...',
+  },
+
+  // Job posting
+  'job.post.title': {
+    en: 'Post a Job',
+    ta: 'வேலை இடுகை',
+  },
+  'job.post.subtitle': {
+    en: 'Find workers for your needs',
+    ta: 'உங்கள் தேவைகளுக்கு தொழிலாளர்களை கண்டுபிடிக்கவும்',
+  },
+  'job.post.form.workType': {
+    en: 'Work Type',
+    ta: 'வேலை வகை',
+  },
+  'job.post.form.area': {
+    en: 'Area',
+    ta: 'பகுதி',
+  },
+  'job.post.form.dateTime': {
     en: 'Date & Time',
     ta: 'தேதி மற்றும் நேரம்',
   },
-  'job.field.salary': {
+  'job.post.form.salary': {
     en: 'Salary',
     ta: 'சம்பளம்',
   },
-  'job.field.description': {
+  'job.post.form.description': {
     en: 'Description',
-    ta: 'விளக்கம்',
+    ta: 'விவரம்',
   },
-  'job.field.phone': {
-    en: 'Contact Phone',
-    ta: 'தொடர்பு தொலைபேசி',
+  'job.post.form.phone': {
+    en: 'Phone',
+    ta: 'தொலைபேசி',
   },
-
-  // Job placeholders
-  'job.placeholder.workType': {
-    en: 'e.g., Plumber, Electrician',
-    ta: 'எ.கா., குழாய் பழுதுபார்ப்பவர், மின்சாரம்',
-  },
-  'job.placeholder.area': {
-    en: 'Enter area or locality',
-    ta: 'பகுதி அல்லது இடத்தை உள்ளிடவும்',
-  },
-  'job.placeholder.salary': {
-    en: 'e.g., ₹500/day',
-    ta: 'எ.கா., ₹500/நாள்',
-  },
-  'job.placeholder.description': {
-    en: 'Describe the work needed',
-    ta: 'தேவையான வேலையை விவரிக்கவும்',
-  },
-  'job.placeholder.phone': {
-    en: '10-digit phone number',
-    ta: '10 இலக்க தொலைபேசி எண்',
-  },
-
-  // Job buttons
-  'job.button.submit': {
+  'job.post.form.submit': {
     en: 'Post Job',
     ta: 'வேலை இடுகை',
   },
-  'job.button.submitting': {
-    en: 'Posting...',
-    ta: 'இடுகையிடுகிறது...',
-  },
 
-  // Job messages
-  'job.success': {
-    en: 'Job posted successfully!',
-    ta: 'வேலை வெற்றிகரமாக இடுகையிடப்பட்டது!',
-  },
-  'job.error': {
-    en: 'Failed to post job',
-    ta: 'வேலையை இடுகையிட முடியவில்லை',
-  },
-
-  // Admin panel
+  // Admin
   'admin.title': {
     en: 'Admin Panel',
     ta: 'நிர்வாக பலகம்',
@@ -321,276 +387,61 @@ export const translations: Record<TranslationKey, BilingualValue> = {
     en: 'Manage workers and job posts',
     ta: 'தொழிலாளர்கள் மற்றும் வேலை இடுகைகளை நிர்வகிக்கவும்',
   },
-  'admin.tab.workers': {
+  'admin.tabs.workers': {
     en: 'Workers',
     ta: 'தொழிலாளர்கள்',
   },
-  'admin.tab.jobs': {
-    en: 'Job Posts',
-    ta: 'வேலை இடுகைகள்',
+  'admin.tabs.jobs': {
+    en: 'Jobs',
+    ta: 'வேலைகள்',
   },
 
-  // Categories
-  'category.construction': {
-    en: 'Construction',
-    ta: 'கட்டுமானம்',
+  // Footer
+  'footer.attribution': {
+    en: 'Built with love using caffeine.ai',
+    ta: 'காஃபின்.ai பயன்படுத்தி அன்புடன் உருவாக்கப்பட்டது',
   },
-  'category.agriculture': {
-    en: 'Agriculture',
-    ta: 'விவசாயம்',
-  },
-  'category.homeServices': {
-    en: 'Home Services',
-    ta: 'வீட்டு சேவைகள்',
-  },
-  'category.transport': {
-    en: 'Transport',
-    ta: 'போக்குவரத்து',
-  },
-  'category.eventWork': {
-    en: 'Events & Cooking',
-    ta: 'நிகழ்வுகள் மற்றும் சமையல்',
-  },
-  'category.dailyHelpers': {
-    en: 'Daily Helpers',
-    ta: 'தினசரி உதவியாளர்கள்',
-  },
-  'category.repairs': {
-    en: 'Repairs',
-    ta: 'பழுதுபார்ப்பு',
-  },
-  'category.supplies': {
-    en: 'Supplies',
-    ta: 'பொருட்கள்',
-  },
-  'category.tailoring': {
-    en: 'Tailoring',
-    ta: 'தையல்',
-  },
-  'category.localSkilledWorkers': {
-    en: 'Local Skilled Workers',
-    ta: 'உள்ளூர் திறமையான தொழிலாளர்கள்',
-  },
-
-  // Subcategories - Construction
-  'subcategory.mason': {
-    en: 'Mason',
-    ta: 'கொத்தனார்',
-  },
-  'subcategory.cooliehelper': {
-    en: 'Coolie/Helper',
-    ta: 'கூலி/உதவியாளர்',
-  },
-  'subcategory.centringworker': {
-    en: 'Centring Worker',
-    ta: 'சென்டரிங் தொழிலாளி',
-  },
-  'subcategory.barbendingworker': {
-    en: 'Bar Bending Worker',
-    ta: 'பார் பெண்டிங் தொழிலாளி',
-  },
-  'subcategory.doormaker': {
-    en: 'Door Maker',
-    ta: 'கதவு தயாரிப்பாளர்',
-  },
-  'subcategory.windowmaker': {
-    en: 'Window Maker',
-    ta: 'ஜன்னல் தயாரிப்பாளர்',
-  },
-  'subcategory.carpenter': {
-    en: 'Carpenter',
-    ta: 'தச்சர்',
-  },
-  'subcategory.grillgatefabricator': {
-    en: 'Grill/Gate Fabricator',
-    ta: 'கிரில்/கேட் தயாரிப்பாளர்',
-  },
-  'subcategory.welder': {
-    en: 'Welder',
-    ta: 'வெல்டர்',
-  },
-
-  // Subcategories - Agriculture
-  'subcategory.treecutter': {
-    en: 'Tree Cutter',
-    ta: 'மரம் வெட்டுபவர்',
-  },
-  'subcategory.coconuttreeclimber': {
-    en: 'Coconut Tree Climber',
-    ta: 'தென்னை மரம் ஏறுபவர்',
-  },
-  'subcategory.coconutpicker': {
-    en: 'Coconut Picker',
-    ta: 'தேங்காய் பறிப்பவர்',
-  },
-  'subcategory.firewoodcutter': {
-    en: 'Firewood Cutter',
-    ta: 'விறகு வெட்டுபவர்',
-  },
-  'subcategory.basketmaker': {
-    en: 'Basket Maker',
-    ta: 'கூடை தயாரிப்பாளர்',
-  },
-  'subcategory.ropemaker': {
-    en: 'Rope Maker',
-    ta: 'கயிறு தயாரிப்பாளர்',
-  },
-  'subcategory.matweaver': {
-    en: 'Mat Weaver',
-    ta: 'பாய் நெசவாளர்',
-  },
-  'subcategory.potmaker': {
-    en: 'Pot Maker',
-    ta: 'பானை தயாரிப்பாளர்',
-  },
-
-  // Subcategories - Home Services
-  'subcategory.housemaid': {
-    en: 'House Maid',
-    ta: 'வீட்டு வேலைக்காரி',
-  },
-  'subcategory.onedaycookingworker': {
-    en: 'One Day Cooking Worker',
-    ta: 'ஒரு நாள் சமையல் தொழிலாளி',
-  },
-  'subcategory.functioncookingteam': {
-    en: 'Function Cooking Team',
-    ta: 'விழா சமையல் குழு',
-  },
-  'subcategory.cleaningworker': {
-    en: 'Cleaning Worker',
-    ta: 'சுத்தம் செய்யும் தொழிலாளி',
-  },
-
-  // Subcategories - Tailoring
-  'subcategory.tailor': {
-    en: 'Tailor',
-    ta: 'தையல்காரர்',
-  },
-  'subcategory.aariworker': {
-    en: 'Aari Worker',
-    ta: 'ஆரி வேலை செய்பவர்',
-  },
-  'subcategory.blousedesigner': {
-    en: 'Blouse Designer',
-    ta: 'ரவிக்கை வடிவமைப்பாளர்',
-  },
-  'subcategory.sareestitching': {
-    en: 'Saree Stitching',
-    ta: 'புடவை தையல்',
-  },
-  'subcategory.blousestitching': {
-    en: 'Blouse Stitching',
-    ta: 'ரவிக்கை தையல்',
-  },
-  'subcategory.sareework': {
-    en: 'Saree Work',
-    ta: 'புடவை வேலை',
-  },
-  'subcategory.sareefallspicoworker': {
-    en: 'Saree Falls/Pico Worker',
-    ta: 'புடவை ஃபால்ஸ்/பிகோ தொழிலாளி',
-  },
-  'subcategory.sareefallspico': {
-    en: 'Saree Falls/Pico',
-    ta: 'புடவை ஃபால்ஸ்/பிகோ',
-  },
-  'subcategory.ironingservice': {
-    en: 'Ironing Service',
-    ta: 'இஸ்திரி சேவை',
-  },
-
-  // Subcategories - Agriculture (additional)
-  'subcategory.farmlabour': {
-    en: 'Farm Labour',
-    ta: 'விவசாய தொழிலாளி',
-  },
-  'subcategory.plantingworker': {
-    en: 'Planting Worker',
-    ta: 'நடவு தொழிலாளி',
-  },
-  'subcategory.harvestworker': {
-    en: 'Harvest Worker',
-    ta: 'அறுவடை தொழிலாளி',
-  },
-  'subcategory.sprayerworker': {
-    en: 'Sprayer Worker',
-    ta: 'தெளிப்பு தொழிலாளி',
-  },
-
-  // Subgroups
-  'subgroup.construction': {
-    en: 'Masonry Work',
-    ta: 'கொத்து வேலை',
-  },
-  'subgroup.woodmetal': {
-    en: 'Wood & Metal Work',
-    ta: 'மரம் & உலோக வேலை',
-  },
-  'subgroup.treework': {
-    en: 'Tree Work',
-    ta: 'மர வேலை',
-  },
-  'subgroup.homehelp': {
-    en: 'Home Help',
-    ta: 'வீட்டு உதவி',
-  },
-  'subgroup.tailoring': {
-    en: 'Tailoring',
-    ta: 'தையல்',
-  },
-  'subgroup.agriculture': {
-    en: 'Agriculture',
-    ta: 'விவசாயம்',
-  },
-
-  // Worker card
-  'worker.availability.available': {
-    en: 'Available Now',
-    ta: 'இப்போது கிடைக்கும்',
-  },
-  'worker.availability.busy': {
-    en: 'Currently Busy',
-    ta: 'தற்போது பிஸி',
-  },
-  'worker.availability.callToConfirm': {
-    en: 'Call to confirm availability',
-    ta: 'கிடைக்கும் தன்மையை உறுதிப்படுத்த அழைக்கவும்',
-  },
-  'worker.trust.verified': {
-    en: 'Verified Number',
-    ta: 'சரிபார்க்கப்பட்ட எண்',
-  },
-  'worker.trust.recentlyActive': {
-    en: 'Recently Active',
-    ta: 'சமீபத்தில் செயலில்',
-  },
-  'worker.action.whatsapp': {
-    en: 'WhatsApp',
-    ta: 'வாட்ஸ்அப்',
-  },
-  'worker.action.call': {
-    en: 'Call',
-    ta: 'அழை',
+  'footer.contact': {
+    en: 'Contact Us',
+    ta: 'எங்களை தொடர்பு கொள்ளவும்',
   },
 };
 
-// Helper function to get translation by key and return with 'regional' property
-export function getTranslation(key: TranslationKey): { en: string; regional: string } {
+/**
+ * Humanizes a raw key by converting it to Title Case
+ * Used as fallback when translation is missing
+ */
+function humanizeKey(key: string): string {
+  if (!key) return '';
+  
+  // Extract the last segment after the last dot
+  const lastSegment = key.includes('.') ? key.split('.').pop() || key : key;
+  
+  // Convert camelCase/snake_case to Title Case
+  return lastSegment
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[_-]/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+/**
+ * Helper function to get translation by key with safe fallback
+ * Never returns raw dotted keys - always returns human-readable text
+ */
+export function getTranslation(key: TranslationKey): BilingualValue {
   const translation = translations[key];
   
-  if (!translation) {
-    // Return a safe fallback instead of throwing
-    console.warn(`Translation missing for key: ${key}`);
-    return {
-      en: key,
-      regional: key,
-    };
+  if (translation) {
+    return translation;
   }
   
-  // Map 'ta' to 'regional' for compatibility
+  // Fallback: humanize the key instead of returning it raw
+  const humanized = humanizeKey(key);
+  
   return {
-    en: translation.en,
-    regional: translation.ta,
+    en: humanized,
+    ta: humanized, // Use humanized English as Tamil fallback
   };
 }

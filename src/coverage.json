@@ -1,131 +1,56 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T15:58:36.845Z",
+  "generatedAt": "2026-02-15T23:35:00.402Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 9,
-    "implemented": 9,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-153",
-        "summary": "Replace the current static /search empty state UI in frontend/src/pages/WorkerSearchResultsPage.tsx with a mobile-first “smart recovery” flow that always gives the user a clear next action instead of leaving them stuck.",
+        "id": "REQ-198",
+        "summary": "Create a strict, centralized category display-label mapping system in the frontend by introducing a `CATEGORY_LABELS` dictionary that maps category slugs to human-readable labels, and a single helper function that UI code must call to render category labels. The dictionary must include (at minimum) the exact mappings provided by the user: construction→Construction, agriculture→Agriculture, homeservices→Home Services, transport→Transport, homeimprovement→Home Improvement, specializedcleaning→Specialized Cleaning, generalservices→General Services, woodmetal→Wood & Metal Works, treework→Tree Cutting & Coconut Climbing, householdservices→Household Services, vehicleservices→Vehicle Services, tailoring→Tailoring, aariwork→Aari Work, catering→Cooking / Catering, eventservices→Event Services, printing→Printing & Flex, repair→Repair Services, electrical→Electrical, plumbing→Plumbing, painting→Painting, carpenter→Carpentry, welding→Welding. The helper must normalize incoming slugs (case/whitespace/punctuation tolerant) for lookup.",
         "status": "implemented",
         "plannedFiles": [
+          "frontend/src/utils/categoryLabels.ts",
+          "frontend/src/utils/bilingualTaxonomy.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/categoryLabels.ts",
+          "frontend/src/utils/bilingualTaxonomy.ts"
+        ]
+      },
+      {
+        "id": "REQ-199",
+        "summary": "Enforce the rendering rules for category slugs across the UI: (1) the UI must never render the raw category slug string; (2) if the slug is not found in `CATEGORY_LABELS`, render a safe fallback that is capitalized words (human-readable), not the original raw slug; (3) database values and navigation/search params must remain unchanged (mapping is display-only).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/categoryLabels.ts",
+          "frontend/src/utils/displayName.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/categoryLabels.ts",
+          "frontend/src/utils/displayName.ts"
+        ]
+      },
+      {
+        "id": "REQ-200",
+        "summary": "Apply the strict category label mapping helper everywhere category slugs can become user-visible, specifically covering: Home page category cards, Search Results page titles and any category labels, Worker Profile page work/category badges, Live suggestions dropdown display text, and category/filter UI (including any chips/buttons/headings that show category values). Replace any current usage that relies on auto-guessing (e.g., heuristics/title-casing directly on raw values) for category slugs with the centralized mapping helper.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/HomePage.tsx",
           "frontend/src/pages/WorkerSearchResultsPage.tsx",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/WorkerSearchResultsPage.tsx",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ]
-      },
-      {
-        "id": "REQ-154",
-        "summary": "In the /search empty state, display a friendly message using the exact Tamil text provided by the user, and source it via the existing i18n system (useI18n().t) so it can render as bilingual text (Tamil primary + English secondary) without hardcoded inline strings.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ]
-      },
-      {
-        "id": "REQ-155",
-        "summary": "In the /search empty state, automatically show a list of nearby approved workers when browser geolocation is available, without requiring additional user input.",
-        "status": "implemented",
-        "plannedFiles": [
+          "frontend/src/pages/WorkerProfilePage.tsx",
+          "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
           "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "frontend/src/hooks/useNearbyWorkers.ts"
+          "frontend/src/components/workers/WorkerCard.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "frontend/src/hooks/useNearbyWorkers.ts"
-        ]
-      },
-      {
-        "id": "REQ-156",
-        "summary": "Add an “Expand Search Area” secondary action in the /search empty state that increases the nearby search radius and refreshes the nearby workers section accordingly (only when geolocation is available).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ]
-      },
-      {
-        "id": "REQ-157",
-        "summary": "In the /search empty state, show “related skill suggestions” based on the user’s current search (prefer q when present; otherwise category/subcategory/area context). Suggestions must be tap-friendly and start a new /search?q=<suggestion> search when tapped.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "frontend/src/hooks/useLiveSearchSuggestions.ts",
-          "frontend/src/utils/humanizeLabel.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ]
-      },
-      {
-        "id": "REQ-158",
-        "summary": "Add two big action buttons to the /search empty state: (1) Primary: “Post a Work Request” which navigates to the existing job request page route (/post-job); (2) Secondary: “Expand Search Area” (covered separately) with large, mobile-friendly styling.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "frontend/src/pages/WorkerSearchResultsPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "frontend/src/pages/WorkerSearchResultsPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-159",
-        "summary": "Add a WhatsApp help CTA to the /search empty state, showing the exact Tamil prompt text provided by the user (sourced via i18n), and render a WhatsApp button that opens a WhatsApp chat/help link.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ]
-      },
-      {
-        "id": "REQ-160",
-        "summary": "Ensure that the empty state recovery UI never renders technical category/taxonomy codes (e.g., \"homeimprovement\", \"specializedcleaning\") anywhere in visible text; all category/subcategory/suggestion labels shown in the empty-state flow must be human-readable and should use the existing bilingual label helpers / i18n lookups with safe humanized fallbacks.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "frontend/src/utils/bilingualTaxonomy.ts",
-          "frontend/src/utils/humanizeLabel.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ]
-      },
-      {
-        "id": "REQ-161",
-        "summary": "Extend the local i18n translation dictionary (frontend/src/components/i18n/translations.ts) with keys needed for the new empty-state recovery flow (friendly message, section labels, button labels, WhatsApp prompt), and ensure they resolve through useI18n().t without showing raw keys.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/i18n/translations.ts",
-          "frontend/src/components/search/SearchEmptyRecovery.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
           "frontend/src/components/search/SearchEmptyRecovery.tsx"
         ]
       }
@@ -136,12 +61,13 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/i18n/I18nProvider.tsx",
-    "frontend/src/components/i18n/translations.ts",
+    "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
     "frontend/src/components/search/SearchEmptyRecovery.tsx",
-    "frontend/src/hooks/useNearbyWorkers.ts",
-    "frontend/src/pages/WorkerSearchResultsPage.tsx",
-    "frontend/src/utils/bilingualFields.ts",
+    "frontend/src/pages/HomePage.tsx",
+    "frontend/src/utils/bilingualTaxonomy.ts",
+    "frontend/src/utils/categoryLabels.ts",
+    "frontend/src/utils/displayName.ts",
+    "frontend/src/utils/formatTaxonomyLabel.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

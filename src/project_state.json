@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 79,
+  "projectStateVersion": 101,
   "summary": "Build a production-ready multilingual hyperlocal services platform named “AREA WORKARS” (always uppercase) connecting (1) people searching for workers, (2) workers listing services, and (3) businesses posting job requirements. Mobile-first, premium colorful corporate-but-rural-friendly UI. Search by area/pincode and by free-text skill tags; browse categories with meaningful local SVG icons, view worker cards with direct Call/WhatsApp (no booking). Includes worker registration (with Skills/Work Tags), public job request posting + job board, and an admin approval panel for workers and job posts. Bilingual everywhere with Tamil as primary line and English as secondary smaller line shown below (no language switch).",
   "architectural_notes": [
     "Brand style: trustworthy, simple, rural+urban friendly; not corporate, not ecommerce; community-service feel",
@@ -21,12 +21,12 @@
     "Language direction mismatch risk: current multilingual approach (English-first with state-selected regional language) conflicts with the new requirement (Tamil-first + English second everywhere, no switch).",
     "Many icons are missing/broken across the UI (user reports multiple icon issues).",
     "Tamil subtitle/second-line text is not appearing in many places where bilingual labels are expected (user reports missing Tamil in many UI areas).",
-    "UI has excessive padding/spacing ('bedding') in multiple places; needs layout polish for consistency.",
     "Duplicate categories/subcategories appear (same category shown 2–3 times); needs deduplication to avoid confusion.",
     "Raw placeholder/i18n keys (e.g., home.hero.title, categories.construction) are visible in the UI; must be replaced with proper bilingual Tamil + English labels and never shown to users.",
-    "Regression: after last update, category/subcategory text labels reverted to raw i18n keys (e.g., category.homeservices, category.events) indicating broken label mapping/translation key resolution."
+    "Regression: after last update, category/subcategory text labels reverted to raw i18n keys (e.g., category.homeservices, category.events) indicating broken label mapping/translation key resolution.",
+    "Category icons are not loading and all cards are showing the fallback icon (likely due to public assets placement, icon path mapping, filename/case-sensitivity mismatches, or incorrect import/loading method)."
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-build-a-single-page-premium-modern-corporate-landing-page-for-the-textile-production-network-brand-named-allovikaas-optimized-to-recruit-saree-manufacturers-weavers-loom-owners-and-cloth-producers-into-a-manufacturing-ecosystem-network",
@@ -1075,6 +1075,302 @@
         "REQ-161"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-fix-the-global-css-tailwind-styling-regression-so-the-ui-no-longer-renders-like-plain-html-restoring-the-intended-design-system-light-background-rounded-cards-soft-shadows-consistent-spacing-and-mobile-first-layout-across-all-pages",
+      "title": "Fix the global CSS/Tailwind styling regression so the UI no longer renders like plain HTML, restoring the intended design system: light background, rounded cards, soft shadows, consistent spacing, and mobile-first layout across all pages.",
+      "reqIds": [
+        "REQ-162"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-global-css-loading-so-global-styles-are-imported-exactly-once-and-reliably-applied-ensure-the-app-s-global-stylesheet-index-css-globals-css-equivalent-is-loaded-from-the-root-entry-and-not-duplicated-or-omitted",
+      "title": "Fix global CSS loading so global styles are imported exactly once and reliably applied: ensure the app’s global stylesheet (index.css / globals.css equivalent) is loaded from the root entry and not duplicated or omitted.",
+      "reqIds": [
+        "REQ-163"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-force-a-light-theme-and-remove-any-dark-mode-fallback-behavior-so-the-ui-always-uses-the-light-color-tokens-regardless-of-system-preference-or-any-lingering-dark-class-on-the-document-root",
+      "title": "Force a light theme and remove any dark-mode fallback behavior so the UI always uses the light color tokens regardless of system preference or any lingering 'dark' class on the document/root.",
+      "reqIds": [
+        "REQ-164"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-global-page-container-to-a-strict-mobile-first-centered-layout-max-width-480px-horizontally-centered-with-16px-padding-and-apply-it-consistently-to-page-content-including-header-footer-alignment",
+      "title": "Update the global page container to a strict mobile-first centered layout: max-width 480px, horizontally centered, with 16px padding, and apply it consistently to page content (including header/footer alignment).",
+      "reqIds": [
+        "REQ-165"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-current-header-navigation-with-the-required-minimal-header-left-side-shows-area-workars-as-green-logo-text-right-side-shows-a-hamburger-menu-icon-remove-the-desktop-top-navigation-buttons-and-ensure-the-header-does-not-show-browse-workers-post-job-blog-or-admin-as-visible-navigation-items",
+      "title": "Replace the current header navigation with the required minimal header: left side shows 'AREA WORKARS' as green logo text; right side shows a hamburger menu icon. Remove the desktop top navigation buttons and ensure the header does NOT show 'Browse Workers', 'Post Job', 'Blog', or 'Admin' as visible navigation items.",
+      "reqIds": [
+        "REQ-166"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-mobile-drawer-menu-triggered-by-the-hamburger-icon-and-ensure-navigation-links-removed-from-the-header-bar-are-not-shown-as-visible-menu-items-specifically-do-not-display-browse-workers-post-job-blog-admin",
+      "title": "Implement a mobile drawer menu triggered by the hamburger icon and ensure navigation links removed from the header bar are not shown as visible menu items (specifically do not display: 'Browse Workers', 'Post Job', 'Blog', 'Admin').",
+      "reqIds": [
+        "REQ-167"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restore-the-home-page-category-grid-styling-to-a-2-column-responsive-card-grid-with-equal-height-cards-centered-icons-and-bilingual-labels-with-english-on-top-and-tamil-directly-below",
+      "title": "Restore the Home page category grid styling to a 2-column responsive card grid with equal-height cards, centered icons, and bilingual labels with English on top and Tamil directly below.",
+      "reqIds": [
+        "REQ-168"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-standardize-primary-button-styling-across-the-ui-green-primary-buttons-rounded-corners-and-fixed-height-of-48px-including-key-ctas-such-as-search-submit-buttons-and-primary-form-actions",
+      "title": "Standardize primary button styling across the UI: green primary buttons, rounded corners, and fixed height of 48px (including key CTAs such as search submit buttons and primary form actions).",
+      "reqIds": [
+        "REQ-169"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-increase-the-visual-spacing-between-the-category-cards-in-the-home-page-categories-grid-frontend-src-pages-homepage-tsx-by-adjusting-only-the-tailwind-grid-gap-values-currently-gap-4-md-gap-6-so-the-cards-have-more-whitespace-between-them-on-mobile-and-desktop",
+      "title": "Increase the visual spacing between the category cards in the Home page Categories grid (frontend/src/pages/HomePage.tsx), by adjusting only the Tailwind grid gap values (currently `gap-4 md:gap-6`) so the cards have more whitespace between them on mobile and desktop.",
+      "reqIds": [
+        "REQ-170"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-worker-card-ui-frontend-src-components-workers-workercard-tsx-to-include-a-3-action-direct-contact-system-for-every-worker-profile-1-call-button-2-whatsapp-button-and-3-send-job-request-button-using-a-mobile-first-layout-with-large-rounded-easy-to-tap-buttons-suitable-for-non-technical-users",
+      "title": "Update the Worker Card UI (frontend/src/components/workers/WorkerCard.tsx) to include a 3-action direct contact system for every worker profile: (1) Call button, (2) WhatsApp button, and (3) Send job request button, using a mobile-first layout with large, rounded, easy-to-tap buttons suitable for non-technical users.",
+      "reqIds": [
+        "REQ-171"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-whatsapp-deep-linking-from-worker-cards-so-that-clicking-whatsapp-opens-whatsapp-with-the-worker-s-number-and-a-prefilled-message-exactly-hello-i-found-you-on-area-workars-i-need-work-for-category-in-area-please-contact-me-replace-category-and-area-using-the-best-available-context-prefer-current-search-context-if-available-otherwise-fall-back-to-the-worker-s-own-category-area-fields-and-url-encode-the-message-safely",
+      "title": "Implement WhatsApp deep-linking from worker cards so that clicking WhatsApp opens WhatsApp with the worker’s number and a prefilled message exactly:\n\"Hello, I found you on AREA WORKARS. I need work for [category] in [area]. Please contact me.\".\nReplace [category] and [area] using the best available context (prefer current search context if available; otherwise fall back to the worker’s own category/area fields), and URL-encode the message safely.",
+      "reqIds": [
+        "REQ-172"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-wire-the-new-send-job-request-action-on-the-worker-card-to-navigate-to-the-existing-job-request-page-route-post-job-and-prefill-the-job-request-form-fields-for-work-type-and-area-based-on-the-same-category-and-area-context-used-for-the-whatsapp-prefilled-message",
+      "title": "Wire the new “Send job request” action on the Worker Card to navigate to the existing job request page route (/post-job) and prefill the Job Request form fields for Work Type and Area based on the same [category] and [area] context used for the WhatsApp prefilled message.",
+      "reqIds": [
+        "REQ-173"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-local-i18n-translation-dictionary-frontend-src-components-i18n-translations-ts-with-any-missing-keys-needed-for-the-new-worker-card-action-label-send-job-request-and-for-the-whatsapp-prefilled-message-template-if-implemented-via-i18n-ensuring-the-ui-does-not-render-raw-i18n-keys",
+      "title": "Extend the local i18n translation dictionary (frontend/src/components/i18n/translations.ts) with any missing keys needed for the new Worker Card action label “Send job request” and for the WhatsApp prefilled-message template (if implemented via i18n), ensuring the UI does not render raw i18n keys.",
+      "reqIds": [
+        "REQ-174"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-tanstack-router-setup-in-frontend-src-app-tsx-so-the-app-renders-routes-correctly-in-production-no-blank-white-screen-by-removing-the-nested-recursive-routerprovider-usage-inside-the-root-route-layout-and-using-the-proper-root-route-outlet-rendering-pattern-while-keeping-the-existing-headerbar-footerbar-layout-and-all-styling-unchanged",
+      "title": "Fix TanStack Router setup in frontend/src/App.tsx so the app renders routes correctly in production (no blank white screen), by removing the nested/recursive RouterProvider usage inside the root route layout and using the proper root-route outlet rendering pattern while keeping the existing HeaderBar/FooterBar layout and all styling unchanged.",
+      "reqIds": [
+        "REQ-175"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-eliminate-conflicting-react-query-provider-setup-that-could-contribute-to-runtime-instability-by-ensuring-there-is-a-single-queryclientprovider-in-the-render-tree-frontend-src-main-tsx-already-wraps-the-app-update-frontend-src-app-tsx-to-stop-creating-wrapping-a-second-queryclientprovider-without-changing-any-query-behavior-or-ui",
+      "title": "Eliminate conflicting React Query provider setup that could contribute to runtime instability by ensuring there is a single QueryClientProvider in the render tree (frontend/src/main.tsx already wraps the app). Update frontend/src/App.tsx to stop creating/wrapping a second QueryClientProvider, without changing any query behavior or UI.",
+      "reqIds": [
+        "REQ-176"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-minimal-non-design-changing-runtime-safety-net-to-prevent-a-total-blank-page-when-homepage-or-worker-list-rendering-hits-unexpected-runtime-errors-ensure-the-route-render-path-fails-gracefully-e-g-safe-fallback-ui-within-the-existing-layout-container-and-logs-errors-without-introducing-new-product-features-or-changing-the-intended-design",
+      "title": "Add a minimal, non-design-changing runtime safety net to prevent a total blank page when HomePage or worker list rendering hits unexpected runtime errors: ensure the route render path fails gracefully (e.g., safe fallback UI within the existing layout container) and logs errors, without introducing new product features or changing the intended design.",
+      "reqIds": [
+        "REQ-177"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-home-page-category-card-icon-source-mapping-so-each-main-category-card-renders-its-correct-icon-instead-of-always-resolving-to-the-fallback-icon-without-changing-any-layout-spacing-styling-or-card-structure",
+      "title": "Fix the Home page category-card icon source mapping so each main category card renders its correct icon instead of always resolving to the fallback icon, without changing any layout, spacing, styling, or card structure.",
+      "reqIds": [
+        "REQ-178"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-audit-and-correct-the-icon-loading-implementation-so-it-loads-the-correct-local-static-assets-reliably-in-production-builds-verify-filenames-and-exact-case-under-the-public-assets-folder-verify-the-referenced-icon-paths-match-actual-filenames-and-ensure-the-icon-import-loading-method-used-by-the-category-cards-matches-the-asset-location-strategy-public-path-string-vs-imported-component",
+      "title": "Audit and correct the icon loading implementation so it loads the correct local static assets reliably in production builds: verify filenames and exact case under the public assets folder, verify the referenced icon paths match actual filenames, and ensure the icon import/loading method used by the category cards matches the asset location strategy (public-path string vs imported component).",
+      "reqIds": [
+        "REQ-179"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-safeiconimage-fallback-configuration-so-that-when-a-category-icon-fails-to-load-it-falls-back-to-an-existing-local-fallback-asset-and-does-not-point-to-a-non-existent-file-extension-while-keeping-the-component-s-rendered-markup-and-styling-behavior-unchanged",
+      "title": "Fix SafeIconImage fallback configuration so that when a category icon fails to load it falls back to an existing local fallback asset (and does not point to a non-existent file extension), while keeping the component’s rendered markup and styling behavior unchanged.",
+      "reqIds": [
+        "REQ-180"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-worker-card-component-frontend-src-components-workers-workercard-tsx-to-show-exactly-two-direct-contact-action-buttons-call-and-whatsapp-no-additional-actions-the-buttons-must-be-rendered-as-two-rounded-buttons-side-by-side-mobile-friendly-and-visually-sticky-at-the-bottom-of-the-card-i-e-pinned-to-the-card-bottom-within-the-card-layout-even-when-other-content-height-varies",
+      "title": "Update the worker card component (frontend/src/components/workers/WorkerCard.tsx) to show exactly two direct-contact action buttons: Call and WhatsApp (no additional actions). The buttons must be rendered as two rounded buttons side-by-side, mobile-friendly, and visually sticky at the bottom of the card (i.e., pinned to the card bottom within the card layout even when other content height varies).",
+      "reqIds": [
+        "REQ-181"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-required-contact-behaviors-on-workercard-actions-call-must-open-the-device-dialer-via-a-tel-link-using-the-worker-phone-number-whatsapp-must-open-a-wa-me-link-using-the-worker-phone-number-ensure-phone-numbers-are-safely-sanitized-for-wa-me-digits-only-and-the-ui-remains-safe-when-phone-is-missing",
+      "title": "Implement the required contact behaviors on WorkerCard actions: Call must open the device dialer via a tel: link using the worker phone number; WhatsApp must open a wa.me link using the worker phone number. Ensure phone numbers are safely sanitized for wa.me (digits-only) and the UI remains safe when phone is missing.",
+      "reqIds": [
+        "REQ-182"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-adjust-i18n-translations-so-the-workercard-action-button-labels-resolve-via-the-existing-i18n-system-keys-no-hardcoded-visible-strings-and-render-as-bilingual-labels-with-english-tamil-for-call-and-whatsapp-ensure-the-tamil-for-call-is-exactly-and-the-tamil-for-whatsapp-is-exactly",
+      "title": "Add/adjust i18n translations so the WorkerCard action button labels resolve via the existing i18n system keys (no hardcoded visible strings) and render as bilingual labels with English + Tamil for: Call and WhatsApp. Ensure the Tamil for Call is exactly \"அழைக்க\" and the Tamil for WhatsApp is exactly \"வாட்ஸ்அப்\".",
+      "reqIds": [
+        "REQ-183"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-mobile-first-worker-profile-view-page-that-displays-a-single-worker-s-information-with-a-clean-card-layout-and-bilingual-tamil-english-field-labels",
+      "title": "Create a new mobile-first Worker Profile View page that displays a single worker’s information with a clean card layout and bilingual (Tamil + English) field labels.",
+      "reqIds": [
+        "REQ-184"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-worker-browsing-flow-so-clicking-a-workercard-opens-the-worker-profile-view-page-for-that-worker-without-breaking-the-existing-call-whatsapp-buttons",
+      "title": "Update the worker browsing flow so clicking a WorkerCard opens the Worker Profile View page for that worker, without breaking the existing Call/WhatsApp buttons.",
+      "reqIds": [
+        "REQ-185"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-frontend-data-loading-flow-for-the-worker-profile-view-page-that-fetches-a-worker-by-id-and-renders-safe-loading-and-not-found-states-without-requiring-login",
+      "title": "Implement a frontend data-loading flow for the Worker Profile View page that fetches a worker by id and renders safe loading and not-found states without requiring login.",
+      "reqIds": [
+        "REQ-186"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-sticky-bottom-action-buttons-on-the-worker-profile-view-page-call-and-whatsapp-using-the-same-direct-contact-behavior-as-workercard-tel-and-wa-me-with-sanitized-phone-numbers",
+      "title": "Add sticky bottom action buttons on the Worker Profile View page: Call and WhatsApp, using the same direct-contact behavior as WorkerCard (tel: and wa.me with sanitized phone numbers).",
+      "reqIds": [
+        "REQ-187"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-local-i18n-dictionary-with-keys-needed-for-worker-profile-view-labels-e-g-name-work-area-experience-work-description-available-time-languages-spoken-so-the-profile-page-never-shows-raw-keys",
+      "title": "Extend the local i18n dictionary with keys needed for Worker Profile View labels (e.g., Name, Work, Area, Experience, Work description, Available time, Languages spoken) so the profile page never shows raw keys.",
+      "reqIds": [
+        "REQ-188"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-keep-the-worker-profile-view-page-aligned-with-product-constraints-no-login-requirement-no-payment-and-no-booking-chat-flows-only-direct-contact",
+      "title": "Keep the Worker Profile View page aligned with product constraints: no login requirement, no payment, and no booking/chat flows—only direct contact.",
+      "reqIds": [
+        "REQ-189"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-local-i18n-translation-dictionary-so-the-worker-registration-form-field-label-keys-and-placeholder-keys-currently-showing-raw-strings-e-g-register-field-name-register-placeholder-name-resolve-to-real-readable-text-in-both-english-and-tamil-using-exactly-these-label-translations-name-phone-number-category-sub-category-area-experience-description-also-add-adjust-placeholder-translations-for-these-same-fields-so-placeholders-are-readable-text-not-keys-and-align-with-the-above-wording",
+      "title": "Update the local i18n translation dictionary so the Worker Registration form field label keys and placeholder keys currently showing raw strings (e.g., \"register.field.name\", \"register.placeholder.name\") resolve to real readable text in both English and Tamil, using exactly these label translations:\n- Name / பெயர்\n- Phone Number / தொலைபேசி எண்\n- Category / பணி வகை\n- Sub Category / உப வகை\n- Area / பகுதி\n- Experience / அனுபவம்\n- Description / விவரம்\nAlso add/adjust placeholder translations for these same fields so placeholders are readable text (not keys) and align with the above wording.",
+      "reqIds": [
+        "REQ-190"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-harden-the-i18n-lookup-so-missing-translations-never-return-a-user-visible-raw-key-string-when-a-translation-key-is-missing-return-a-human-readable-fallback-english-tamil-instead-of-the-original-key-e-g-never-render-values-containing-dotted-key-patterns-like-register-field-name-anywhere-in-the-ui",
+      "title": "Harden the i18n lookup so missing translations never return a user-visible raw key string. When a translation key is missing, return a human-readable fallback (English + Tamil) instead of the original key (e.g., never render values containing dotted key patterns like \"register.field.name\" anywhere in the UI).",
+      "reqIds": [
+        "REQ-191"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-single-display-label-formatter-for-category-strings-and-any-other-taxonomy-like-strings-shown-to-users-that-converts-slugs-camelcase-into-human-readable-title-case-with-explicit-overrides-for-the-provided-slugs-without-changing-any-stored-database-values",
+      "title": "Implement a single display-label formatter for category strings (and any other taxonomy-like strings shown to users) that converts slugs/camelCase into human-readable Title Case, with explicit overrides for the provided slugs, without changing any stored database values.",
+      "reqIds": [
+        "REQ-193"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-the-category-display-label-formatter-everywhere-category-subcategory-values-can-be-visible-to-the-user-ensuring-raw-database-slugs-are-never-shown-in-1-home-page-category-cards-2-search-results-page-title-and-any-category-subcategory-labels-3-worker-cards-4-worker-profile-page-work-type-badge-and-5-live-suggestions-dropdown-empty-state-suggestion-buttons-keep-the-underlying-values-used-for-navigation-search-unchanged",
+      "title": "Apply the category display-label formatter everywhere category/subcategory values can be visible to the user, ensuring raw database slugs are never shown in: (1) Home page category cards, (2) Search results page title and any category/subcategory labels, (3) Worker cards, (4) Worker profile page work/type badge, and (5) Live suggestions dropdown + empty-state suggestion buttons; keep the underlying values used for navigation/search unchanged.",
+      "reqIds": [
+        "REQ-194"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-centralized-frontend-only-displayname-formatter-function-for-taxonomy-like-strings-category-subcategory-group-skills-that-converts-database-slugs-camelcase-into-human-readable-title-case-labels-without-changing-any-stored-values-or-navigation-search-params-the-formatter-must-follow-these-rules-1-split-joined-words-where-possible-2-insert-spaces-before-capital-letters-3-convert-to-title-case-and-4-never-allow-a-raw-slug-to-be-shown-in-the-ui-it-must-satisfy-these-examples-exactly-homeimprovement-home-improvement-specializedcleaning-specialized-cleaning-securityservices-security-services-vehicleservices-vehicle-services",
+      "title": "Create a centralized frontend-only `displayName` formatter function for taxonomy-like strings (category/subcategory/group/skills) that converts database slugs/camelCase into human-readable Title Case labels without changing any stored values or navigation/search params. The formatter must follow these rules: (1) split joined words where possible, (2) insert spaces before capital letters, (3) convert to Title Case, and (4) never allow a raw slug to be shown in the UI. It must satisfy these examples exactly: `homeimprovement` -> `Home Improvement`, `specializedcleaning` -> `Specialized Cleaning`, `securityservices` -> `Security Services`, `vehicleServices` -> `Vehicle Services`.",
+      "reqIds": [
+        "REQ-195"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-displayname-everywhere-category-subcategory-taxonomy-values-can-be-user-visible-ensuring-that-raw-database-values-like-homeimprovement-and-specializedcleaning-never-render-anywhere-in-the-ui-this-must-include-at-minimum-home-page-category-cards-title-any-subtitle-search-suggestions-dropdown-display-text-worker-profile-page-work-type-badge-and-any-other-taxonomy-derived-labels-and-all-filter-ui-labels-chips-titles-on-the-search-results-page",
+      "title": "Apply `displayName` everywhere category/subcategory/taxonomy values can be user-visible, ensuring that raw database values like `Homeimprovement` and `Specializedcleaning` never render anywhere in the UI. This must include at minimum: Home page category cards (title + any subtitle), search suggestions dropdown display text, worker profile page work/type badge and any other taxonomy-derived labels, and all filter UI labels/chips/titles on the search results page.",
+      "reqIds": [
+        "REQ-196"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-strict-centralized-category-display-label-mapping-system-in-the-frontend-by-introducing-a-category-labels-dictionary-that-maps-category-slugs-to-human-readable-labels-and-a-single-helper-function-that-ui-code-must-call-to-render-category-labels-the-dictionary-must-include-at-minimum-the-exact-mappings-provided-by-the-user-construction-construction-agriculture-agriculture-homeservices-home-services-transport-transport-homeimprovement-home-improvement-specializedcleaning-specialized-cleaning-generalservices-general-services-woodmetal-wood-metal-works-treework-tree-cutting-coconut-climbing-householdservices-household-services-vehicleservices-vehicle-services-tailoring-tailoring-aariwork-aari-work-catering-cooking-catering-eventservices-event-services-printing-printing-flex-repair-repair-services-electrical-electrical-plumbing-plumbing-painting-painting-carpenter-carpentry-welding-welding-the-helper-must-normalize-incoming-slugs-case-whitespace-punctuation-tolerant-for-lookup",
+      "title": "Create a strict, centralized category display-label mapping system in the frontend by introducing a `CATEGORY_LABELS` dictionary that maps category slugs to human-readable labels, and a single helper function that UI code must call to render category labels. The dictionary must include (at minimum) the exact mappings provided by the user: construction→Construction, agriculture→Agriculture, homeservices→Home Services, transport→Transport, homeimprovement→Home Improvement, specializedcleaning→Specialized Cleaning, generalservices→General Services, woodmetal→Wood & Metal Works, treework→Tree Cutting & Coconut Climbing, householdservices→Household Services, vehicleservices→Vehicle Services, tailoring→Tailoring, aariwork→Aari Work, catering→Cooking / Catering, eventservices→Event Services, printing→Printing & Flex, repair→Repair Services, electrical→Electrical, plumbing→Plumbing, painting→Painting, carpenter→Carpentry, welding→Welding. The helper must normalize incoming slugs (case/whitespace/punctuation tolerant) for lookup.",
+      "reqIds": [
+        "REQ-198"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enforce-the-rendering-rules-for-category-slugs-across-the-ui-1-the-ui-must-never-render-the-raw-category-slug-string-2-if-the-slug-is-not-found-in-category-labels-render-a-safe-fallback-that-is-capitalized-words-human-readable-not-the-original-raw-slug-3-database-values-and-navigation-search-params-must-remain-unchanged-mapping-is-display-only",
+      "title": "Enforce the rendering rules for category slugs across the UI: (1) the UI must never render the raw category slug string; (2) if the slug is not found in `CATEGORY_LABELS`, render a safe fallback that is capitalized words (human-readable), not the original raw slug; (3) database values and navigation/search params must remain unchanged (mapping is display-only).",
+      "reqIds": [
+        "REQ-199"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-the-strict-category-label-mapping-helper-everywhere-category-slugs-can-become-user-visible-specifically-covering-home-page-category-cards-search-results-page-titles-and-any-category-labels-worker-profile-page-work-category-badges-live-suggestions-dropdown-display-text-and-category-filter-ui-including-any-chips-buttons-headings-that-show-category-values-replace-any-current-usage-that-relies-on-auto-guessing-e-g-heuristics-title-casing-directly-on-raw-values-for-category-slugs-with-the-centralized-mapping-helper",
+      "title": "Apply the strict category label mapping helper everywhere category slugs can become user-visible, specifically covering: Home page category cards, Search Results page titles and any category labels, Worker Profile page work/category badges, Live suggestions dropdown display text, and category/filter UI (including any chips/buttons/headings that show category values). Replace any current usage that relies on auto-guessing (e.g., heuristics/title-casing directly on raw values) for category slugs with the centralized mapping helper.",
+      "reqIds": [
+        "REQ-200"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -1597,6 +1893,64 @@
     {
       "id": "AR-137",
       "summary": "Improve /search empty state (\"No workers found\") into a smart recovery flow for retention: show friendly Tamil message, auto-search nearby areas by expanding pincode radius, show related skill suggestions based on the user’s query, add 2 large actions (Primary: Post a Work Request; Secondary: Expand Search Area), add WhatsApp help CTA, and ensure only human-readable Tamil labels are shown (never technical category codes like homeimprovement/specializedcleaning). Mobile-first, simple, human-friendly tone.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-138",
+      "summary": "UI tweak: increase spacing between category cards (no functional changes)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-139",
+      "summary": "Enhance worker cards with a direct contact system: show Call, WhatsApp (opens with a prefilled message template referencing AREA WORKARS + selected [category] and [area]), and a \"Send job request\" button; mobile-first with large rounded, non-technical-user-friendly buttons",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-140",
+      "summary": "Worker card contact UI: add sticky bottom Call + WhatsApp buttons (rounded side-by-side; WhatsApp green, Call dark) with bilingual labels (Call/அழைக்க, WhatsApp/வாட்ஸ்அப்); Call uses tel:phoneNumber, WhatsApp uses wa.me/<number>; no login/payment",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-141",
+      "summary": "Create a Worker Profile View page opened when a worker card is clicked, showing header (name, work type, area, photo/default avatar), details (experience, work description, available time, languages spoken), and sticky bottom Call + WhatsApp buttons; mobile-first clean layout with bilingual Tamil+English labels; no login/payment, direct contact only",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-142",
+      "summary": "Fix i18n for form field labels + placeholders so no raw translation keys render: ensure bilingual labels (EN+TA) for Name/Phone Number/Category/Sub Category/Area/Experience/Description; hardcode human-readable fallback text when translation missing; mobile-friendly.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-145",
+      "summary": "Update the Worker Registration form to use the corrected i18n keys for the affected field labels and placeholders, and ensure the form remains mobile-friendly (no layout breakage, labels remain clear, inputs remain easy to tap).",
+      "reqIds": [
+        "REQ-192"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-146",
+      "summary": "Fix category label formatting so raw database slugs/camelCase never display in UI; convert to human-readable Title Case (e.g., homeimprovement→Home Improvement, specializedcleaning→Specialized Cleaning, homeservices→Home Services, securityservices→Security Services) everywhere (category cards, search results, worker profile, suggestions) without changing stored DB values",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-149",
+      "summary": "Enforce the rule “never show raw slug in UI” by removing/repairing any remaining fallback paths that directly return the original database string unchanged for visible labels. Any fallback must be a human-readable formatted label from `displayName(...)` rather than the original slug/camelCase token.",
+      "reqIds": [
+        "REQ-197"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-150",
+      "summary": "Implement strict CATEGORY_LABELS display mapping for category slugs: always render human-readable labels via dictionary (no auto-guessing); never show raw slugs; fallback to capitalized words when unmapped; apply everywhere (category cards, search results, worker profile, suggestions, filters) without changing stored DB values",
       "reqIds": [],
       "status": "pending"
     }

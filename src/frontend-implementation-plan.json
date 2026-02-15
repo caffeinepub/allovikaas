@@ -1,212 +1,90 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Smart recovery empty state for /search (nearby workers, suggestions, CTAs, bilingual i18n)",
+  "title": "Centralize strict CATEGORY_LABELS mapping and enforce category label rendering across UI",
   "requirements": [
     {
-      "id": "REQ-153",
-      "summary": "Replace the /search no-results static empty state with a mobile-first smart recovery flow while keeping existing non-empty results UI unchanged.",
+      "id": "REQ-198",
+      "summary": "Introduce a strict CATEGORY_LABELS dictionary and a single shared helper that normalizes category slugs before rendering display labels.",
       "acceptanceCriteria": [
-        "When a search returns zero workers (after loading), the page renders a recovery UI instead of only the existing static empty-state content.",
-        "The recovery UI is optimized for mobile (simple layout, large tap targets, minimal text clutter).",
-        "The existing non-empty results UI (grouping, cards, sorting) remains unchanged."
+        "A `CATEGORY_LABELS` constant exists in the frontend codebase and contains the exact user-provided slug→label mappings.",
+        "There is exactly one shared helper used to convert a raw category slug into a display label, and it normalizes input before dictionary lookup (e.g., casing differences do not break mapping).",
+        "The helper returns a human-readable string for every input category slug, never the raw slug."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
-          "operation": "modify",
-          "description": "Replace the current static empty-state block with a dedicated smart recovery component that renders only when results are empty; keep the existing loading and non-empty results rendering paths unchanged."
-        },
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "path": "frontend/src/utils/categoryLabels.ts",
           "operation": "create",
-          "description": "Create a focused, mobile-first smart recovery empty-state component (friendly message, next-action CTAs, related suggestions, optional nearby section, WhatsApp CTA). Use shadcn-ui primitives (e.g., Button/Card/Badge) for consistent large tap targets. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-154",
-      "summary": "Show the exact user-provided Tamil friendly message in the /search empty state using i18n and the app’s bilingual rendering pattern (BilingualText).",
-      "acceptanceCriteria": [
-        "A new i18n key is added for this empty-state friendly message.",
-        "The Tamil (regional) value matches exactly:\n\"உங்கள் பகுதியில் வேலைக்காரர்கள் இன்னும் சேரவில்லை.\nஅருகிலுள்ள பகுதிகளில் தேடலாம் அல்லது வேலை பதிவு செய்யலாம்.\"",
-        "The message is rendered using the app’s bilingual rendering pattern (BilingualText or equivalent), not as a raw string."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/i18n/translations.ts",
-          "operation": "modify",
-          "description": "Add a new i18n key for the empty-state friendly message with the exact provided Tamil value and an English counterpart; ensure it resolves via useI18n().t without displaying raw keys."
-        },
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "operation": "modify",
-          "description": "Render the friendly message using useI18n().t and BilingualText (Tamil primary + English secondary per existing pattern), avoiding hardcoded inline strings."
-        }
-      ]
-    },
-    {
-      "id": "REQ-155",
-      "summary": "Automatically show nearby approved workers in the /search empty state when browser geolocation is available, without adding filter UI.",
-      "acceptanceCriteria": [
-        "If browser geolocation is granted and coordinates are available, the empty state renders a “nearby workers” section below the friendly message.",
-        "Nearby workers are fetched using the existing nearby-workers flow (do not add filter UI).",
-        "If geolocation is denied/unavailable, the nearby workers section is not shown and the rest of the recovery UI still works.",
-        "The nearby workers list renders safely when optional worker fields are missing (location, skills, phone, photo)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "operation": "modify",
-          "description": "Use the existing useBrowserGeolocation() and useNearbyWorkers() hooks to auto-fetch and render a nearby workers section only when coordinates are available; render results using the existing WorkerCard to ensure safe handling of optional worker fields."
-        },
-        {
-          "path": "frontend/src/hooks/useNearbyWorkers.ts",
-          "operation": "modify",
-          "description": "Adjust the hook to better support the empty-state nearby section (e.g., allow fetching a higher limit for client-side radius filtering and ensure safe behavior when location is missing), without adding any new UI filters."
-        }
-      ]
-    },
-    {
-      "id": "REQ-156",
-      "summary": "Add an i18n-labeled “Expand Search Area” action that increases the effective nearby distance threshold and refreshes nearby workers without page reload (geolocation-only).",
-      "acceptanceCriteria": [
-        "A large, mobile-friendly secondary button labeled via i18n (“Expand Search Area”) is shown in the empty state.",
-        "Clicking the button increases the effective nearby distance threshold and updates the nearby list (e.g., shows more workers / workers from farther away) without a page reload.",
-        "If geolocation is unavailable, the button is either hidden or disabled with safe behavior (no errors)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/i18n/translations.ts",
-          "operation": "modify",
-          "description": "Add i18n keys for the “Expand Search Area” label (English + Tamil) used by the empty-state recovery flow."
-        },
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "operation": "modify",
-          "description": "Add a large secondary action button wired to a local radius state (only when geolocation coords exist); on click, increase radius and recompute the rendered nearby workers list without reloading the page."
-        }
-      ]
-    },
-    {
-      "id": "REQ-157",
-      "summary": "Show tap-friendly related skill suggestions in the /search empty state derived from current search context and navigate to /search?q=<suggestion> when tapped.",
-      "acceptanceCriteria": [
-        "When there are no workers, a “related suggestions” section appears with a small list of tap-friendly suggestion chips/buttons.",
-        "Tapping a suggestion navigates to /search with search param { q: <suggestion> }.",
-        "Suggestions are derived from existing app data sources (e.g., live suggestions / taxonomy / skills) and are safe when inputs are empty.",
-        "No additional filter UI is added as part of this change."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "operation": "modify",
-          "description": "Add a related suggestions section that derives suggestions from existing sources (prefer q via the existing live suggestions flow when available; otherwise use taxonomy/category/subcategory context). Render suggestions as large, tap-friendly chips/buttons and navigate to /search with { q: suggestion } when tapped. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useLiveSearchSuggestions.ts",
-          "operation": "modify",
-          "description": "Ensure the live suggestions hook can be reused safely by the empty-state flow (e.g., allow on-demand suggestions for a given q prefix and return a deduped, stable list for chip rendering), without introducing new filter UI."
-        },
-        {
-          "path": "frontend/src/utils/humanizeLabel.ts",
-          "operation": "modify",
-          "description": "Add/adjust helper logic if needed to produce safe, human-readable labels for suggestion chips when translations are missing, ensuring raw taxonomy slugs/codes are not shown in the empty-state UI."
-        }
-      ]
-    },
-    {
-      "id": "REQ-158",
-      "summary": "Add two big action buttons to the /search empty state: primary “Post a Work Request” (to /post-job) and secondary “Expand Search Area” with mobile-friendly styling.",
-      "acceptanceCriteria": [
-        "The empty state shows a prominent primary button labeled via i18n: “Post a Work Request”.",
-        "Clicking “Post a Work Request” navigates to the existing job post page at route /post-job.",
-        "Buttons are large and easy to tap on mobile (no tiny links).",
-        "This change does not add new backend notification features; it uses the existing job request submission flow."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/i18n/translations.ts",
-          "operation": "modify",
-          "description": "Add i18n keys for “Post a Work Request” (English + Tamil) used in the new empty-state recovery UI."
-        },
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "operation": "modify",
-          "description": "Add a prominent primary shadcn-ui Button that navigates to the existing /post-job route, and ensure both primary/secondary actions are styled for mobile (full-width, large size). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
-          "operation": "modify",
-          "description": "Wire the empty-state recovery component so that the new action buttons are reachable exactly when sortedWorkers is empty and loading has finished."
-        }
-      ]
-    },
-    {
-      "id": "REQ-159",
-      "summary": "Add a WhatsApp help CTA to the /search empty state using i18n for the exact Tamil prompt text and a WhatsApp button that opens a WhatsApp chat/help link.",
-      "acceptanceCriteria": [
-        "The empty state displays the WhatsApp help prompt text via i18n, with Tamil matching exactly: \"உங்களுக்கு உடனடி உதவி வேண்டுமா?\"",
-        "A WhatsApp button is shown; clicking it opens a WhatsApp link (new tab or same tab is acceptable) and does not throw errors.",
-        "The WhatsApp CTA is visually simple and mobile-friendly."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/i18n/translations.ts",
-          "operation": "modify",
-          "description": "Add i18n keys for the WhatsApp help prompt (with exact Tamil text) and WhatsApp button label used in the empty-state recovery flow."
-        },
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "operation": "modify",
-          "description": "Render a WhatsApp CTA section with bilingual prompt via useI18n().t and BilingualText, and a mobile-friendly WhatsApp button that opens a WhatsApp help link safely (no runtime errors)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-160",
-      "summary": "Ensure the /search empty-state recovery UI never displays raw taxonomy slugs/codes and always uses human-readable bilingual labels with safe fallbacks.",
-      "acceptanceCriteria": [
-        "No raw taxonomy slugs/codes are displayed in the empty state (including suggestion labels and any category chips).",
-        "Any label derived from stored strings is converted to a human-readable display label using existing helper utilities (and/or i18n mappings).",
-        "If a translation is missing, the UI uses a safe humanized label (not the raw key/slug)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "operation": "modify",
-          "description": "Ensure every visible label in the empty-state flow (section headers, suggestion chips, category/subcategory-derived text) is rendered via existing bilingual label helpers (e.g., bilingualTaxonomy) or safe humanized fallbacks, and never prints raw taxonomy codes."
+          "description": "Create centralized `CATEGORY_LABELS` mapping with the exact user-provided slug→label pairs and export a single helper (e.g., `getCategoryLabel`) that normalizes input (case/whitespace/punctuation tolerant) before lookup and always returns a human-readable string (mapping result or safe fallback)."
         },
         {
           "path": "frontend/src/utils/bilingualTaxonomy.ts",
           "operation": "modify",
-          "description": "Update/extend label resolution as needed so empty-state suggestions and any category/subcategory labels resolve to human-readable bilingual labels with safe fallbacks (and do not leak raw slugs/codes)."
-        },
-        {
-          "path": "frontend/src/utils/humanizeLabel.ts",
-          "operation": "modify",
-          "description": "Strengthen the humanization fallback used by the empty-state flow to avoid exposing raw keys/slugs (e.g., handle concatenated taxonomy codes) while still producing readable labels."
+          "description": "Update category-label generation to use the new centralized category label helper for category display text (especially for fallback behavior), while keeping stored values and i18n keying/navigation values unchanged (display-only)."
         }
       ]
     },
     {
-      "id": "REQ-161",
-      "summary": "Extend the i18n translation dictionary with keys required by the new /search empty-state recovery flow and ensure useI18n().t resolves them without showing raw keys.",
+      "id": "REQ-199",
+      "summary": "Enforce category rendering rules so raw slugs are never shown and unknown slugs use a capitalized-words fallback without changing stored/URL values.",
       "acceptanceCriteria": [
-        "New i18n keys for the empty-state recovery flow exist with both English and Tamil values.",
-        "No new user-visible strings in the recovery flow are hardcoded as raw i18n keys (e.g., \"search.empty.*\" must never appear).",
-        "The Tamil values include the two exact user-provided Tamil sentences for the friendly message and WhatsApp prompt."
+        "If a category slug is not in `CATEGORY_LABELS`, the displayed label is a capitalized-words fallback (e.g., derived from slug formatting), and the raw slug is never shown.",
+        "No changes are made to stored backend values or the values used in URL params/search filters; only the displayed text changes.",
+        "There are no user-visible instances of raw slugs like \"homeimprovement\" or \"specializedcleaning\" in the app UI."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/i18n/translations.ts",
+          "path": "frontend/src/utils/categoryLabels.ts",
           "operation": "modify",
-          "description": "Add all required empty-state recovery i18n keys (friendly message, section labels like “Nearby workers” / “Related suggestions”, button labels including “Post a Work Request” and “Expand Search Area”, WhatsApp prompt) with English + Tamil values; ensure keys are consistent and do not render as raw key strings in UI."
+          "description": "Ensure the category label helper implements the strict rendering rules: never return the raw slug; when not found in `CATEGORY_LABELS`, return a safe capitalized-words fallback derived from the input (slug/case/whitespace/punctuation tolerant normalization is for lookup only; do not mutate the underlying value used elsewhere)."
+        },
+        {
+          "path": "frontend/src/utils/displayName.ts",
+          "operation": "modify",
+          "description": "Add documentation and guardrails to clarify that category display must go through the centralized category label helper (and not directly render raw slugs), while keeping `displayName()` as a general-purpose humanizer for non-category taxonomy values (subcategories/skills/etc.)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-200",
+      "summary": "Replace all user-visible category slug rendering in required UI locations with the centralized category label helper (display-only), covering home category cards, search results titles/labels, worker profile badges, live suggestions, and filter/recovery UI.",
+      "acceptanceCriteria": [
+        "Home page category cards render category names using the centralized `CATEGORY_LABELS` mapping helper (no direct rendering of raw `taxonomy.categories` values).",
+        "Search Results page title and grouped section headings do not display raw category slugs; any category shown uses the centralized mapping helper.",
+        "Worker Profile page work/category badge never displays a raw slug and uses the centralized mapping helper when showing category-derived text.",
+        "LiveSuggestionSearchBox suggestions render category-like values using the centralized mapping helper (display-only), while still submitting/navigating using the original suggestion value.",
+        "SearchEmptyRecovery and any filter UI elements that show category values use the centralized mapping helper so raw slugs are never visible."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Ensure category card titles use the centralized category label helper (directly or via updated bilingual taxonomy helper) for any category-derived display text, while keeping the clicked/navigated category value unchanged."
+        },
+        {
+          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
+          "operation": "modify",
+          "description": "Update search results title construction to render category values via the centralized category label helper (subcategory labels can continue using existing taxonomy formatting), ensuring no raw category slugs appear while leaving URL/search params unchanged."
+        },
+        {
+          "path": "frontend/src/pages/WorkerProfilePage.tsx",
+          "operation": "modify",
+          "description": "Update the worker profile work/category badge rendering so that when the display derives from a category slug it uses the centralized category label helper (subcategory/skills can continue using existing formatting), ensuring raw slugs are never shown."
+        },
+        {
+          "path": "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
+          "operation": "modify",
+          "description": "Render live suggestions with the centralized category label helper when the suggestion source indicates a category-like value, while preserving the original suggestion text for submission/navigation (display-only mapping)."
         },
         {
           "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
           "operation": "modify",
-          "description": "Use useI18n().t for all user-visible text in the empty-state recovery flow (including section headers and button labels) and render bilingual content via BilingualText where appropriate, avoiding hardcoded raw strings."
+          "description": "Update recovery suggestions UI so any category labels displayed use the centralized category label helper (including suggested parent category or popular category chips), while continuing to navigate/search using the original underlying values."
+        },
+        {
+          "path": "frontend/src/components/workers/WorkerCard.tsx",
+          "operation": "modify",
+          "description": "Ensure any category-derived text displayed in worker cards (e.g., when falling back to category for the main badge/label) uses the centralized category label helper so raw slugs never appear."
         }
       ]
     }

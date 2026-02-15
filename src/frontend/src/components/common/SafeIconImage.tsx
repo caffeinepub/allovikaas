@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SafeIconImageProps {
   src: string;
@@ -21,10 +21,10 @@ export default function SafeIconImage({
   const [hasErrored, setHasErrored] = useState(false);
 
   // Reset error state when src prop changes
-  if (src !== imgSrc && !hasErrored) {
+  useEffect(() => {
     setImgSrc(src);
     setHasErrored(false);
-  }
+  }, [src]);
 
   const handleError = () => {
     if (!hasErrored) {

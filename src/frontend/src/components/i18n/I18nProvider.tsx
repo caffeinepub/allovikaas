@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { getTranslation } from './translations';
+import { getTranslation, BilingualValue } from './translations';
 
 export type SupportedState = 'TN' | 'KA' | 'KL' | 'AP' | 'TS' | 'NORTH' | 'DEFAULT';
 export type RegionalLanguage = 'ta' | 'kn' | 'ml' | 'te' | 'hi' | 'en';
@@ -23,6 +23,31 @@ const stateToLanguageMap: Record<SupportedState, RegionalLanguage> = {
   DEFAULT: 'ta',
 };
 
+/**
+ * Checks if a string looks like a raw i18n key (contains dots)
+ */
+function looksLikeRawKey(text: string): boolean {
+  return text.includes('.') && text.split('.').length > 1;
+}
+
+/**
+ * Humanizes a raw key by converting it to Title Case
+ */
+function humanizeKey(key: string): string {
+  if (!key) return '';
+  
+  // Extract the last segment after the last dot
+  const lastSegment = key.includes('.') ? key.split('.').pop() || key : key;
+  
+  // Convert camelCase/snake_case to Title Case
+  return lastSegment
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[_-]/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
   // Always use Tamil as primary language
   const selectedState: SupportedState = 'TN';
@@ -33,8 +58,26 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   };
 
   const t = (key: string): { en: string; regional: string } => {
-    // getTranslation now returns { en, regional } directly
-    return getTranslation(key);
+    const translation: BilingualValue = getTranslation(key);
+    
+    // Additional safety check: if the translation still looks like a raw key,
+    // humanize it instead of displaying the key
+    let finalEn = translation.en;
+    let finalRegional = translation.ta;
+    
+    if (looksLikeRawKey(finalEn)) {
+      finalEn = humanizeKey(key);
+    }
+    
+    if (looksLikeRawKey(finalRegional)) {
+      finalRegional = humanizeKey(key);
+    }
+    
+    // Map 'ta' property to 'regional' for compatibility
+    return {
+      en: finalEn,
+      regional: finalRegional,
+    };
   };
 
   return (

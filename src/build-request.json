@@ -1,186 +1,74 @@
 {
   "kind": "build_request",
-  "title": "Upgrade /search empty state into a smart recovery flow (retain users when no workers found)",
+  "title": "Introduce strict CATEGORY_LABELS mapping for taxonomy slugs and use it everywhere in UI",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-153",
-      "text": "Replace the current static /search empty state UI in frontend/src/pages/WorkerSearchResultsPage.tsx with a mobile-first “smart recovery” flow that always gives the user a clear next action instead of leaving them stuck.",
+      "id": "REQ-198",
+      "text": "Create a strict, centralized category display-label mapping system in the frontend by introducing a `CATEGORY_LABELS` dictionary that maps category slugs to human-readable labels, and a single helper function that UI code must call to render category labels. The dictionary must include (at minimum) the exact mappings provided by the user: construction→Construction, agriculture→Agriculture, homeservices→Home Services, transport→Transport, homeimprovement→Home Improvement, specializedcleaning→Specialized Cleaning, generalservices→General Services, woodmetal→Wood & Metal Works, treework→Tree Cutting & Coconut Climbing, householdservices→Household Services, vehicleservices→Vehicle Services, tailoring→Tailoring, aariwork→Aari Work, catering→Cooking / Catering, eventservices→Event Services, printing→Printing & Flex, repair→Repair Services, electrical→Electrical, plumbing→Plumbing, painting→Painting, carpenter→Carpentry, welding→Welding. The helper must normalize incoming slugs (case/whitespace/punctuation tolerant) for lookup.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "Improve \"No workers found\" page for user retention.\n\nGoal:\nNever leave user stuck.\nAlways give next action.\n\nReplace static message with smart recovery flow."
+          "Create a CATEGORY_LABELS dictionary and always use it in UI.\n\nExample mapping:\n\nconstruction: Construction\n...\nwelding: Welding"
         ]
       },
       "acceptanceCriteria": [
-        "When a search returns zero workers (after loading), the page renders a recovery UI instead of only the existing static empty-state content.",
-        "The recovery UI is optimized for mobile (simple layout, large tap targets, minimal text clutter).",
-        "The existing non-empty results UI (grouping, cards, sorting) remains unchanged."
+        "A `CATEGORY_LABELS` constant exists in the frontend codebase and contains the exact user-provided slug→label mappings.",
+        "There is exactly one shared helper used to convert a raw category slug into a display label, and it normalizes input before dictionary lookup (e.g., casing differences do not break mapping).",
+        "The helper returns a human-readable string for every input category slug, never the raw slug."
       ]
     },
     {
-      "id": "REQ-154",
-      "text": "In the /search empty state, display a friendly message using the exact Tamil text provided by the user, and source it via the existing i18n system (useI18n().t) so it can render as bilingual text (Tamil primary + English secondary) without hardcoded inline strings.",
+      "id": "REQ-199",
+      "text": "Enforce the rendering rules for category slugs across the UI: (1) the UI must never render the raw category slug string; (2) if the slug is not found in `CATEGORY_LABELS`, render a safe fallback that is capitalized words (human-readable), not the original raw slug; (3) database values and navigation/search params must remain unchanged (mapping is display-only).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "1) Show friendly Tamil message:\n\"உங்கள் பகுதியில் வேலைக்காரர்கள் இன்னும் சேரவில்லை.\nஅருகிலுள்ள பகுதிகளில் தேடலாம் அல்லது வேலை பதிவு செய்யலாம்.\""
+          "Rules:\n1) UI must NEVER show raw slug\n2) If slug not found → show capitalized words (fallback)\n\nDatabase values must remain unchanged.\nOnly UI display text uses CATEGORY_LABELS."
         ]
       },
       "acceptanceCriteria": [
-        "A new i18n key is added for this empty-state friendly message.",
-        "The Tamil (regional) value matches exactly:\n\"உங்கள் பகுதியில் வேலைக்காரர்கள் இன்னும் சேரவில்லை.\nஅருகிலுள்ள பகுதிகளில் தேடலாம் அல்லது வேலை பதிவு செய்யலாம்.\"",
-        "The message is rendered using the app’s bilingual rendering pattern (BilingualText or equivalent), not as a raw string."
+        "If a category slug is not in `CATEGORY_LABELS`, the displayed label is a capitalized-words fallback (e.g., derived from slug formatting), and the raw slug is never shown.",
+        "No changes are made to stored backend values or the values used in URL params/search filters; only the displayed text changes.",
+        "There are no user-visible instances of raw slugs like \"homeimprovement\" or \"specializedcleaning\" in the app UI."
       ]
     },
     {
-      "id": "REQ-155",
-      "text": "In the /search empty state, automatically show a list of nearby approved workers when browser geolocation is available, without requiring additional user input.",
+      "id": "REQ-200",
+      "text": "Apply the strict category label mapping helper everywhere category slugs can become user-visible, specifically covering: Home page category cards, Search Results page titles and any category labels, Worker Profile page work/category badges, Live suggestions dropdown display text, and category/filter UI (including any chips/buttons/headings that show category values). Replace any current usage that relies on auto-guessing (e.g., heuristics/title-casing directly on raw values) for category slugs with the centralized mapping helper.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "2) Auto show nearby area workers\nSearch nearby pincode radius automatically"
+          "Apply mapping everywhere:\n   - category cards\n   - search results\n   - worker profile\n   - suggestions\n   - filters"
         ]
       },
       "acceptanceCriteria": [
-        "If browser geolocation is granted and coordinates are available, the empty state renders a “nearby workers” section below the friendly message.",
-        "Nearby workers are fetched using the existing nearby-workers flow (do not add filter UI).",
-        "If geolocation is denied/unavailable, the nearby workers section is not shown and the rest of the recovery UI still works.",
-        "The nearby workers list renders safely when optional worker fields are missing (location, skills, phone, photo)."
-      ]
-    },
-    {
-      "id": "REQ-156",
-      "text": "Add an “Expand Search Area” secondary action in the /search empty state that increases the nearby search radius and refreshes the nearby workers section accordingly (only when geolocation is available).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Secondary: Expand Search Area\n-> increase radius"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A large, mobile-friendly secondary button labeled via i18n (“Expand Search Area”) is shown in the empty state.",
-        "Clicking the button increases the effective nearby distance threshold and updates the nearby list (e.g., shows more workers / workers from farther away) without a page reload.",
-        "If geolocation is unavailable, the button is either hidden or disabled with safe behavior (no errors)."
-      ]
-    },
-    {
-      "id": "REQ-157",
-      "text": "In the /search empty state, show “related skill suggestions” based on the user’s current search (prefer q when present; otherwise category/subcategory/area context). Suggestions must be tap-friendly and start a new /search?q=<suggestion> search when tapped.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "3) Show related skill suggestions based on search\nExample:\nsearch: plumber\nshow: motor repair, borewell, pump repair, electrician"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When there are no workers, a “related suggestions” section appears with a small list of tap-friendly suggestion chips/buttons.",
-        "Tapping a suggestion navigates to /search with search param { q: <suggestion> }.",
-        "Suggestions are derived from existing app data sources (e.g., live suggestions / taxonomy / skills) and are safe when inputs are empty.",
-        "No additional filter UI is added as part of this change."
-      ]
-    },
-    {
-      "id": "REQ-158",
-      "text": "Add two big action buttons to the /search empty state: (1) Primary: “Post a Work Request” which navigates to the existing job request page route (/post-job); (2) Secondary: “Expand Search Area” (covered separately) with large, mobile-friendly styling.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "4) Add 2 big action buttons:\n\nPrimary: Post a Work Request\n-> user can submit job requirement\n-> notify matching workers later\n\nSecondary: Expand Search Area\n-> increase radius"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The empty state shows a prominent primary button labeled via i18n: “Post a Work Request”.",
-        "Clicking “Post a Work Request” navigates to the existing job post page at route /post-job.",
-        "Buttons are large and easy to tap on mobile (no tiny links).",
-        "This change does not add new backend notification features; it uses the existing job request submission flow."
-      ]
-    },
-    {
-      "id": "REQ-159",
-      "text": "Add a WhatsApp help CTA to the /search empty state, showing the exact Tamil prompt text provided by the user (sourced via i18n), and render a WhatsApp button that opens a WhatsApp chat/help link.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "5) Show WhatsApp help CTA:\n\"உங்களுக்கு உடனடி உதவி வேண்டுமா?\"\nWhatsApp button"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The empty state displays the WhatsApp help prompt text via i18n, with Tamil matching exactly: \"உங்களுக்கு உடனடி உதவி வேண்டுமா?\"",
-        "A WhatsApp button is shown; clicking it opens a WhatsApp link (new tab or same tab is acceptable) and does not throw errors.",
-        "The WhatsApp CTA is visually simple and mobile-friendly."
-      ]
-    },
-    {
-      "id": "REQ-160",
-      "text": "Ensure that the empty state recovery UI never renders technical category/taxonomy codes (e.g., \"homeimprovement\", \"specializedcleaning\") anywhere in visible text; all category/subcategory/suggestion labels shown in the empty-state flow must be human-readable and should use the existing bilingual label helpers / i18n lookups with safe humanized fallbacks.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "6) Never show technical category codes like:\nhomeimprovement, specializedcleaning\n\nShow only human readable Tamil labels."
-        ]
-      },
-      "acceptanceCriteria": [
-        "No raw taxonomy slugs/codes are displayed in the empty state (including suggestion labels and any category chips).",
-        "Any label derived from stored strings is converted to a human-readable display label using existing helper utilities (and/or i18n mappings).",
-        "If a translation is missing, the UI uses a safe humanized label (not the raw key/slug)."
-      ]
-    },
-    {
-      "id": "REQ-161",
-      "text": "Extend the local i18n translation dictionary (frontend/src/components/i18n/translations.ts) with keys needed for the new empty-state recovery flow (friendly message, section labels, button labels, WhatsApp prompt), and ensure they resolve through useI18n().t without showing raw keys.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "Use English for any user-facing text in the build request."
-        ]
-      },
-      "acceptanceCriteria": [
-        "New i18n keys for the empty-state recovery flow exist with both English and Tamil values.",
-        "No new user-visible strings in the recovery flow are hardcoded as raw i18n keys (e.g., \"search.empty.*\" must never appear).",
-        "The Tamil values include the two exact user-provided Tamil sentences for the friendly message and WhatsApp prompt."
+        "Home page category cards render category names using the centralized `CATEGORY_LABELS` mapping helper (no direct rendering of raw `taxonomy.categories` values).",
+        "Search Results page title and grouped section headings do not display raw category slugs; any category shown uses the centralized mapping helper.",
+        "Worker Profile page work/category badge never displays a raw slug and uses the centralized mapping helper when showing category-derived text.",
+        "LiveSuggestionSearchBox suggestions render category-like values using the centralized mapping helper (display-only), while still submitting/navigating using the original suggestion value.",
+        "SearchEmptyRecovery and any filter UI elements that show category values use the centralized mapping helper so raw slugs are never visible."
       ]
     }
   ],
   "constraints": [
-    "Use English for any user-facing text in this build request document; UI may include Tamil as required by the app’s bilingual system.",
-    "Do not add any booking, payment, or in-app chat flows; keep direct-contact + job-request model unchanged.",
-    "Do not modify immutable frontend paths listed in SYSTEM_CONTEXT.",
-    "Do not display raw taxonomy slugs/codes (e.g., homeimprovement, specializedcleaning) in the new empty-state flow.",
-    "Keep the existing /search results rendering (sorting/grouping/cards) unchanged when results exist; only enhance the empty-state experience."
+    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "Do not change database/stored taxonomy values in the backend; mapping is display-only.",
+    "User-facing text in this change request must remain English-only (do not introduce new Tamil-first copy as part of this mapping change)."
   ],
   "nonGoals": [
-    "Do not implement real notifications to workers (“notify matching workers later”) beyond the existing job post submission capability.",
-    "Do not add new filter UI to /search as part of this change.",
-    "Do not change backend data schemas solely for this empty-state UX unless strictly required for nearby-worker retrieval (prefer reusing existing nearby worker APIs/hooks).",
-    "Do not redesign the entire Search Results page; scope is limited to the no-results recovery flow."
+    "Do not modify backend taxonomy schema, stored worker/job records, or any Motoko APIs as part of this change.",
+    "Do not change routing, URL parameter formats, or search behavior; only change displayed labels.",
+    "Do not redesign layouts or restyle components; scope is label rendering consistency only."
   ],
   "imageRequirements": {
     "required": [],

@@ -143,6 +143,26 @@ export function useGetCallerUserProfile() {
   };
 }
 
+export function useGetWorkerById(workerId: bigint) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Worker | null>({
+    queryKey: ['worker', workerId.toString()],
+    queryFn: async () => {
+      if (!actor) return null;
+      try {
+        const worker = await actor.getWorkerById(workerId);
+        return worker || null;
+      } catch (error) {
+        logError('useGetWorkerById', error);
+        return null;
+      }
+    },
+    enabled: !!actor && !isFetching && workerId > BigInt(0),
+    retry: false,
+  });
+}
+
 // Mutation hook for creating job posts
 export function useCreateJobPost() {
   const { actor } = useActor();

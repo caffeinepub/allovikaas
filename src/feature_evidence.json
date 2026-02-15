@@ -2,11 +2,56 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-replace-the-current-static-search-empty-state-ui-in-frontend-src-pages-workersearchresultspage-tsx-with-a-mobile-first-smart-recovery-flow-that-always-gives-the-user-a-clear-next-action-instead-of-leaving-them-stuck",
-      "featureTitle": "Replace the current static /search empty state UI in frontend/src/pages/WorkerSearchResultsPage.tsx with a mobile-first “smart recovery” flow that always gives the user a clear next action instead of leaving them stuck.",
+      "featureId": "feature-create-a-strict-centralized-category-display-label-mapping-system-in-the-frontend-by-introducing-a-category-labels-dictionary-that-maps-category-slugs-to-human-readable-labels-and-a-single-helper-function-that-ui-code-must-call-to-render-category-labels-the-dictionary-must-include-at-minimum-the-exact-mappings-provided-by-the-user-construction-construction-agriculture-agriculture-homeservices-home-services-transport-transport-homeimprovement-home-improvement-specializedcleaning-specialized-cleaning-generalservices-general-services-woodmetal-wood-metal-works-treework-tree-cutting-coconut-climbing-householdservices-household-services-vehicleservices-vehicle-services-tailoring-tailoring-aariwork-aari-work-catering-cooking-catering-eventservices-event-services-printing-printing-flex-repair-repair-services-electrical-electrical-plumbing-plumbing-painting-painting-carpenter-carpentry-welding-welding-the-helper-must-normalize-incoming-slugs-case-whitespace-punctuation-tolerant-for-lookup",
+      "featureTitle": "Create a strict, centralized category display-label mapping system in the frontend by introducing a `CATEGORY_LABELS` dictionary that maps category slugs to human-readable labels, and a single helper function that UI code must call to render category labels. The dictionary must include (at minimum) the exact mappings provided by the user: construction→Construction, agriculture→Agriculture, homeservices→Home Services, transport→Transport, homeimprovement→Home Improvement, specializedcleaning→Specialized Cleaning, generalservices→General Services, woodmetal→Wood & Metal Works, treework→Tree Cutting & Coconut Climbing, householdservices→Household Services, vehicleservices→Vehicle Services, tailoring→Tailoring, aariwork→Aari Work, catering→Cooking / Catering, eventservices→Event Services, printing→Printing & Flex, repair→Repair Services, electrical→Electrical, plumbing→Plumbing, painting→Painting, carpenter→Carpentry, welding→Welding. The helper must normalize incoming slugs (case/whitespace/punctuation tolerant) for lookup.",
       "files": [
+        "frontend/src/utils/bilingualTaxonomy.ts",
+        "frontend/src/utils/categoryLabels.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-198"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-enforce-the-rendering-rules-for-category-slugs-across-the-ui-1-the-ui-must-never-render-the-raw-category-slug-string-2-if-the-slug-is-not-found-in-category-labels-render-a-safe-fallback-that-is-capitalized-words-human-readable-not-the-original-raw-slug-3-database-values-and-navigation-search-params-must-remain-unchanged-mapping-is-display-only",
+      "featureTitle": "Enforce the rendering rules for category slugs across the UI: (1) the UI must never render the raw category slug string; (2) if the slug is not found in `CATEGORY_LABELS`, render a safe fallback that is capitalized words (human-readable), not the original raw slug; (3) database values and navigation/search params must remain unchanged (mapping is display-only).",
+      "files": [
+        "frontend/src/utils/categoryLabels.ts",
+        "frontend/src/utils/displayName.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-199"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-the-strict-category-label-mapping-helper-everywhere-category-slugs-can-become-user-visible-specifically-covering-home-page-category-cards-search-results-page-titles-and-any-category-labels-worker-profile-page-work-category-badges-live-suggestions-dropdown-display-text-and-category-filter-ui-including-any-chips-buttons-headings-that-show-category-values-replace-any-current-usage-that-relies-on-auto-guessing-e-g-heuristics-title-casing-directly-on-raw-values-for-category-slugs-with-the-centralized-mapping-helper",
+      "featureTitle": "Apply the strict category label mapping helper everywhere category slugs can become user-visible, specifically covering: Home page category cards, Search Results page titles and any category labels, Worker Profile page work/category badges, Live suggestions dropdown display text, and category/filter UI (including any chips/buttons/headings that show category values). Replace any current usage that relies on auto-guessing (e.g., heuristics/title-casing directly on raw values) for category slugs with the centralized mapping helper.",
+      "files": [
+        "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
         "frontend/src/components/search/SearchEmptyRecovery.tsx",
-        "frontend/src/pages/WorkerSearchResultsPage.tsx"
+        "frontend/src/pages/HomePage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -19,182 +64,7 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-153"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-in-the-search-empty-state-display-a-friendly-message-using-the-exact-tamil-text-provided-by-the-user-and-source-it-via-the-existing-i18n-system-usei18n-t-so-it-can-render-as-bilingual-text-tamil-primary-english-secondary-without-hardcoded-inline-strings",
-      "featureTitle": "In the /search empty state, display a friendly message using the exact Tamil text provided by the user, and source it via the existing i18n system (useI18n().t) so it can render as bilingual text (Tamil primary + English secondary) without hardcoded inline strings.",
-      "files": [
-        "frontend/src/components/i18n/translations.ts",
-        "frontend/src/components/search/SearchEmptyRecovery.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-154"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-in-the-search-empty-state-automatically-show-a-list-of-nearby-approved-workers-when-browser-geolocation-is-available-without-requiring-additional-user-input",
-      "featureTitle": "In the /search empty state, automatically show a list of nearby approved workers when browser geolocation is available, without requiring additional user input.",
-      "files": [
-        "frontend/src/components/search/SearchEmptyRecovery.tsx",
-        "frontend/src/hooks/useNearbyWorkers.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-155"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-an-expand-search-area-secondary-action-in-the-search-empty-state-that-increases-the-nearby-search-radius-and-refreshes-the-nearby-workers-section-accordingly-only-when-geolocation-is-available",
-      "featureTitle": "Add an “Expand Search Area” secondary action in the /search empty state that increases the nearby search radius and refreshes the nearby workers section accordingly (only when geolocation is available).",
-      "files": [
-        "frontend/src/components/i18n/translations.ts",
-        "frontend/src/components/search/SearchEmptyRecovery.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-156"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-in-the-search-empty-state-show-related-skill-suggestions-based-on-the-user-s-current-search-prefer-q-when-present-otherwise-category-subcategory-area-context-suggestions-must-be-tap-friendly-and-start-a-new-search-q-suggestion-search-when-tapped",
-      "featureTitle": "In the /search empty state, show “related skill suggestions” based on the user’s current search (prefer q when present; otherwise category/subcategory/area context). Suggestions must be tap-friendly and start a new /search?q=<suggestion> search when tapped.",
-      "files": [
-        "frontend/src/components/search/SearchEmptyRecovery.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-157"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-two-big-action-buttons-to-the-search-empty-state-1-primary-post-a-work-request-which-navigates-to-the-existing-job-request-page-route-post-job-2-secondary-expand-search-area-covered-separately-with-large-mobile-friendly-styling",
-      "featureTitle": "Add two big action buttons to the /search empty state: (1) Primary: “Post a Work Request” which navigates to the existing job request page route (/post-job); (2) Secondary: “Expand Search Area” (covered separately) with large, mobile-friendly styling.",
-      "files": [
-        "frontend/src/components/i18n/translations.ts",
-        "frontend/src/components/search/SearchEmptyRecovery.tsx",
-        "frontend/src/pages/WorkerSearchResultsPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-158"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-whatsapp-help-cta-to-the-search-empty-state-showing-the-exact-tamil-prompt-text-provided-by-the-user-sourced-via-i18n-and-render-a-whatsapp-button-that-opens-a-whatsapp-chat-help-link",
-      "featureTitle": "Add a WhatsApp help CTA to the /search empty state, showing the exact Tamil prompt text provided by the user (sourced via i18n), and render a WhatsApp button that opens a WhatsApp chat/help link.",
-      "files": [
-        "frontend/src/components/i18n/translations.ts",
-        "frontend/src/components/search/SearchEmptyRecovery.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-159"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-that-the-empty-state-recovery-ui-never-renders-technical-category-taxonomy-codes-e-g-homeimprovement-specializedcleaning-anywhere-in-visible-text-all-category-subcategory-suggestion-labels-shown-in-the-empty-state-flow-must-be-human-readable-and-should-use-the-existing-bilingual-label-helpers-i18n-lookups-with-safe-humanized-fallbacks",
-      "featureTitle": "Ensure that the empty state recovery UI never renders technical category/taxonomy codes (e.g., \"homeimprovement\", \"specializedcleaning\") anywhere in visible text; all category/subcategory/suggestion labels shown in the empty-state flow must be human-readable and should use the existing bilingual label helpers / i18n lookups with safe humanized fallbacks.",
-      "files": [
-        "frontend/src/components/search/SearchEmptyRecovery.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-160"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-extend-the-local-i18n-translation-dictionary-frontend-src-components-i18n-translations-ts-with-keys-needed-for-the-new-empty-state-recovery-flow-friendly-message-section-labels-button-labels-whatsapp-prompt-and-ensure-they-resolve-through-usei18n-t-without-showing-raw-keys",
-      "featureTitle": "Extend the local i18n translation dictionary (frontend/src/components/i18n/translations.ts) with keys needed for the new empty-state recovery flow (friendly message, section labels, button labels, WhatsApp prompt), and ensure they resolve through useI18n().t without showing raw keys.",
-      "files": [
-        "frontend/src/components/i18n/translations.ts",
-        "frontend/src/components/search/SearchEmptyRecovery.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-161"
+        "REQ-200"
       ],
       "confidence": "high"
     }

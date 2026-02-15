@@ -1,8 +1,11 @@
+import { displayName } from './displayName';
+
 // Utility functions to convert raw database/system keys into human-readable labels
 // Used as fallback when translations are missing
 
 /**
  * Converts a camelCase, snake_case, or concatenated string into Title Case
+ * Now uses the centralized displayName formatter for consistent results
  * Examples:
  * - "homeimprovement" -> "Home Improvement"
  * - "work_type" -> "Work Type"
@@ -13,31 +16,15 @@ export function humanizeKey(input: string): string {
   
   // Remove common prefixes
   let cleaned = input;
-  const prefixes = ['category.', 'subcategory.', 'field.', 'job.'];
+  const prefixes = ['category.', 'subcategory.', 'field.', 'job.', 'subgroup.'];
   for (const prefix of prefixes) {
     if (cleaned.startsWith(prefix)) {
       cleaned = cleaned.substring(prefix.length);
     }
   }
   
-  // Split on various delimiters and camelCase boundaries
-  const words = cleaned
-    // Insert space before capital letters (camelCase)
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    // Replace underscores and hyphens with spaces
-    .replace(/[_-]/g, ' ')
-    // Split concatenated lowercase words (basic heuristic)
-    .replace(/([a-z])([a-z]{2,})/gi, '$1 $2')
-    // Collapse multiple spaces
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toLowerCase()
-    .split(' ');
-  
-  // Title case each word
-  return words
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  // Use the centralized displayName formatter
+  return displayName(cleaned);
 }
 
 /**

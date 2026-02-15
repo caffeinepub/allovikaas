@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLiveSearchSuggestions } from '@/hooks/useLiveSearchSuggestions';
 import { Suggestion } from '@/backend';
+import { getCategoryLabel } from '@/utils/categoryLabels';
+import { displayName } from '@/utils/displayName';
 
 interface LiveSuggestionSearchBoxProps {
   value: string;
@@ -17,6 +19,10 @@ interface LiveSuggestionSearchBoxProps {
 /**
  * Reusable search box with live suggestions dropdown
  * Mobile-friendly with safe close behaviors (outside click, Escape)
+ * 
+ * Displays formatted taxonomy labels using getCategoryLabel() for categories
+ * and displayName() for other values, while preserving original suggestion
+ * values for navigation/search execution.
  */
 export default function LiveSuggestionSearchBox({
   value,
@@ -97,6 +103,17 @@ export default function LiveSuggestionSearchBox({
     onSuggestionSelect(suggestionText);
   };
 
+  // Format suggestion display text based on source type
+  const formatSuggestionDisplay = (suggestion: Suggestion): string => {
+    // Use strict category mapping for category suggestions
+    if (suggestion.source === 'category') {
+      return getCategoryLabel(suggestion.text);
+    }
+    
+    // Use general displayName for other types
+    return displayName(suggestion.text);
+  };
+
   const hasSuggestions = suggestions && suggestions.length > 0;
 
   return (
@@ -110,13 +127,12 @@ export default function LiveSuggestionSearchBox({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="h-12 pl-12 pr-24 rounded-xl border-2 border-border focus:border-primary"
-            autoComplete="off"
+            className="h-12 pl-12 pr-24 rounded-xl text-base shadow-md"
           />
           <Button
             type="submit"
-            size="lg"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-9 px-6 rounded-lg bg-primary hover:bg-primary-dark text-primary-foreground font-semibold"
+            size="sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg px-4 h-8"
           >
             Search
           </Button>
@@ -124,36 +140,38 @@ export default function LiveSuggestionSearchBox({
       </form>
 
       {/* Suggestions Dropdown */}
-      {showDropdown && value.trim().length >= 1 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-card border-2 border-border rounded-xl shadow-2xl z-50 max-h-80 overflow-y-auto">
+      {showDropdown && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-xl shadow-xl z-50 max-h-80 overflow-y-auto">
           {isLoading && (
-            <div className="px-4 py-3 text-sm text-muted-foreground">
+            <div className="p-4 text-center text-sm text-muted-foreground">
               Loading suggestions...
             </div>
           )}
-          
-          {!isLoading && !hasSuggestions && (
-            <div className="px-4 py-3 text-sm text-muted-foreground">
+
+          {!isLoading && !hasSuggestions && debouncedValue.trim().length >= 3 && (
+            <div className="p-4 text-center text-sm text-muted-foreground">
               No suggestions found
             </div>
           )}
-          
+
           {!isLoading && hasSuggestions && (
             <ul className="py-2">
               {suggestions.map((suggestion, index) => (
-                <li key={`${suggestion.text}-${index}`}>
+                <li key={index}>
                   <button
                     type="button"
                     onClick={() => handleSuggestionClick(suggestion.text)}
-                    className="w-full px-4 py-3 text-left hover:bg-accent/10 transition-colors flex items-center gap-3 group"
+                    className="w-full px-4 py-3 text-left hover:bg-accent transition-colors flex items-center gap-3"
                   >
-                    <Search className="h-4 w-4 text-muted-foreground group-hover:text-primary flex-shrink-0" />
-                    <span className="text-sm font-medium text-foreground group-hover:text-primary flex-1">
-                      {suggestion.text}
-                    </span>
-                    <span className="text-xs text-muted-foreground capitalize flex-shrink-0">
-                      {getSuggestionSourceLabel(suggestion.source)}
-                    </span>
+                    <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-foreground truncate">
+                        {formatSuggestionDisplay(suggestion)}
+                      </div>
+                      <div className="text-xs text-muted-foreground capitalize">
+                        {suggestion.source}
+                      </div>
+                    </div>
                   </button>
                 </li>
               ))}
@@ -163,16 +181,4 @@ export default function LiveSuggestionSearchBox({
       )}
     </div>
   );
-}
-
-function getSuggestionSourceLabel(source: Suggestion['source']): string {
-  const sourceMap: Record<string, string> = {
-    category: 'Category',
-    subcategory: 'Type',
-    area: 'Area',
-    workerName: 'Worker',
-    skill: 'Skill',
-  };
-  
-  return sourceMap[source] || 'Result';
 }
