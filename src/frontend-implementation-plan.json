@@ -1,88 +1,258 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Bilingual (English + Tamil) labels across Local Skilled Workers, Worker Registration, and Worker Search Results",
+  "title": "Fix broken category/subcategory icons by using local generated SVG assets with SafeIconImage fallback",
   "requirements": [
     {
-      "id": "REQ-59",
-      "summary": "Add bilingual two-line rendering for Local Skilled Workers group headings and subcategory tiles (English first, Tamil second when TN selected) across the app, including Home page grid.",
+      "id": "REQ-63",
+      "summary": "Audit and update all category/subcategory icon references so they only point to existing local SVGs under frontend/public/assets/generated (no external URLs).",
       "acceptanceCriteria": [
-        "On the Home page, each Local Skilled Workers group heading is shown bilingually (English line + Tamil line) instead of English-only (e.g., 'Construction Related' plus a Tamil translation below it).",
-        "On the Home page, each Local Skilled Workers subcategory tile shows a two-line bilingual label (English line + Tamil line) instead of a single combined string like 'Door Maker (Kathavu seibavar)'.",
-        "All bilingual rendering uses the existing i18n system (I18nProvider + BilingualText) so English is always shown and Tamil appears as the regional line when Tamil Nadu (TN) is selected."
+        "No icon <img> src (or CSS background-image) references an http/https URL anywhere in the app.",
+        "All category and subcategory icon references resolve to files under /assets/generated/*.svg.",
+        "All icon filenames referenced in code exist in frontend/public/assets/generated."
       ],
       "file_operations": [
-        {
-          "path": "frontend/src/config/localSkilledWorkers.ts",
-          "operation": "modify",
-          "description": "Refactor Local Skilled Workers group/subcategory configuration to keep the existing English strings as the canonical values (for navigation/search compatibility) while adding stable i18n key references for group names and subcategory names (and removing any mixed bilingual-in-one-string labels like parenthesized transliterations)."
-        },
         {
           "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Render Local Skilled Workers group headings and subcategory tile labels using the existing BilingualText component with strings sourced from I18nProvider (English always shown; regional line shown when TN selected). Verify the component's usage instructions before implementing."
+          "description": "Audit the category grid and Local Skilled Workers subcategory grid icon sources; ensure every icon src is a local /assets/generated/*.svg path (not .png, not http/https) and update any stale/broken filenames to match the generated SVG assets. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/utils/bilingualTaxonomy.ts",
+          "path": "frontend/src/config/localSkilledWorkers.ts",
+          "operation": "modify",
+          "description": "Audit all Local Skilled Workers subcategory icon paths; ensure every icon points to a local /assets/generated/*.svg filename that exists (and update any stale/broken paths). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/common/SafeIconImage.tsx",
+          "operation": "modify",
+          "description": "Harden SafeIconImage so any http/https src (or any src outside /assets/generated/*.svg) is treated as invalid and replaced with the local fallback; keep the rendered <img> and className behavior unchanged to preserve layout. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-64",
+      "summary": "Centralize icon rendering through SafeIconImage so missing/invalid icon sources always render the local fallback SVG without layout changes.",
+      "acceptanceCriteria": [
+        "If an icon src is empty, whitespace, invalid, or the file fails to load, the UI renders /assets/generated/icon-fallback.dim_128x128.svg.",
+        "No broken-image placeholders appear on the Home page category grid or Local Skilled Workers subcategory grid.",
+        "No changes to spacing, grid columns, card sizes, or typography on pages where icons appear (layout remains unchanged)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Confirm all category and subcategory icons on this page are rendered using the existing SafeIconImage component (no raw <img> tags or CSS background-image for these icons), preserving all existing wrappers, sizes, and className values to keep layout unchanged. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/common/SafeIconImage.tsx",
+          "operation": "modify",
+          "description": "Ensure SafeIconImage reliably falls back to /assets/generated/icon-fallback.dim_128x128.svg for empty/whitespace/invalid src and for load errors, without changing element structure or layout-affecting attributes. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-65",
+      "summary": "Add any missing local SVG icon assets (including fallback) for the current category and Local Skilled Workers subcategory taxonomy, using the exact filenames referenced by the frontend.",
+      "acceptanceCriteria": [
+        "All required SVG icon files exist under frontend/public/assets/generated with the exact filenames referenced by the code.",
+        "All icons are simple SVGs (no embedded external image links) and render correctly at small sizes (e.g., 64–96px) without clipping.",
+        "The fallback icon file /assets/generated/icon-fallback.dim_128x128.svg exists and is used automatically when needed."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/icon-fallback.dim_128x128.svg",
           "operation": "create",
-          "description": "Add a small helper for producing display-ready bilingual label pairs (en/regional) for known Local Skilled Workers group/subcategory values by mapping English canonical strings to i18n keys, ensuring the underlying values used for navigation remain the existing English strings."
-        }
-      ]
-    },
-    {
-      "id": "REQ-60",
-      "summary": "Bilingualize Worker Registration page UI (titles, field labels, placeholders, errors, buttons) and show bilingual category/subcategory option labels while submitting existing English values.",
-      "acceptanceCriteria": [
-        "The Worker Registration page header, helper text, each field label (e.g., Full Name, Phone Number, Category, Sub Category, Area / Location, Experience, Working Hours, Photo, Additional Comments), placeholders, and submit button text are displayed bilingually (English first line, Tamil second line) when TN is selected.",
-        "Validation errors (e.g., 'Name is required', 'Phone number must be 10 digits', 'Category is required') are displayed bilingually (English + Tamil) and do not introduce runtime errors.",
-        "Category and subcategory dropdown option display text is bilingual (English + Tamil), while the selected value submitted to the backend remains the existing English category/subcategory string."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/WorkerRegistrationPage.tsx",
-          "operation": "modify",
-          "description": "Replace hardcoded UI strings with i18n keys and render labels/placeholders/buttons/errors using the existing BilingualText component; keep form submission values unchanged (existing English category/subcategory strings), while rendering Select option content bilingually. Verify the component's usage instructions before implementing."
+          "description": "Add the required local fallback SVG icon asset (simple, consistent style, no external references)."
         },
         {
-          "path": "frontend/src/utils/bilingualTaxonomy.ts",
-          "operation": "modify",
-          "description": "Extend helper(s) to return bilingual display labels for category/subcategory dropdown options (including Local Skilled Workers items), while preserving the underlying SelectItem value as the existing English string."
-        }
-      ]
-    },
-    {
-      "id": "REQ-61",
-      "summary": "Bilingualize Worker Search Results page UI (title, filters, buttons, states, filter chips) and show bilingual category/subcategory option labels while keeping internal filter values English.",
-      "acceptanceCriteria": [
-        "The Worker Search Results page title ('Find Workers'), filter placeholders (area, category, subcategory), buttons ('Search', 'Clear Filters'), loading text, error text, empty state text, and filter chip prefixes ('Area:', 'Category:', 'Subcategory:') display bilingually (English first line + Tamil second line) when TN is selected.",
-        "Category/Subcategory dropdown option display text is bilingual (English + Tamil), while the internal values used for filtering remain the existing English category/subcategory strings coming from taxonomy.",
-        "No changes introduce new crashes; the page continues to render safely even if taxonomy data is loading or incomplete."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
-          "operation": "modify",
-          "description": "Integrate I18nProvider + BilingualText to render bilingual page title, filter labels/placeholders, buttons, loading/error/empty states, and active filter chips; render Select option content bilingually without changing the actual filter values (keep existing English strings). Verify the component's usage instructions before implementing."
+          "path": "frontend/public/assets/generated/icon-construction.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
         },
         {
-          "path": "frontend/src/utils/bilingualTaxonomy.ts",
-          "operation": "modify",
-          "description": "Reuse/extend bilingual label helper(s) for category/subcategory option display in search filters and for chip prefix label selection via i18n keys."
-        }
-      ]
-    },
-    {
-      "id": "REQ-62",
-      "summary": "Extend the i18n translation dictionary with keys required for new bilingual labels across Home (Local Skilled Workers UI), Worker Registration, and Worker Search Results.",
-      "acceptanceCriteria": [
-        "All newly bilingualized UI strings are sourced from i18n keys (not hardcoded English-only strings).",
-        "For each new key, English and Tamil translations are present; missing keys fall back safely without breaking UI (consistent with existing I18nProvider fallback behavior)."
-      ],
-      "file_operations": [
+          "path": "frontend/public/assets/generated/icon-agriculture.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
         {
-          "path": "frontend/src/components/i18n/I18nProvider.tsx",
-          "operation": "modify",
-          "description": "Add translation entries (English + Tamil at minimum) for: Local Skilled Workers group names and subcategory names; Worker Registration titles/helper text/field labels/placeholders/buttons/validation messages; Worker Search Results title/filter placeholders/buttons/loading/error/empty-state text/filter-chip prefixes. Ensure fallback behavior remains unchanged and safe."
+          "path": "frontend/public/assets/generated/icon-home-services.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-transport.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-repairs.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-supplies.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-mason.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-coolie-helper.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-centring-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-bar-bending-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-door-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-window-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-carpenter.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-grill-gate-fabricator.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-welder.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-tree-cutter.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-coconut-tree-climber.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-coconut-picker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-firewood-cutter.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-basket-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-rope-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-mat-weaver.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-pot-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-house-maid.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-one-day-cooking-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-function-cooking-team.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-cleaning-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-tailor.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-aari-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-ironing-service.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-farm-labour.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-planting-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-harvest-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-sprayer-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG icon asset (simple, consistent style, no external references)."
         }
       ]
     }

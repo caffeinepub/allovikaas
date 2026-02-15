@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Add consistent English + Tamil bilingual (two-line) labels across Local Skilled Workers taxonomy displays, Worker Registration, and Worker Search Results using the existing i18n system.
+**Goal:** Fix all broken category/subcategory icons by using local SVG assets only, ensuring icons never load from external URLs and always fall back gracefully without changing the existing layout.
 
 **Planned changes:**
-- Update Local Skilled Workers group names and subcategory names to support bilingual labels and render them as two-line text (English first line, Tamil second line) wherever shown, including the Home page grid.
-- Update the Worker Registration page to render bilingual labels for the page title/helper text, all field labels, placeholders, validation/error messages, and primary/secondary buttons; show bilingual dropdown option text while keeping submitted values as the existing English strings.
-- Update the Worker Search Results page to render bilingual labels for the page title, filters/placeholders, action buttons, loading/error/empty states, and active filter chips; show bilingual dropdown option text while keeping internal filter values as the existing English strings.
-- Extend the i18n translation dictionary with keys for all newly bilingualized UI strings (English + Tamil), relying on existing fallback behavior for missing keys.
+- Audit the frontend for every category/subcategory icon usage (img src, CSS background-image, etc.) and replace any http/https or stale paths with local `/assets/generated/*.svg` references.
+- Route all category and subcategory icon rendering through the existing `SafeIconImage` (or equivalent centralized icon component) so invalid/missing sources automatically render the local fallback icon.
+- Add/generate any missing local SVG icon files under `frontend/public/assets/generated` using the exact filenames referenced by the frontend.
 
-**User-visible outcome:** When Tamil Nadu (TN) is selected, Local Skilled Workers categories/subcategories, registration form text (including errors), and search/filter UI display as two-line English + Tamil labels while keeping backend-facing category/subcategory values unchanged.
+**User-visible outcome:** Category and subcategory icon grids (e.g., Home page and Local Skilled Workers subcategories) show consistent local SVG icons with no broken-image placeholders, and missing/invalid icons display a fallback icon—while the layout remains unchanged.

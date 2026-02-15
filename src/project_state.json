@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 29,
+  "projectStateVersion": 31,
   "summary": "Build a production-ready multilingual hyperlocal services platform named “AREA WORKARS” (always uppercase) that connects (1) people searching for workers, (2) workers listing their services, and (3) businesses posting job requirements. Mobile-first, premium colorful corporate-but-rural-friendly UI. Search by area/pincode, browse categories with meaningful icons, view worker cards with direct Call/WhatsApp (no booking). Includes worker registration, public job request posting + job board, and an admin approval panel for workers and job posts. Multilingual: English default with an auto-selected regional language shown below based on selected state (Tamil/Kannada/Malayalam/Telugu/Hindi).",
   "architectural_notes": [
     "Brand style: trustworthy, simple, rural+urban friendly; not corporate, not ecommerce; community-service feel",
@@ -19,7 +19,8 @@
     "Broken/missing images/icons on the site; need local SVG icons for all categories/subcategories with a fallback icon when missing.",
     "Broken image placeholders are visible on category icons; must use local SVG icons only with a fallback icon when missing."
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
+  "imageRequirements": "## Required Images\n- Simple generic fallback icon (icon-fallback.dim_128x128.svg)\n- Simple construction icon (icon-construction.dim_128x128.svg)\n- Simple agriculture icon (icon-agriculture.dim_128x128.svg)\n- Simple home services icon (icon-home-services.dim_128x128.svg)\n- Simple transport icon (icon-transport.dim_128x128.svg)\n- Simple events and cooking icon (icon-events-cooking.dim_128x128.svg)\n- Simple daily helpers icon (icon-daily-helpers.dim_128x128.svg)\n- Simple repairs icon (icon-repairs.dim_128x128.svg)\n- Simple supplies icon (icon-supplies.dim_128x128.svg)\n- Simple mason icon (icon-mason.dim_128x128.svg)\n- Simple coolie helper icon (icon-coolie-helper.dim_128x128.svg)\n- Simple centring worker icon (icon-centring-worker.dim_128x128.svg)\n- Simple bar bending worker icon (icon-bar-bending-worker.dim_128x128.svg)\n- Simple door maker icon (icon-door-maker.dim_128x128.svg)\n- Simple window maker icon (icon-window-maker.dim_128x128.svg)\n- Simple carpenter icon (icon-carpenter.dim_128x128.svg)\n- Simple grill / gate fabricator icon (icon-grill-gate-fabricator.dim_128x128.svg)\n- Simple welder icon (icon-welder.dim_128x128.svg)\n- Simple tree cutter icon (icon-tree-cutter.dim_128x128.svg)\n- Simple coconut tree climber icon (icon-coconut-tree-climber.dim_128x128.svg)\n- Simple coconut picker icon (icon-coconut-picker.dim_128x128.svg)\n- Simple firewood cutter icon (icon-firewood-cutter.dim_128x128.svg)\n- Simple basket maker icon (icon-basket-maker.dim_128x128.svg)\n- Simple rope maker icon (icon-rope-maker.dim_128x128.svg)\n- Simple mat weaver icon (icon-mat-weaver.dim_128x128.svg)\n- Simple pot maker icon (icon-pot-maker.dim_128x128.svg)\n- Simple house maid icon (icon-house-maid.dim_128x128.svg)\n- Simple one day cooking worker icon (icon-one-day-cooking-worker.dim_128x128.svg)\n- Simple function cooking team icon (icon-function-cooking-team.dim_128x128.svg)\n- Simple cleaning worker icon (icon-cleaning-worker.dim_128x128.svg)\n- Simple tailor icon (icon-tailor.dim_128x128.svg)\n- Simple aari worker icon (icon-aari-worker.dim_128x128.svg)\n- Simple blouse designer icon (icon-blouse-designer.dim_128x128.svg)\n- Simple saree falls/pico worker icon (icon-saree-falls-pico-worker.dim_128x128.svg)\n- Simple ironing service icon (icon-ironing-service.dim_128x128.svg)\n- Simple farm labour icon (icon-farm-labour.dim_128x128.svg)\n- Simple planting worker icon (icon-planting-worker.dim_128x128.svg)\n- Simple harvest worker icon (icon-harvest-worker.dim_128x128.svg)\n- Simple sprayer worker icon (icon-sprayer-worker.dim_128x128.svg)",
   "existing_features": [
     {
       "id": "feature-build-a-single-page-premium-modern-corporate-landing-page-for-the-textile-production-network-brand-named-allovikaas-optimized-to-recruit-saree-manufacturers-weavers-loom-owners-and-cloth-producers-into-a-manufacturing-ecosystem-network",
@@ -420,6 +421,14 @@
         "REQ-62"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-generate-or-add-any-missing-local-svg-icon-assets-required-by-the-current-category-and-local-skilled-workers-subcategory-taxonomy-using-a-consistent-simple-icon-style-and-the-exact-filenames-referenced-by-the-frontend",
+      "title": "Generate or add any missing local SVG icon assets required by the current category and Local Skilled Workers subcategory taxonomy, using a consistent simple icon style and the exact filenames referenced by the frontend.",
+      "reqIds": [
+        "REQ-65"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -643,6 +652,22 @@
       "id": "AR-59",
       "summary": "Add bilingual labels (Tamil + English) to UI elements (e.g., categories/buttons/forms) so both languages are shown together",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-60",
+      "summary": "Audit the frontend to find every category/subcategory icon reference used in the UI and ensure all icon sources are local SVG files under frontend/public/assets/generated (no external URLs and no internet fetching). Update any stale/broken icon paths so they point to existing local SVG filenames.",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-61",
+      "summary": "Ensure all category and subcategory icons render through the existing SafeIconImage component (or an equivalent centralized icon component) so broken/missing/empty icon sources always render the local fallback SVG icon instead of a broken image placeholder, while keeping the existing layout unchanged.",
+      "reqIds": [
+        "REQ-64"
+      ],
       "status": "pending"
     }
   ],

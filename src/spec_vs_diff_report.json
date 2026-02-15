@@ -1,53 +1,45 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T04:55:09.139Z",
-  "summary": "Diff adds a bilingual taxonomy utility and starts using the i18n/BilingualText system on HomePage and WorkerRegistrationPage, plus expands the I18nProvider translation table. However, Worker Search Results page changes are not shown, registration validation/errors are still English-only in the visible code, and the needed i18n keys for Local Skilled Workers groups/subcategories and registration/search UI are not evidenced in the (truncated) translation dictionary.",
+  "generatedAt": "2026-02-15T05:07:44.377Z",
+  "summary": "The diff only modifies `project_state.json` (project metadata) and shows no frontend code or asset changes related to category/subcategory icons. As a result, none of the requested icon fixes, centralized fallback behavior, or SVG asset additions are implemented in the provided diff summary.",
   "missing_requirements": [
     {
-      "id": "REQ-61",
-      "requirement": "Update the Worker Search Results page to show bilingual (English + Tamil) labels for title, filters, buttons, states, and chips; keep taxonomy values in English.",
-      "reason": "No diff entry shows modifications to a Worker Search Results page/component (no file resembling search results was modified), so the required bilingual UI for that page is not evidenced.",
+      "id": "REQ-63",
+      "requirement": "Audit the frontend to find every category/subcategory icon reference used in the UI and ensure all icon sources are local SVG files under frontend/public/assets/generated (no external URLs and no internet fetching). Update any stale/broken icon paths so they point to existing local SVG filenames.",
+      "reason": "No frontend files were modified and no icon references were updated; the only modified file is `project_state.json`, which does not implement the required audit/path updates.",
       "evidence": [
-        "File diff summary: no modified/added file for Worker Search Results page"
+        "project_state.json"
       ]
     },
     {
-      "id": "REQ-60",
-      "requirement": "Show bilingual (English + Tamil) validation/error messages on Worker Registration page using existing i18n system.",
-      "reason": "Visible validation sets `setError(errorMsg.en)` which would display only English; also there is a hardcoded English error string for missing actor/backend connection.",
+      "id": "REQ-64",
+      "requirement": "Ensure all category and subcategory icons render through the existing SafeIconImage component (or an equivalent centralized icon component) so broken/missing/empty icon sources always render the local fallback SVG icon instead of a broken image placeholder, while keeping the existing layout unchanged.",
+      "reason": "No UI/component code changes are shown. There is no evidence that SafeIconImage usage was enforced or that fallback behavior was implemented/updated.",
       "evidence": [
-        "frontend/src/pages/WorkerRegistrationPage.tsx (validateForm uses `setError(errorMsg.en)` for multiple errors)",
-        "frontend/src/pages/WorkerRegistrationPage.tsx (`setError('Backend connection not available. Please try again.')`)"
+        "project_state.json"
       ]
     },
     {
-      "id": "REQ-62",
-      "requirement": "Extend i18n translation dictionary with keys needed for Home page Local Skilled Workers bilingual labels, Worker Registration page, and Worker Search Results page (English + Tamil minimum).",
-      "reason": "New code references many new i18n keys (e.g., `lsw.group.*`, `lsw.sub.*`, `register.*`, and `category.localSkilledWorkers`), but the truncated I18nProvider snippet does not show these keys being added; therefore presence of required keys/translations is not evidenced.",
+      "id": "REQ-65",
+      "requirement": "Generate or add any missing local SVG icon assets required by the current category and Local Skilled Workers subcategory taxonomy, using a consistent simple icon style and the exact filenames referenced by the frontend.",
+      "reason": "No files were added under `frontend/public/assets/generated` (added files: none). Therefore, required SVG assets (including the fallback icon) are not shown as added.",
       "evidence": [
-        "frontend/src/utils/bilingualTaxonomy.ts (uses `lsw.group.*`, `lsw.sub.*`, `category.localSkilledWorkers`)",
-        "frontend/src/pages/WorkerRegistrationPage.tsx (uses `register.title`, `register.helper`, `register.success`, `register.error.*`)",
-        "frontend/src/components/i18n/I18nProvider.tsx (translation table shown but new keys not visible in provided truncated portion)"
-      ]
-    },
-    {
-      "id": "REQ-59",
-      "requirement": "Render Local Skilled Workers group/subcategory names as two-line bilingual labels (English first line, Tamil second line) wherever shown, including Home page grid.",
-      "reason": "Although HomePage imports `getBilingualGroupLabel/getBilingualSubcategoryLabel` and `BilingualText`, the provided truncated portion does not include the Local Skilled Workers grid rendering, so the required two-line bilingual rendering for group headings and subcategory tiles is not fully evidenced.",
-      "evidence": [
-        "frontend/src/pages/HomePage.tsx (imports `LOCAL_SKILLED_WORKERS_GROUPS`, `getBilingualGroupLabel`, `getBilingualSubcategoryLabel`, `BilingualText`, but grid section not visible in truncated snippet)"
+        "project_state.json"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.62,
+  "hallucinated_features": [
+    {
+      "description": "Updated project metadata/state (e.g., project summary/features) unrelated to fixing category/subcategory icons via local SVGs.",
+      "reason": "The BuildRequest is specifically about fixing icon sources and adding local SVG assets without changing layout; modifying `project_state.json` is not requested by any of REQ-63/64/65.",
+      "evidence": [
+        "project_state.json"
+      ]
+    }
+  ],
+  "confidence": 0.92,
   "changed_files": [
-    "frontend/src/components/i18n/I18nProvider.tsx",
-    "frontend/src/config/localSkilledWorkers.ts",
-    "frontend/src/pages/HomePage.tsx",
-    "frontend/src/pages/WorkerRegistrationPage.tsx",
-    "frontend/src/utils/bilingualTaxonomy.ts",
     "project_state.json"
   ]
 }

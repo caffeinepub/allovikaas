@@ -1,9 +1,8 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="20" y="20" width="88" height="88" rx="12" fill="#ECEFF1"/>
-  <path d="M45 55L50 50L78 50L83 55L83 75L45 75L45 55Z" fill="#607D8B" stroke="#37474F" stroke-width="2"/>
-  <rect x="50" y="45" width="8" height="8" rx="2" fill="#455A64"/>
-  <ellipse cx="64" cy="62" rx="12" ry="8" fill="#78909C"/>
-  <circle cx="58" cy="60" r="2" fill="#FFF" opacity="0.3"/>
-  <circle cx="64" cy="62" r="2" fill="#FFF" opacity="0.3"/>
-  <circle cx="70" cy="60" r="2" fill="#FFF" opacity="0.3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <path d="M 32 56 L 48 40 L 80 40 L 80 56 Z" fill="#64748b"/>
+  <rect x="32" y="56" width="64" height="32" rx="4" fill="#475569"/>
+  <circle cx="52" cy="72" r="4" fill="#94a3b8"/>
+  <circle cx="68" cy="72" r="4" fill="#94a3b8"/>
+  <line x1="80" y1="32" x2="96" y2="16" stroke="#94a3b8" stroke-width="4"/>
+  <circle cx="96" cy="16" r="6" fill="#cbd5e1"/>
 </svg>
