@@ -1,0 +1,266 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Replace broken category icons with local SVG assets and resilient fallback rendering",
+  "requirements": [
+    {
+      "id": "REQ-42",
+      "summary": "Add local SVG icon assets for all homepage categories and all Local Skilled Workers subcategories under frontend/public/assets/generated, with no external icon URLs.",
+      "acceptanceCriteria": [
+        "All category and subcategory icons used by the UI resolve to local paths under /assets/generated/ and do not reference any external URL.",
+        "All new icon files are SVGs and are committed as static assets under frontend/public/assets/generated.",
+        "The app builds successfully and category/subcategory icons render without broken image placeholders in the browser."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/icon-fallback.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add the required local SVG fallback icon asset at frontend/public/assets/generated/icon-fallback.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-construction.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Construction homepage category at frontend/public/assets/generated/icon-construction.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-agriculture.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Agriculture homepage category at frontend/public/assets/generated/icon-agriculture.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-home-services.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Home Services homepage category at frontend/public/assets/generated/icon-home-services.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-transport.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Transport homepage category at frontend/public/assets/generated/icon-transport.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Events & Cooking homepage category at frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Daily Helpers homepage category at frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-repairs.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Repairs homepage category at frontend/public/assets/generated/icon-repairs.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-supplies.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Supplies homepage category at frontend/public/assets/generated/icon-supplies.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-local-skilled-workers.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Local Skilled Workers category branding/icon at frontend/public/assets/generated/icon-local-skilled-workers.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-mason.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Mason subcategory at frontend/public/assets/generated/icon-mason.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-coolie-helper.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Coolie Helper subcategory at frontend/public/assets/generated/icon-coolie-helper.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-centring-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Centring Worker subcategory at frontend/public/assets/generated/icon-centring-worker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-bar-bending-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Bar Bending Worker subcategory at frontend/public/assets/generated/icon-bar-bending-worker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-door-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Door Maker subcategory at frontend/public/assets/generated/icon-door-maker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-window-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Window Maker subcategory at frontend/public/assets/generated/icon-window-maker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-carpenter.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Carpenter subcategory at frontend/public/assets/generated/icon-carpenter.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-grill-gate-fabricator.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Grill/Gate Fabricator subcategory at frontend/public/assets/generated/icon-grill-gate-fabricator.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-welder.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Welder subcategory at frontend/public/assets/generated/icon-welder.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-tree-cutter.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Tree Cutter subcategory at frontend/public/assets/generated/icon-tree-cutter.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-coconut-tree-climber.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Coconut Tree Climber subcategory at frontend/public/assets/generated/icon-coconut-tree-climber.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-coconut-picker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Coconut Picker subcategory at frontend/public/assets/generated/icon-coconut-picker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-firewood-cutter.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Firewood Cutter subcategory at frontend/public/assets/generated/icon-firewood-cutter.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-basket-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Basket Maker subcategory at frontend/public/assets/generated/icon-basket-maker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-rope-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Rope Maker subcategory at frontend/public/assets/generated/icon-rope-maker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-mat-weaver.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Mat Weaver subcategory at frontend/public/assets/generated/icon-mat-weaver.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-pot-maker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Pot Maker subcategory at frontend/public/assets/generated/icon-pot-maker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-house-maid.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the House Maid subcategory at frontend/public/assets/generated/icon-house-maid.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-one-day-cooking-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the One Day Cooking Worker subcategory at frontend/public/assets/generated/icon-one-day-cooking-worker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-function-cooking-team.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Function Cooking Team subcategory at frontend/public/assets/generated/icon-function-cooking-team.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-cleaning-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Cleaning Worker subcategory at frontend/public/assets/generated/icon-cleaning-worker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-tailor.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Tailor subcategory at frontend/public/assets/generated/icon-tailor.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-aari-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Aari Worker subcategory at frontend/public/assets/generated/icon-aari-worker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Blouse Designer subcategory at frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Saree Falls/Pico Worker subcategory at frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-ironing-service.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Ironing Service subcategory at frontend/public/assets/generated/icon-ironing-service.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-farm-labour.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Farm Labour subcategory at frontend/public/assets/generated/icon-farm-labour.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-planting-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Planting Worker subcategory at frontend/public/assets/generated/icon-planting-worker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-harvest-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Harvest Worker subcategory at frontend/public/assets/generated/icon-harvest-worker.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/public/assets/generated/icon-sprayer-worker.dim_128x128.svg",
+          "operation": "create",
+          "description": "Add local SVG icon asset for the Sprayer Worker subcategory at frontend/public/assets/generated/icon-sprayer-worker.dim_128x128.svg."
+        }
+      ]
+    },
+    {
+      "id": "REQ-43",
+      "summary": "Update homepage category icon paths and Local Skilled Workers subcategory icon paths to reference the new local SVG filenames under /assets/generated/.",
+      "acceptanceCriteria": [
+        "frontend/src/pages/HomePage.tsx category icon paths reference .svg files under /assets/generated/ (not .png).",
+        "frontend/src/config/localSkilledWorkers.ts subcategory icon paths reference .svg files under /assets/generated/ (not .png).",
+        "No remaining references to the old icon .png filenames are required for correct rendering of category/subcategory icons."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Replace the homepage categories array icon paths to use the local SVG assets (e.g., /assets/generated/icon-construction.dim_128x128.svg) instead of .png references; ensure the Local Skilled Workers subcategory default icon references are also updated to local .svg paths."
+        },
+        {
+          "path": "frontend/src/config/localSkilledWorkers.ts",
+          "operation": "modify",
+          "description": "Update Local Skilled Workers taxonomy icon paths so every subcategory points to its specific local SVG file under /assets/generated/ (e.g., icon-rope-maker.dim_128x128.svg, icon-tailor.dim_128x128.svg) and update helper fallback return values to .svg paths."
+        }
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "summary": "Add robust local fallback icon behavior so missing/empty/failed icon loads render a local fallback SVG without changing the existing layout.",
+      "acceptanceCriteria": [
+        "On the homepage category grid, when an icon fails to load, the UI displays the fallback icon (the icon is not hidden).",
+        "On the Local Skilled Workers subcategory grid, when an icon fails to load, the UI displays the fallback icon.",
+        "Fallback uses a local SVG file under /assets/generated/ and does not load from any external URL.",
+        "The fallback behavior does not change spacing, sizing, or layout of the existing category/subcategory cards (only the image source changes)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/common/SafeIconImage.tsx",
+          "operation": "create",
+          "description": "Create a small shared SafeIconImage component that renders an <img> with resilient local fallback handling (treat missing/empty src as fallback, and swap to fallback on load error) while preserving passed sizing/className; use local fallback at /assets/generated/icon-fallback.dim_128x128.svg."
+        },
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Wire SafeIconImage into the homepage category grid and Local Skilled Workers subcategory grid, replacing current onError behavior that hides the image; ensure fallback uses /assets/generated/icon-fallback.dim_128x128.svg and keep existing wrapper divs/classes unchanged to avoid layout changes."
+        },
+        {
+          "path": "frontend/src/config/localSkilledWorkers.ts",
+          "operation": "modify",
+          "description": "Update getSubcategoryIcon (and any default icon constants used for Local Skilled Workers) to return the local fallback SVG path /assets/generated/icon-fallback.dim_128x128.svg when the icon is missing/empty or no match is found, without changing any UI layout logic."
+        }
+      ]
+    }
+  ]
+}

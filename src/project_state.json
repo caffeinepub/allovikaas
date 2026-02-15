@@ -1,0 +1,479 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 17,
+  "summary": "Build a production-ready multilingual hyperlocal services platform named “AREA WORKARS” (always uppercase) that connects (1) people searching for workers, (2) workers listing their services, and (3) businesses posting job requirements. Mobile-first, premium colorful corporate-but-rural-friendly UI. Search by area/pincode, browse categories with meaningful icons, view worker cards with direct Call/WhatsApp (no booking). Includes worker registration, public job request posting + job board, and an admin approval panel for workers and job posts. Multilingual: English default with an auto-selected regional language shown below based on selected state (Tamil/Kannada/Malayalam/Telugu/Hindi).",
+  "architectural_notes": [
+    "Brand style: trustworthy, simple, rural+urban friendly; not corporate, not ecommerce; community-service feel",
+    "Color palette: dark green + white + light grey; emphasize accessibility and readability",
+    "Typography: clean, readable font that supports both Tamil and English well",
+    "Core UX: mobile-first; no booking system; no user login required; direct Call and WhatsApp contact",
+    "Information architecture: Home (search + category grid) -> Category listing pages with worker cards; separate Worker Registration page; simple Admin panel",
+    "Worker card fields: photo, name, work type, area, experience (years), availability, Call button (green), WhatsApp button",
+    "Worker registration fields: name, phone number, work category dropdown, area, experience, working time, upload photo; after submit show 'We will verify and publish your number' message",
+    "SEO targets: optimize for local intent searches (e.g., 'worker near me', 'maram vetra aal near me', 'electrician near me tamilnadu')",
+    "User preference: background should feel vibrant and more corporate in style (ensure readability on mobile).",
+    "Project renamed to “AREA WORKER” with tagline: “Find People Who Work Near You / உங்கள் அருகில் வேலை செய்யும் நபர்களை கண்டுபிடிக்கவும்”."
+  ],
+  "known_issues": [
+    "App crash showing \"Something went wrong\" (observed after adding categories); likely caused by missing/invalid category/subcategory relations or unhandled API errors.",
+    "Broken/missing images/icons on the site; need local SVG icons for all categories/subcategories with a fallback icon when missing."
+  ],
+  "isFixRequest": true,
+  "imageRequirements": "## Required Images\n- Default generic fallback icon, simple flat monochrome badge/worker-symbol style (icon-fallback.dim_128x128.svg)\n- Construction category icon, simple flat monochrome (icon-construction.dim_128x128.svg)\n- Agriculture category icon, simple flat monochrome (icon-agriculture.dim_128x128.svg)\n- Home services category icon, simple flat monochrome (icon-home-services.dim_128x128.svg)\n- Transport category icon, simple flat monochrome (icon-transport.dim_128x128.svg)\n- Events & cooking category icon, simple flat monochrome (icon-events-cooking.dim_128x128.svg)\n- Daily helpers category icon, simple flat monochrome (icon-daily-helpers.dim_128x128.svg)\n- Repairs category icon, simple flat monochrome (icon-repairs.dim_128x128.svg)\n- Supplies category icon, simple flat monochrome (icon-supplies.dim_128x128.svg)\n- Local skilled workers category icon, simple flat monochrome (icon-local-skilled-workers.dim_128x128.svg)\n- Mason subcategory icon, simple flat monochrome (icon-mason.dim_128x128.svg)\n- Coolie helper subcategory icon, simple flat monochrome (icon-coolie-helper.dim_128x128.svg)\n- Centring worker subcategory icon, simple flat monochrome (icon-centring-worker.dim_128x128.svg)\n- Bar bending worker subcategory icon, simple flat monochrome (icon-bar-bending-worker.dim_128x128.svg)\n- Door maker subcategory icon, simple flat monochrome (icon-door-maker.dim_128x128.svg)\n- Window maker subcategory icon, simple flat monochrome (icon-window-maker.dim_128x128.svg)\n- Carpenter subcategory icon, simple flat monochrome (icon-carpenter.dim_128x128.svg)\n- Grill/gate fabricator subcategory icon, simple flat monochrome (icon-grill-gate-fabricator.dim_128x128.svg)\n- Welder subcategory icon, simple flat monochrome (icon-welder.dim_128x128.svg)\n- Tree cutter subcategory icon, simple flat monochrome (icon-tree-cutter.dim_128x128.svg)\n- Coconut tree climber subcategory icon, simple flat monochrome (icon-coconut-tree-climber.dim_128x128.svg)\n- Coconut picker subcategory icon, simple flat monochrome (icon-coconut-picker.dim_128x128.svg)\n- Firewood cutter subcategory icon, simple flat monochrome (icon-firewood-cutter.dim_128x128.svg)\n- Basket maker subcategory icon, simple flat monochrome (icon-basket-maker.dim_128x128.svg)\n- Rope maker subcategory icon, simple flat monochrome (icon-rope-maker.dim_128x128.svg)\n- Mat weaver subcategory icon, simple flat monochrome (icon-mat-weaver.dim_128x128.svg)\n- Pot maker subcategory icon, simple flat monochrome (icon-pot-maker.dim_128x128.svg)\n- House maid subcategory icon, simple flat monochrome (icon-house-maid.dim_128x128.svg)\n- One day cooking worker subcategory icon, simple flat monochrome (icon-one-day-cooking-worker.dim_128x128.svg)\n- Function cooking team subcategory icon, simple flat monochrome (icon-function-cooking-team.dim_128x128.svg)\n- Cleaning worker subcategory icon, simple flat monochrome (icon-cleaning-worker.dim_128x128.svg)\n- Tailor subcategory icon, simple flat monochrome (icon-tailor.dim_128x128.svg)\n- Aari worker subcategory icon, simple flat monochrome (icon-aari-worker.dim_128x128.svg)\n- Blouse designer subcategory icon, simple flat monochrome (icon-blouse-designer.dim_128x128.svg)\n- Saree falls/pico worker subcategory icon, simple flat monochrome (icon-saree-falls-pico-worker.dim_128x128.svg)\n- Ironing service subcategory icon, simple flat monochrome (icon-ironing-service.dim_128x128.svg)\n- Farm labour subcategory icon, simple flat monochrome (icon-farm-labour.dim_128x128.svg)\n- Planting worker subcategory icon, simple flat monochrome (icon-planting-worker.dim_128x128.svg)\n- Harvest worker subcategory icon, simple flat monochrome (icon-harvest-worker.dim_128x128.svg)\n- Sprayer worker subcategory icon, simple flat monochrome (icon-sprayer-worker.dim_128x128.svg)",
+  "existing_features": [
+    {
+      "id": "feature-build-a-single-page-premium-modern-corporate-landing-page-for-the-textile-production-network-brand-named-allovikaas-optimized-to-recruit-saree-manufacturers-weavers-loom-owners-and-cloth-producers-into-a-manufacturing-ecosystem-network",
+      "title": "Build a single-page premium modern corporate landing page for the textile production network brand named “ALLOVIKAAS”, optimized to recruit saree manufacturers, weavers, loom owners, and cloth producers into a manufacturing ecosystem network.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-bilingual-rendering-for-all-important-user-facing-text-show-english-first-and-the-tamil-translation-directly-below-it-consistently-across-hero-section-headings-key-paragraphs-benefit-labels-steps-testimonial-text-ctas-form-labels-and-footer-taglines",
+      "title": "Implement bilingual rendering for all important user-facing text: show English first and the Tamil translation directly below it, consistently across hero, section headings, key paragraphs, benefit labels, steps, testimonial text, CTAs, form labels, and footer taglines.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-the-specified-dark-premium-textile-corporate-design-system-across-the-page-background-gradient-typography-colors-card-styles-buttons-using-a-modern-clean-sans-serif-font-and-a-minimal-trustworthy-layout",
+      "title": "Apply the specified dark premium textile corporate design system across the page (background gradient, typography, colors, card styles, buttons), using a modern clean sans-serif font and a minimal, trustworthy layout.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-subtle-textile-themed-visuals-a-low-opacity-saree-weave-texture-overlay-and-minimal-fabric-folds-loom-silhouette-accents-that-maintain-a-premium-corporate-feel-and-do-not-overpower-content",
+      "title": "Add subtle textile-themed visuals: a low-opacity saree weave texture overlay and minimal fabric folds + loom silhouette accents that maintain a premium corporate feel and do not overpower content.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-hero-section-with-the-provided-bilingual-copy-lines-and-a-primary-cta-button-join-community-that-opens-a-registration-modal-popup",
+      "title": "Implement the Hero section with the provided bilingual copy lines and a primary CTA button “Join Community / சமூகத்தில் இணையுங்கள்” that opens a registration modal popup.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-registration-form-popup-modal-with-bilingual-field-labels-and-the-exact-fields-name-phone-number-city-work-type-manufacturer-weaver-seller-home-producer-monthly-production-capacity-experience-years-include-a-submit-button-labeled-continue-to-activation",
+      "title": "Create a registration form popup (modal) with bilingual field labels and the exact fields: Name, Phone Number, City, Work Type (Manufacturer/Weaver/Seller/Home Producer), Monthly Production Capacity, Experience Years; include a submit button labeled “Continue to Activation / செயல்படுத்த தொடரவும்”.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-activation-payment-section-that-communicates-the-one-time-lifetime-network-activation-fee-bilingual-and-includes-an-activate-membership-button-wired-to-a-razorpay-link-placeholder-configurable-after-activation-reveal-the-whatsapp-community-join-link-https-chat-whatsapp-com-cfmjqmtq9wucdn09m0aopk",
+      "title": "Add an Activation/Payment section that communicates the one-time lifetime network activation fee (bilingual) and includes an “Activate Membership / உறுப்பினர் செயல்படுத்துக” button wired to a Razorpay link placeholder (configurable). After activation, reveal the WhatsApp community join link: https://chat.whatsapp.com/CFmJqmTQ9wUCdn09m0aopk",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-remaining-landing-page-sections-with-the-provided-bilingual-copy-and-structured-card-grid-layout-about-network-including-the-not-a-reseller-group-statement-benefits-6-items-who-can-join-including-even-small-capacity-can-join-how-it-works-3-steps-testimonials-bilingual-business-stability-success-statements-final-cta-and-footer-tagline",
+      "title": "Implement the remaining landing page sections with the provided bilingual copy and structured card/grid layout: About Network (including the ‘Not a reseller group’ statement), Benefits (6 items), Who Can Join (including ‘Even small capacity can join’), How It Works (3 steps), Testimonials (bilingual business stability/success statements), Final CTA, and Footer tagline.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-and-use-generated-static-image-assets-for-the-textile-weave-texture-and-subtle-loom-fabric-accents-store-them-under-frontend-public-assets-generated-and-reference-them-directly-from-the-frontend",
+      "title": "Create and use generated static image assets for the textile weave texture and subtle loom/fabric accents; store them under frontend/public/assets/generated and reference them directly from the frontend.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-landing-page-and-registration-modal-copy-to-explicitly-target-saree-resellers-as-eligible-production-partners-including-changing-any-work-type-option-text-from-seller-to-reseller-where-applicable-while-preserving-the-message-that-allovikaas-is-not-a-reseller-selling-website-but-a-textile-industry-organization-network",
+      "title": "Update the landing page and registration modal copy to explicitly target saree resellers as eligible production partners, including changing any Work Type option text from “Seller” to “Reseller” where applicable, while preserving the message that ALLOVIKAAS is not a reseller selling website but a textile industry organization network.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-hero-section-xpath-html-body-div-div-main-section-1-to-represent-the-hyperlocal-workers-directory-brand-namma-ooru-velai-with-a-mobile-first-layout-that-includes-1-the-site-name-2-the-tagline-english-line-and-tamil-line-shown-beneath-it-and-3-a-prominent-search-bar-with-placeholder-text-enter-area-or-pincode",
+      "title": "Update the Hero section (XPath /html/body/div/div/main/section[1]) to represent the hyperlocal workers directory brand “NAMMA OORU VELAI” with a mobile-first layout that includes: (1) the site name, (2) the tagline (English line and Tamil line shown beneath it), and (3) a prominent search bar with placeholder text “Enter Area or Pincode”.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-hero-section-xpath-html-body-div-div-main-section-1-add-a-quick-category-navigation-grid-as-large-buttons-grouped-under-the-headings-urgent-works-home-services-transport-and-personal-services-containing-exactly-the-category-labels-provided-by-the-user",
+      "title": "In the Hero section (XPath /html/body/div/div/main/section[1]), add a quick category navigation grid as large buttons grouped under the headings: “Urgent Works”, “Home Services”, “Transport”, and “Personal Services”, containing exactly the category labels provided by the user.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-replace-the-about-section-content-xpath-html-body-div-div-main-section-2-div-div-div-1-with-copy-that-describes-the-platform-as-a-helpful-local-community-service-connecting-local-people-with-local-workers-directly-and-explicitly-states-no-commission-no-middleman-use-a-simple-trustworthy-tone-not-corporate-not-ecommerce-and-ensure-the-section-reads-well-on-mobile",
+      "title": "Replace the About section content (XPath /html/body/div/div/main/section[2]/div/div/div[1]) with copy that describes the platform as a helpful local community service connecting local people with local workers directly, and explicitly states “No commission. No middleman.” Use a simple, trustworthy tone (not corporate, not ecommerce) and ensure the section reads well on mobile.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restyle-only-the-selected-hero-and-about-sections-to-match-the-requested-brand-palette-dark-green-white-light-grey-and-trustworthy-simple-community-look-avoid-corporate-premium-textile-styling-within-these-sections-e-g-avoid-gold-accents-in-these-sections",
+      "title": "Restyle only the selected Hero and About sections to match the requested brand palette (dark green + white + light grey) and “trustworthy, simple” community look; avoid corporate/premium textile styling within these sections (e.g., avoid gold accents in these sections).",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-site-s-global-background-styling-to-a-more-vibrant-corporate-style-look-while-preserving-mobile-first-readability-and-the-existing-namma-ooru-velai-green-white-grey-palette-as-the-primary-brand-colors",
+      "title": "Update the site’s global background styling to a more vibrant, corporate-style look while preserving mobile-first readability and the existing NAMMA OORU VELAI green/white/grey palette as the primary brand colors.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-clear-user-facing-path-for-worker-registration-provide-a-prominent-register-as-a-worker-entry-point-from-the-home-experience-and-implement-a-dedicated-worker-registration-form-page-for-namma-ooru-velai-with-these-fields-english-labels-name-phone-number-work-category-dropdown-area-experience-years-working-time-photo-upload-after-submit-show-a-confirmation-message-we-will-verify-and-publish-your-number",
+      "title": "Add a clear user-facing path for worker registration: provide a prominent \"Register as a Worker\" entry point from the home experience and implement a dedicated Worker Registration form page for NAMMA OORU VELAI with these fields (English labels): Name, Phone Number, Work Category (dropdown), Area, Experience (years), Working Time, Photo upload; after submit, show a confirmation message: \"We will verify and publish your number\".",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-rebrand-the-app-ui-copy-and-navigation-to-the-new-project-name-area-worker-and-tagline-find-people-who-work-near-you-while-keeping-the-product-positioned-as-community-infrastructure-not-an-ecommerce-marketplace",
+      "title": "Rebrand the app UI copy and navigation to the new project name \"AREA WORKER\" and tagline \"Find People Who Work Near You\" while keeping the product positioned as community infrastructure (not an ecommerce marketplace).",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-multilingual-system-that-defaults-to-english-and-shows-a-second-line-in-a-regional-language-selected-by-the-user-s-chosen-state-tamil-nadu-tamil-karnataka-kannada-kerala-malayalam-andhra-telangana-telugu-north-india-hindi-all-major-labels-must-render-english-first-and-the-selected-regional-language-directly-below-it",
+      "title": "Implement a multilingual system that defaults to English and shows a second line in a regional language selected by the user’s chosen state: Tamil Nadu → Tamil, Karnataka → Kannada, Kerala → Malayalam, Andhra/Telangana → Telugu, North India → Hindi. All major labels must render English first and the selected regional language directly below it.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-homepage-to-match-the-requested-structure-a-hero-with-a-large-search-bar-labeled-search-workers-in-your-area-and-a-large-colorful-category-grid-using-exactly-these-categories-construction-agriculture-home-services-transport-events-cooking-daily-helpers-repairs-supplies",
+      "title": "Update the homepage to match the requested structure: a hero with a large search bar labeled \"Search workers in your area\" and a large colorful category grid using exactly these categories: Construction, Agriculture, Home Services, Transport, Events & Cooking, Daily Helpers, Repairs, Supplies.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-every-homepage-category-has-a-meaningful-icon-that-visually-explains-the-job-category-and-use-a-consistent-icon-style-across-the-category-grid",
+      "title": "Ensure every homepage category has a meaningful icon that visually explains the job category, and use a consistent icon style across the category grid.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-worker-search-and-browsing-allow-users-to-enter-area-pincode-and-view-nearby-workers-and-allow-browsing-by-category-from-the-homepage-category-grid",
+      "title": "Implement worker search and browsing: allow users to enter Area/Pincode and view nearby workers, and allow browsing by category from the homepage category grid.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-reusable-worker-card-ui-that-displays-photo-name-work-type-area-experience-availability-call-button-whatsapp-button-and-verified-badge",
+      "title": "Create a reusable Worker Card UI that displays: Photo, Name, Work type, Area, Experience, Availability, Call button, WhatsApp button, and Verified badge.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-worker-register-page-to-match-the-requested-fields-name-phone-category-sub-category-area-experience-working-hours-upload-photo-after-submit-show-the-confirmation-message-we-will-verify-and-publish",
+      "title": "Implement the Worker Register page to match the requested fields: Name, Phone, Category, Sub category, Area, Experience, Working hours, Upload photo; after submit show the confirmation message \"We will verify and publish\".",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-direct-contact-only-no-booking-flow-the-platform-must-not-introduce-booking-payment-or-in-app-chat-users-should-contact-workers-via-call-and-whatsapp-only",
+      "title": "Implement Direct Contact only (no booking flow): the platform must not introduce booking, payment, or in-app chat; users should contact workers via Call and WhatsApp only.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-job-request-feature-create-an-i-need-a-worker-page-with-the-provided-bilingual-title-and-a-post-requirement-form-with-fields-work-type-area-date-time-salary-description-phone-number-also-show-a-public-job-board-section-titled-workers-needed-today-listing-recent-approved-posts",
+      "title": "Implement the Job Request feature: create an \"I Need a Worker\" page with the provided bilingual title and a post requirement form with fields: Work type, Area, Date/time, Salary, Description, Phone number. Also show a public job board section titled \"Workers Needed Today\" listing recent approved posts.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-admin-approval-panel-that-supports-approving-workers-approving-job-posts-marking-workers-job-posts-as-verified-and-featuring-worker-listings",
+      "title": "Add an Admin Approval Panel that supports: approving workers, approving job posts, marking workers/job posts as verified, and featuring worker listings.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-the-requested-design-style-across-the-updated-area-worker-user-experience-premium-colorful-corporate-ui-but-friendly-for-rural-users-mobile-first-large-rounded-cards-big-readable-fonts-clear-icons-palette-primary-deep-green-secondary-blue-accent-orange-soft-light-grey-white-cards-and-avoid-flashy-ecommerce-patterns",
+      "title": "Apply the requested design style across the updated AREA WORKER user experience: premium colorful corporate UI but friendly for rural users, mobile-first, large rounded cards, big readable fonts, clear icons, palette (Primary deep green, Secondary blue, Accent orange, soft light grey/white cards), and avoid flashy ecommerce patterns.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-footer-to-include-the-requested-community-positioning-statements-and-a-contact-whatsapp-entry-point",
+      "title": "Update the footer to include the requested community positioning statements and a \"Contact WhatsApp\" entry point.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-baseline-seo-metadata-and-on-page-seo-targeting-for-the-provided-keywords-worker-near-me-local-worker-contact-electrician-near-me-india-maram-vetra-aal-near-me",
+      "title": "Implement baseline SEO metadata and on-page SEO targeting for the provided keywords: \"worker near me\", \"local worker contact\", \"electrician near me India\", \"maram vetra aal near me\".",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-primary-category-named-local-skilled-workers-with-tamil-second-line-label-and-define-its-complete-subcategory-taxonomy-exactly-as-provided-construction-related-mason-coolie-helper-centring-worker-bar-bending-worker-wood-metal-door-maker-kathavu-seibavar-window-maker-jannal-seibavar-carpenter-grill-gate-fabricator-welder-tree-land-works-tree-cutter-maram-aruppavar-coconut-tree-climber-thennai-maram-yeripavar-coconut-picker-firewood-cutter-handcraft-small-work-basket-maker-koodai-pinnubavar-rope-maker-mat-weaver-pot-maker-home-daily-help-house-maid-one-day-cooking-worker-orunaal-samayal-function-cooking-team-cleaning-worker-clothing-tailoring-tailor-aari-worker-blouse-designer-saree-falls-pico-worker-ironing-service-agriculture-workers-farm-labour-planting-worker-harvest-worker-sprayer-worker",
+      "title": "Add a new primary category named \"Local Skilled Workers\" (with Tamil second-line label \"உள்ளூர் கைதேர்ந்த தொழிலாளர்கள்\") and define its complete subcategory taxonomy exactly as provided: Construction Related (Mason, Coolie Helper, Centring Worker, Bar Bending Worker); Wood & Metal (Door Maker (Kathavu seibavar), Window Maker (Jannal seibavar), Carpenter, Grill / Gate Fabricator, Welder); Tree & Land Works (Tree Cutter (Maram aruppavar), Coconut Tree Climber (Thennai maram yeripavar), Coconut Picker, Firewood Cutter); Handcraft & Small Work (Basket Maker (Koodai pinnubavar), Rope Maker, Mat Weaver, Pot Maker); Home & Daily Help (House Maid, One Day Cooking Worker (Orunaal samayal), Function Cooking Team, Cleaning Worker); Clothing & Tailoring (Tailor, Aari Worker, Blouse Designer, Saree Falls/Pico Worker, Ironing Service); Agriculture Workers (Farm Labour, Planting Worker, Harvest Worker, Sprayer Worker).",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-worker-registration-page-so-every-provided-local-skilled-workers-subcategory-appears-as-a-selectable-option-in-the-form-category-sub-category-fields-in-addition-to-the-existing-categories",
+      "title": "Update the Worker Registration page so every provided \"Local Skilled Workers\" subcategory appears as a selectable option in the form (Category + Sub Category fields), in addition to the existing categories.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-homepage-category-browsing-ui-to-include-local-skilled-workers-and-show-all-provided-subcategories-as-selectable-items-in-the-homepage-category-grid-with-clear-meaningful-icons-for-each-item-clicking-any-item-must-navigate-to-the-search-results-filtered-to-that-subcategory",
+      "title": "Update the homepage category browsing UI to include \"Local Skilled Workers\" and show all provided subcategories as selectable items in the homepage category grid (with clear meaningful icons for each item). Clicking any item must navigate to the search results filtered to that subcategory.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-search-filtering-ui-so-every-provided-local-skilled-workers-subcategory-can-be-selected-as-a-search-filter-and-ensure-the-results-list-filters-workers-correctly-by-subcategory-optionally-alongside-area-pincode-filtering",
+      "title": "Add search filtering UI so every provided \"Local Skilled Workers\" subcategory can be selected as a search filter, and ensure the results list filters workers correctly by subcategory (optionally alongside area/pincode filtering).",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-i18n-keys-for-local-skilled-workers-and-its-subcategory-group-labels-so-the-ui-can-render-english-the-selected-regional-language-as-the-second-line-at-minimum-provide-tamil-for-the-new-primary-category-label-using-the-exact-provided-tamil-text",
+      "title": "Add i18n keys for \"Local Skilled Workers\" and its subcategory/group labels so the UI can render English + the selected regional language as the second line (at minimum, provide Tamil for the new primary category label using the exact provided Tamil text).",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-prevent-frontend-runtime-crashes-when-category-subcategory-data-is-missing-or-inconsistent-by-adding-null-undefined-guards-and-safe-fallbacks-in-search-and-filter-flows-while-keeping-the-ui-layout-and-styling-unchanged",
+      "title": "Prevent frontend runtime crashes when category/subcategory data is missing or inconsistent by adding null/undefined guards and safe fallbacks in search and filter flows, while keeping the UI layout and styling unchanged.",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-error-handling-to-all-frontend-to-backend-query-functions-so-react-query-never-throws-unhandled-errors-that-trigger-the-global-something-went-wrong-state-queries-must-resolve-to-safe-defaults-when-the-actor-is-missing-or-a-call-fails",
+      "title": "Add error handling to all frontend-to-backend query functions so React Query never throws unhandled errors that trigger the global “Something went wrong” state; queries must resolve to safe defaults when the actor is missing or a call fails.",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-local-svg-icon-assets-for-every-homepage-category-and-every-local-skilled-workers-subcategory-under-frontend-public-assets-generated-and-ensure-no-category-subcategory-icon-uses-any-external-url",
+      "title": "Add local SVG icon assets for every homepage category and every \"Local Skilled Workers\" subcategory under frontend/public/assets/generated, and ensure no category/subcategory icon uses any external URL.",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-category-and-subcategory-icon-references-in-the-frontend-to-use-the-new-local-svg-icon-filenames-replacing-current-png-references-including-icons-defined-in-frontend-src-pages-homepage-tsx-and-frontend-src-config-localskilledworkers-ts",
+      "title": "Update the category and subcategory icon references in the frontend to use the new local SVG icon filenames (replacing current .png references), including icons defined in frontend/src/pages/HomePage.tsx and frontend/src/config/localSkilledWorkers.ts.",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-default-fallback-icon-behavior-for-category-and-subcategory-icons-if-an-icon-path-is-missing-empty-or-fails-to-load-render-a-local-fallback-svg-icon-instead-of-hiding-the-image-or-leaving-it-broken",
+      "title": "Implement a default fallback icon behavior for category and subcategory icons: if an icon path is missing, empty, or fails to load, render a local fallback SVG icon instead of hiding the image or leaving it broken.",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-7",
+      "summary": "Home page with prominent search bar (Enter Area or Pincode) and quick category grid (Urgent Works, Home Services, Transport, Personal Services)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Category listing pages showing worker cards with photo, name, work type, area, experience, availability, and Call/WhatsApp buttons",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Direct contact actions: tap-to-call button and WhatsApp deep link on worker cards (no user login)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Worker registration page with form fields (name, phone, category dropdown, area, experience, working time, photo upload) and post-submit verification message",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Simple admin panel to add/edit/delete workers, approve workers, and mark featured workers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "SEO + performance: fast loading, mobile-first, SEO targeting queries like 'worker near me' and Tamil Nadu variants",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Footer content and contact: platform explanation (no commission/no middleman) plus Contact WhatsApp button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Update site visual design to use a vibrant, corporate-style background theme (while keeping mobile-first readability)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Implement backend persistence for worker registration submissions in the single Motoko actor: accept new worker registration entries (including storing photo data or a frontend-provided reference), store them as \"pending verification\", and return success/failure to the frontend submission flow.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Multilingual system: auto language based on selected state (English default + regional language below) supporting Tamil, Kannada, Malayalam, Telugu, and Hindi across all major labels",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Job Request feature: “I Need a Worker” post requirement form (work type, area, date/time, salary, description, phone) and public job board section (“Workers Needed Today”)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Admin panel enhancements: approve job posts, mark listings as verified, and manage featured listings (in addition to worker approvals)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Design system update: premium colorful corporate UI (deep green primary, blue secondary, orange accent, soft light grey/white cards), large rounded cards, big readable fonts, clear icons; every category has a meaningful icon",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Worker card enhancement: display a Verified badge on worker cards",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Worker registration enhancement: add Category + Subcategory fields (along with name, phone, area, experience, working hours, photo upload)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-34",
+      "summary": "Update the backend data model and APIs to support the new worker fields (name, phone, category, subcategory, area, experience, working hours, photo, status/verified, featured) and job posts (work type, area, date/time, salary, description, phone, status). Keep backend as a single Motoko actor and ensure state persists across upgrades.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Add new primary category “LOCAL SKILLED WORKERS (உள்ளூர் கைதேர்ந்த தொழிலாளர்கள்)” with the provided subcategory taxonomy (Construction Related, Wood & Metal, Tree & Land Works, Handcraft & Small Work, Home & Daily Help, Clothing & Tailoring, Agriculture Workers) and ensure each subcategory appears as a selectable option in (1) worker registration form, (2) search filters, and (3) the homepage category grid, each with clear meaningful icons",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-40",
+      "summary": "Extend backend worker search/browsing APIs to support filtering by subcategory (in addition to existing area and category queries), without changing existing stored worker records.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Ensure all backend APIs never trap due to unexpected data or missing records by adding defensive try/catch-style handling and returning safe defaults or explicit error results instead of crashing.",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-42",
+      "summary": "Validate and repair backend data integrity for workers and job posts by detecting invalid or broken records, removing or sanitizing them, and ensuring category/subcategory relations are consistent and non-empty.",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-43",
+      "summary": "Fix broken images by generating and using local SVG icons for every category and subcategory (no external URLs), and show a default fallback icon when an icon is missing; do not modify database or UI layout",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "AREA WORKARS",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

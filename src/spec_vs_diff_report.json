@@ -1,0 +1,43 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T03:47:44.713Z",
+  "summary": "Updated category/subcategory icon paths to local /assets/generated/*.svg and introduced a SafeIconImage component intended to provide onError/empty-src fallback to a local fallback SVG. However, the diff does not include the required SVG asset files under frontend/public/assets/generated, and usage of the fallback behavior in the actual category/subcategory rendering is not fully evidenced in the provided truncation.",
+  "missing_requirements": [
+    {
+      "id": "REQ-42",
+      "requirement": "Add local SVG icon assets for every homepage category and every \"Local Skilled Workers\" subcategory under frontend/public/assets/generated, ensuring no icon uses any external URL.",
+      "reason": "No new SVG files under frontend/public/assets/generated are shown as added in the diff summary (only a TSX component and config/page edits).",
+      "evidence": [
+        "File diff summary shows ADDED: frontend/src/components/common/SafeIconImage.tsx בלבד; no added files under frontend/public/assets/generated/"
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "requirement": "Implement default fallback icon behavior for category and subcategory icons so that missing/empty/failed icons render a local fallback SVG instead of a broken/hidden image.",
+      "reason": "SafeIconImage implements fallback logic, but the diff does not clearly show it being used in the homepage category grid or the Local Skilled Workers subcategory grid rendering (HomePage.tsx is truncated after the import, and no subcategory grid component changes are shown).",
+      "evidence": [
+        "frontend/src/components/common/SafeIconImage.tsx",
+        "frontend/src/pages/HomePage.tsx (shows import of SafeIconImage, but usage not visible in truncated content)"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added/modified project metadata/state tracking files unrelated to icon asset generation or icon reference updates.",
+      "reason": "Not requested by BuildRequest requirements (REQ-42/43/44) and does not contribute directly to icon assets/paths/fallback behavior.",
+      "evidence": [
+        "project_state.json",
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
+  "confidence": 0.74,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/components/common/SafeIconImage.tsx",
+    "frontend/src/config/localSkilledWorkers.ts",
+    "frontend/src/pages/HomePage.tsx",
+    "project_state.json"
+  ]
+}
