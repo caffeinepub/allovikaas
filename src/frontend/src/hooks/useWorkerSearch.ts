@@ -2,26 +2,24 @@ import { useQuery } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { Worker } from '@/backend';
 import { logError } from '@/utils/errors';
-import { normalizeKey } from '@/utils/normalizeTaxonomy';
 
 /**
- * Validates and sanitizes a worker object to ensure it has all required fields
+ * Validates and sanitizes a worker object to ensure it has required fields
+ * Relaxed validation - allows optional fields (skills, location, photo URL) to be missing
  */
 function sanitizeWorker(worker: any): Worker | null {
   try {
-    // Check required fields
+    // Check required fields only
     if (!worker || typeof worker !== 'object') return null;
     if (!worker.id || typeof worker.id !== 'bigint') return null;
     if (!worker.name || typeof worker.name !== 'string') return null;
-    if (!worker.phone || typeof worker.phone !== 'string') return null;
     if (!worker.category || typeof worker.category !== 'string') return null;
-    if (!worker.subcategory || typeof worker.subcategory !== 'string') return null;
     if (!worker.area || typeof worker.area !== 'string') return null;
-    if (!worker.experience || typeof worker.experience !== 'string') return null;
-    if (!worker.workingHours || typeof worker.workingHours !== 'string') return null;
-    if (!worker.photo || typeof worker.photo.getDirectURL !== 'function') return null;
     if (!worker.status || typeof worker.status !== 'object') return null;
 
+    // Optional fields are allowed to be missing or invalid
+    // phone, subcategory, experience, workingHours, photo, skills, location, etc.
+    
     // Worker is valid
     return worker as Worker;
   } catch (error) {

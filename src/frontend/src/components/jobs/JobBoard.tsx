@@ -5,11 +5,18 @@ import { useGetApprovedJobs } from '@/hooks/useQueries';
 import { useI18n } from '../i18n/I18nProvider';
 import BilingualText from '../i18n/BilingualText';
 import { Loader2 } from 'lucide-react';
+import { getBilingualFieldLabel } from '@/utils/bilingualFields';
 
 export default function JobBoard() {
   const { data: jobs, isLoading } = useGetApprovedJobs();
   const { t } = useI18n();
   const boardTitle = t('job.board');
+
+  // Get bilingual labels for job fields
+  const areaLabel = getBilingualFieldLabel('area');
+  const dateTimeLabel = getBilingualFieldLabel('dateTime');
+  const salaryLabel = getBilingualFieldLabel('salary');
+  const descriptionLabel = getBilingualFieldLabel('description');
 
   return (
     <div className="space-y-6">
@@ -43,17 +50,17 @@ export default function JobBoard() {
               <CardContent className="space-y-3">
                 <div className="space-y-1 text-sm">
                   <p className="text-foreground">
-                    <span className="font-medium">Area:</span> {job.area}
+                    <span className="font-medium">{areaLabel.en}:</span> {job.area}
                   </p>
                   <p className="text-foreground">
-                    <span className="font-medium">Date/Time:</span> {new Date(Number(job.dateTime) / 1000000).toLocaleString()}
+                    <span className="font-medium">{dateTimeLabel.en}:</span> {new Date(Number(job.dateTime) / 1000000).toLocaleString()}
                   </p>
                   <p className="text-foreground">
-                    <span className="font-medium">Salary:</span> {job.salary}
+                    <span className="font-medium">{salaryLabel.en}:</span> {job.salary}
                   </p>
                   {job.description && (
                     <p className="text-foreground">
-                      <span className="font-medium">Description:</span> {job.description}
+                      <span className="font-medium">{descriptionLabel.en}:</span> {job.description}
                     </p>
                   )}
                 </div>

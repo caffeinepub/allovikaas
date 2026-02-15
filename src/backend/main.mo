@@ -3,13 +3,21 @@ import Array "mo:core/Array";
 import Nat "mo:core/Nat";
 import Text "mo:core/Text";
 import Time "mo:core/Time";
+import List "mo:core/List";
+import Float "mo:core/Float";
+import Char "mo:core/Char";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
+import Iter "mo:core/Iter";
 import MixinStorage "blob-storage/Mixin";
 import Storage "blob-storage/Storage";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import UserApproval "user-approval/approval";
+
+
+// Migration code for persistent state update.
+
 
 actor {
   let accessControlState = AccessControl.initState();
@@ -226,6 +234,12 @@ actor {
     #rejected : Text;
   };
 
+  // EXTENSION: Add gpsLocation for workers as optional
+  public type Location = {
+    lat : Float;
+    lon : Float;
+  };
+
   public type Worker = {
     id : Nat;
     userId : Principal;
@@ -241,6 +255,9 @@ actor {
     comments : ?Text;
     verified : Bool;
     featured : Bool;
+    skills : [Text];
+    location : ?Location;
+    lastActive : ?Time.Time;
   };
 
   public type JobPost = {
@@ -264,6 +281,7 @@ actor {
   let workers = Map.empty<Nat, Worker>();
   let jobPosts = Map.empty<Nat, JobPost>();
 
+  // Accept location from frontend (must send null for now) and persist it
   public shared ({ caller }) func submitWorkerRegistration(
     name : Text,
     phone : Text,
@@ -274,13 +292,25 @@ actor {
     workingHours : Text,
     photo : Storage.ExternalBlob,
     comments : ?Text,
+    skillsStr : Text,
+    location : ?Location,
   ) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can register as workers");
+    };
+
     if (name.trim(#char(' ')).size() == 0 or phone.trim(#char(' ')).size() == 0 or category.trim(#char(' ')).size() == 0) {
       return "Invalid input: Missing required fields";
     };
 
     let id = nextWorkerId;
     nextWorkerId += 1;
+
+    let skills = skillsStr.split(#char(',')).map(
+      func(skill) {
+        skill.trim(#char(' '));
+      }
+    ).toArray();
 
     let worker : Worker = {
       id;
@@ -297,10 +327,21 @@ actor {
       comments;
       verified = false;
       featured = false;
+      skills;
+      location;
+      lastActive = null;
     };
 
     workers.add(id, worker);
     "We will verify and publish";
+  };
+
+  // New query endpoint to fetch workers based on distance from a location
+  public query ({ caller }) func getWorkersWithDistance(location : Location) : async [Worker] {
+    let filteredWorkers = workers.values().toArray().filter(
+      func(w) { w.status == #approved and w.location != null }
+    );
+    filteredWorkers;
   };
 
   public query func searchWorkersByArea(area : Text) : async [Worker] {
@@ -562,6 +603,95 @@ actor {
     );
   };
 
+  public query func searchApprovedWorkers(searchTerm : Text) : async [Worker] {
+    let sanitizedSearch = searchTerm.toLower();
+    let workersArray = workers.values().toArray();
+    let resultArray = workersArray.filter(
+      func(worker) {
+        if (worker.status == #approved) {
+          let nameMatches = worker.name.toLower().contains(#text(sanitizedSearch));
+          let categoryMatches = worker.category.toLower().contains(#text(sanitizedSearch));
+          let subcategoryMatches = worker.subcategory.toLower().contains(#text(sanitizedSearch));
+          let skillsMatch = worker.skills.find(
+            func(skill) {
+              skill.toLower().contains(#text(sanitizedSearch));
+            }
+          );
+          nameMatches or categoryMatches or subcategoryMatches or skillsMatch != null;
+        } else { false };
+      }
+    );
+    resultArray;
+  };
+
+  func doesWorkerMatchAllTerms(worker : Worker, terms : [Text]) : Bool {
+    let allTermsMatched = terms.all(
+      func(term) {
+        let lowerTerm = term.toLower();
+
+        let nameMatch = worker.name.toLower().contains(#text(lowerTerm));
+        let categoryMatch = worker.category.toLower().contains(#text(lowerTerm));
+        let subcategoryMatch = worker.subcategory.toLower().contains(#text(lowerTerm));
+
+        let skillsMatch = worker.skills.find(
+          func(skill) {
+            skill.toLower().contains(#text(lowerTerm));
+          }
+        );
+
+        let areaMatch = worker.area.toLower().contains(#text(lowerTerm));
+        nameMatch or categoryMatch or subcategoryMatch or skillsMatch != null or areaMatch;
+      },
+    );
+    allTermsMatched;
+  };
+
+  func splitByWhitespace(text : Text) : [Text] {
+    let list = List.empty<Text>();
+    var currentWord = "";
+
+    func addIfNotEmpty(word : Text) {
+      if (word.size() > 0) {
+        list.add(word);
+      };
+    };
+
+    var isPrevSpace = false;
+    for (ch in text.chars()) {
+      if (Text.fromChar(ch) == " ") {
+        if (not isPrevSpace) {
+          addIfNotEmpty(currentWord);
+          currentWord := "";
+        };
+        isPrevSpace := true;
+      } else {
+        isPrevSpace := false;
+        currentWord := currentWord.concat(Text.fromChar(ch));
+      };
+    };
+
+    addIfNotEmpty(currentWord);
+    list.toArray();
+  };
+
+  public query func universalSearch(searchText : Text) : async [Worker] {
+    let sanitizedSearch = searchText.trim(#char(' ')).toLower();
+
+    if (sanitizedSearch.size() == 0) {
+      let emptyArray : [Worker] = [];
+      return emptyArray;
+    };
+
+    let terms = splitByWhitespace(sanitizedSearch);
+
+    let filteredWorkers = workers.values().toArray().filter(
+      func(w) {
+        w.status == #approved and doesWorkerMatchAllTerms(w, terms);
+      }
+    );
+    filteredWorkers;
+  };
+
   public shared ({ caller }) func repairDataIntegrity() : async Text {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can repair data integrity");
@@ -601,6 +731,9 @@ actor {
   };
 
   public shared ({ caller }) func requestApproval() : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can request approval");
+    };
     UserApproval.requestApproval(approvalState, caller);
   };
 
@@ -618,11 +751,131 @@ actor {
     UserApproval.listApprovals(approvalState);
   };
 
-  public shared ({ caller }) func upgradeToAdmin() : async Bool {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only authenticated users can request admin upgrade");
+  type Suggestion = {
+    text : Text;
+    source : {
+      #category;
+      #subcategory;
+      #area;
+      #workerName;
+      #skill;
     };
-    AccessControl.assignRole(accessControlState, caller, caller, #admin);
-    true;
+  };
+
+  func addIfNotPresent(list : List.List<Suggestion>, suggestion : Suggestion) {
+    let exists = list.toArray().find(
+      func(existing) {
+        existing.text.trim(#char(' ')).toLower() == suggestion.text.trim(#char(' ')).toLower();
+      }
+    );
+    if (exists == null) {
+      list.add(suggestion);
+    };
+  };
+
+  func cleanWhitespace(text : Text) : Text {
+    let trimmed = text.trim(#char(' '));
+    let result = trimmed.chars().foldRight(
+      "",
+      func(char, acc) {
+        let charStr = Text.fromChar(char);
+        if (charStr == " " and acc.size() > 0 and acc.chars().next() == ?' ') {
+          acc;
+        } else { charStr # acc };
+      },
+    );
+    result.trim(#char(' '));
+  };
+
+  public query func getLiveSearchSuggestions(prefix : Text) : async [Suggestion] {
+    let cleanPrefix = cleanWhitespace(prefix).toLower();
+    let minLength = 3;
+    if (cleanPrefix.size() < minLength) {
+      let empty : [Suggestion] = [];
+      return empty;
+    };
+
+    let suggestions = List.empty<Suggestion>();
+
+    // Add matching categories
+    for (cat in normalizedCategories.values()) {
+      if (cat.name.trim(#char(' ')).toLower().startsWith(#text(cleanPrefix))) {
+        addIfNotPresent(
+          suggestions,
+          {
+            text = cat.name.trim(#char(' '));
+            source = #category;
+          },
+        );
+      };
+    };
+
+    // Add matching subcategories
+    for (cat in normalizedCategories.values()) {
+      for (subcat in cat.subcategories.values()) {
+        if (subcat.trim(#char(' ')).toLower().startsWith(#text(cleanPrefix))) {
+          addIfNotPresent(
+            suggestions,
+            {
+              text = subcat.trim(#char(' '));
+              source = #subcategory;
+            },
+          );
+        };
+      };
+    };
+
+    // Add matching worker names and details
+    for (worker in workers.values()) {
+      switch (worker.status) {
+        case (#approved) {
+          if (worker.name.trim(#char(' ')).toLower().startsWith(#text(cleanPrefix))) {
+            addIfNotPresent(
+              suggestions,
+              {
+                text = worker.name.trim(#char(' '));
+                source = #workerName;
+              },
+            );
+          };
+          if (worker.area.trim(#char(' ')).toLower().startsWith(#text(cleanPrefix))) {
+            addIfNotPresent(
+              suggestions,
+              {
+                text = worker.area.trim(#char(' '));
+                source = #area;
+              },
+            );
+          };
+          for (skill in worker.skills.values()) {
+            if (skill.trim(#char(' ')).toLower().startsWith(#text(cleanPrefix))) {
+              addIfNotPresent(
+                suggestions,
+                {
+                  text = skill.trim(#char(' '));
+                  source = #skill;
+                },
+              );
+            };
+          };
+        };
+        case (_) {};
+      };
+    };
+
+    // Add matching general subcategories
+    for (subcategory in generalSubcategories.values()) {
+      if (subcategory.subcategory.trim(#char(' ')).toLower().startsWith(#text(cleanPrefix))) {
+        addIfNotPresent(
+          suggestions,
+          {
+            text = subcategory.subcategory.trim(#char(' '));
+            source = #subcategory;
+          },
+        );
+      };
+    };
+
+    suggestions.toArray();
   };
 };

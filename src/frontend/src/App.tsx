@@ -38,6 +38,7 @@ type SearchParams = {
   area?: string;
   category?: string;
   subcategory?: string;
+  q?: string;
 };
 
 const searchRoute = createRoute({
@@ -49,6 +50,7 @@ const searchRoute = createRoute({
       area: typeof search.area === 'string' ? search.area : undefined,
       category: typeof search.category === 'string' ? search.category : undefined,
       subcategory: typeof search.subcategory === 'string' ? search.subcategory : undefined,
+      q: typeof search.q === 'string' ? search.q : undefined,
     };
   },
 });

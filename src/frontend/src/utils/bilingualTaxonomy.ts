@@ -1,23 +1,73 @@
 import { useI18n } from '@/components/i18n/I18nProvider';
+import { humanizeKey, createBilingualFallback, isValidTranslation } from './humanizeLabel';
 
 // Explicit mapping for known category variants to i18n keys
 const CATEGORY_KEY_MAP: Record<string, string> = {
+  // Construction
   'construction': 'construction',
+  
+  // Agriculture
   'agriculture': 'agriculture',
-  'homeservices': 'homeservices',
-  'home services': 'homeservices',
+  
+  // Home Services
+  'homeservices': 'homeServices',
+  'home services': 'homeServices',
+  'household services': 'homeServices',
+  'householdservices': 'homeServices',
+  
+  // Transport
   'transport': 'transport',
-  'events': 'events',
-  'events & cooking': 'events',
-  'events&cooking': 'events',
-  'eventscooking': 'events',
-  'helpers': 'helpers',
-  'daily helpers': 'helpers',
-  'dailyhelpers': 'helpers',
+  'vehicle services': 'transport',
+  'vehicleservices': 'transport',
+  
+  // Events & Cooking
+  'events': 'eventWork',
+  'events & cooking': 'eventWork',
+  'events&cooking': 'eventWork',
+  'eventscooking': 'eventWork',
+  'events cooking': 'eventWork',
+  'event work': 'eventWork',
+  'eventwork': 'eventWork',
+  'event services': 'eventWork',
+  'eventservices': 'eventWork',
+  
+  // Daily Helpers
+  'helpers': 'dailyHelpers',
+  'daily helpers': 'dailyHelpers',
+  'dailyhelpers': 'dailyHelpers',
+  'home help': 'dailyHelpers',
+  'homehelp': 'dailyHelpers',
+  
+  // Repairs
   'repairs': 'repairs',
+  
+  // Supplies
   'supplies': 'supplies',
+  
+  // Tailoring
+  'tailoring': 'tailoring',
+  
+  // Local Skilled Workers
   'local skilled workers': 'localSkilledWorkers',
   'localskilledworkers': 'localSkilledWorkers',
+  
+  // The 7 new categories from user request
+  'homeimprovement': 'homeimprovement',
+  'home improvement': 'homeimprovement',
+  'specializedcleaning': 'specializedcleaning',
+  'specialized cleaning': 'specializedcleaning',
+  'skilledtrades': 'skilledtrades',
+  'skilled trades': 'skilledtrades',
+  'electronicsappliances': 'electronicsappliances',
+  'electronics appliances': 'electronicsappliances',
+  'electronics & appliances': 'electronicsappliances',
+  'pestcontrol': 'pestcontrol',
+  'pest control': 'pestcontrol',
+  'beautywellness': 'beautywellness',
+  'beauty wellness': 'beautywellness',
+  'beauty & wellness': 'beautywellness',
+  'fitnessservices': 'fitnessservices',
+  'fitness services': 'fitnessservices',
 };
 
 // Explicit mapping for known group variants to i18n keys
@@ -34,26 +84,50 @@ const GROUP_KEY_MAP: Record<string, string> = {
   'agriculture': 'agriculture',
 };
 
+function normalizeKey(input: string): string {
+  return input.toLowerCase().trim().replace(/\s+/g, '').replace(/&/g, '').replace(/\//g, '');
+}
+
 export function getBilingualCategoryLabel(category: string, t: ReturnType<typeof useI18n>['t']): { en: string; regional: string } {
   try {
     if (!category) {
       return { en: 'Category', regional: 'வகை' };
     }
 
-    const normalizedCategory = category.toLowerCase().trim();
-    const categoryKey = CATEGORY_KEY_MAP[normalizedCategory] || normalizedCategory.replace(/\s+/g, '').replace(/&/g, '');
+    // Strip "category." prefix if already present
+    let cleanCategory = category;
+    if (category.startsWith('category.')) {
+      cleanCategory = category.substring(9);
+    }
+
+    const normalizedCategory = cleanCategory.toLowerCase().trim();
+    
+    // Try exact match first
+    let categoryKey = CATEGORY_KEY_MAP[normalizedCategory];
+    
+    // If no exact match, try normalized match
+    if (!categoryKey) {
+      const normalized = normalizeKey(cleanCategory);
+      categoryKey = CATEGORY_KEY_MAP[normalized];
+    }
+    
+    // If still no match, use the normalized version as key
+    if (!categoryKey) {
+      categoryKey = normalizeKey(cleanCategory);
+    }
     
     const translation = t(`category.${categoryKey}`);
     
-    if (translation && translation.en && translation.regional && translation.regional !== categoryKey) {
+    // Check if translation is valid using the helper
+    if (isValidTranslation(translation, `category.${categoryKey}`)) {
       return translation;
     }
     
-    // Safe fallback with non-empty regional value
-    return { en: category, regional: category };
+    // Safe fallback: humanize the category value
+    return createBilingualFallback(cleanCategory);
   } catch (error) {
     console.error('Error getting bilingual category label:', error);
-    return { en: category || 'Category', regional: category || 'வகை' };
+    return createBilingualFallback(category || 'Category');
   }
 }
 
@@ -63,40 +137,68 @@ export function getBilingualSubcategoryLabel(subcategory: string, t: ReturnType<
       return { en: 'Subcategory', regional: 'துணை வகை' };
     }
 
-    const subcategoryKey = subcategory.toLowerCase().replace(/\s+/g, '').replace(/\//g, '').replace(/-/g, '');
+    // Strip "subcategory." prefix if already present
+    let cleanSubcategory = subcategory;
+    if (subcategory.startsWith('subcategory.')) {
+      cleanSubcategory = subcategory.substring(12);
+    }
+
+    // Normalize: lowercase, remove spaces, slashes, hyphens
+    const subcategoryKey = normalizeKey(cleanSubcategory);
     const translation = t(`subcategory.${subcategoryKey}`);
     
-    if (translation && translation.en && translation.regional && translation.regional !== subcategoryKey) {
+    // Check if translation is valid using the helper
+    if (isValidTranslation(translation, `subcategory.${subcategoryKey}`)) {
       return translation;
     }
     
-    // Safe fallback with non-empty regional value
-    return { en: subcategory, regional: subcategory };
+    // Safe fallback: humanize the subcategory value
+    return createBilingualFallback(cleanSubcategory);
   } catch (error) {
     console.error('Error getting bilingual subcategory label:', error);
-    return { en: subcategory || 'Subcategory', regional: subcategory || 'துணை வகை' };
+    return createBilingualFallback(subcategory || 'Subcategory');
   }
 }
 
-export function getBilingualGroupLabel(groupName: string, t: ReturnType<typeof useI18n>['t']): { en: string; regional: string } {
+export function getBilingualGroupLabel(group: string, t: ReturnType<typeof useI18n>['t']): { en: string; regional: string } {
   try {
-    if (!groupName) {
+    if (!group) {
       return { en: 'Group', regional: 'குழு' };
     }
 
-    const normalizedGroup = groupName.toLowerCase().trim();
-    const groupKey = GROUP_KEY_MAP[normalizedGroup] || normalizedGroup.replace(/\s+/g, '').replace(/&/g, '');
+    // Strip "subgroup." prefix if already present
+    let cleanGroup = group;
+    if (group.startsWith('subgroup.')) {
+      cleanGroup = group.substring(9);
+    }
+
+    const normalizedGroup = cleanGroup.toLowerCase().trim();
     
-    const translation = t(`group.${groupKey}`);
+    // Try exact match first
+    let groupKey = GROUP_KEY_MAP[normalizedGroup];
     
-    if (translation && translation.en && translation.regional && translation.regional !== groupKey) {
+    // If no exact match, try normalized match
+    if (!groupKey) {
+      const normalized = normalizeKey(cleanGroup);
+      groupKey = GROUP_KEY_MAP[normalized];
+    }
+    
+    // If still no match, use the normalized version as key
+    if (!groupKey) {
+      groupKey = normalizeKey(cleanGroup);
+    }
+    
+    const translation = t(`subgroup.${groupKey}`);
+    
+    // Check if translation is valid using the helper
+    if (isValidTranslation(translation, `subgroup.${groupKey}`)) {
       return translation;
     }
     
-    // Safe fallback with non-empty regional value
-    return { en: groupName, regional: groupName };
+    // Safe fallback: humanize the group value
+    return createBilingualFallback(cleanGroup);
   } catch (error) {
     console.error('Error getting bilingual group label:', error);
-    return { en: groupName || 'Group', regional: groupName || 'குழு' };
+    return createBilingualFallback(group || 'Group');
   }
 }

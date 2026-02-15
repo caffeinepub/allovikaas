@@ -1,159 +1,212 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Tailoring subcategory dropdowns, local icon standardization, and anonymous worker registration UX fixes (frontend-only)",
+  "title": "Smart recovery empty state for /search (nearby workers, suggestions, CTAs, bilingual i18n)",
   "requirements": [
     {
-      "id": "REQ-90",
-      "summary": "Ensure Tailoring subcategories (Blouse Stitching, saree-related) appear under the correct Tailoring parent category in Registration and Search subcategory dropdowns, with safe fallback taxonomy.",
+      "id": "REQ-153",
+      "summary": "Replace the /search no-results static empty state with a mobile-first smart recovery flow while keeping existing non-empty results UI unchanged.",
       "acceptanceCriteria": [
-        "In Worker Registration, selecting the relevant Tailoring parent category enables a Subcategory dropdown that includes \"Blouse Stitching\" and the saree-related subcategory option.",
-        "In Worker Search Results filters, selecting the relevant Tailoring parent category enables a Subcategory dropdown that includes \"Blouse Stitching\" and the saree-related subcategory option.",
-        "Backend getAllCategories() returns these Tailoring subcategories under the correct parent category mapping (not under an unrelated category)."
+        "When a search returns zero workers (after loading), the page renders a recovery UI instead of only the existing static empty-state content.",
+        "The recovery UI is optimized for mobile (simple layout, large tap targets, minimal text clutter).",
+        "The existing non-empty results UI (grouping, cards, sorting) remains unchanged."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useWorkerTaxonomy.ts",
+          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
           "operation": "modify",
-          "description": "Extend frontend fallback taxonomy to include a Tailoring parent category with subcategories including \"Blouse Stitching\" and the saree-related option (e.g., \"Saree Work\" and/or \"Saree Falls/Pico\"), and ensure the hook continues to safely merge/dedupe backend taxonomy so these appear in dropdowns even if backend data is missing."
+          "description": "Replace the current static empty-state block with a dedicated smart recovery component that renders only when results are empty; keep the existing loading and non-empty results rendering paths unchanged."
         },
         {
-          "path": "frontend/src/pages/WorkerRegistrationPage.tsx",
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "operation": "create",
+          "description": "Create a focused, mobile-first smart recovery empty-state component (friendly message, next-action CTAs, related suggestions, optional nearby section, WhatsApp CTA). Use shadcn-ui primitives (e.g., Button/Card/Badge) for consistent large tap targets. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-154",
+      "summary": "Show the exact user-provided Tamil friendly message in the /search empty state using i18n and the app’s bilingual rendering pattern (BilingualText).",
+      "acceptanceCriteria": [
+        "A new i18n key is added for this empty-state friendly message.",
+        "The Tamil (regional) value matches exactly:\n\"உங்கள் பகுதியில் வேலைக்காரர்கள் இன்னும் சேரவில்லை.\nஅருகிலுள்ள பகுதிகளில் தேடலாம் அல்லது வேலை பதிவு செய்யலாம்.\"",
+        "The message is rendered using the app’s bilingual rendering pattern (BilingualText or equivalent), not as a raw string."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/i18n/translations.ts",
           "operation": "modify",
-          "description": "Ensure the Registration Subcategory dropdown is populated from taxonomy for Tailoring, and add a safe empty-state option/message when a selected category has zero subcategories (while keeping the dropdown disabled until a category is chosen)."
+          "description": "Add a new i18n key for the empty-state friendly message with the exact provided Tamil value and an English counterpart; ensure it resolves via useI18n().t without displaying raw keys."
+        },
+        {
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "operation": "modify",
+          "description": "Render the friendly message using useI18n().t and BilingualText (Tamil primary + English secondary per existing pattern), avoiding hardcoded inline strings."
+        }
+      ]
+    },
+    {
+      "id": "REQ-155",
+      "summary": "Automatically show nearby approved workers in the /search empty state when browser geolocation is available, without adding filter UI.",
+      "acceptanceCriteria": [
+        "If browser geolocation is granted and coordinates are available, the empty state renders a “nearby workers” section below the friendly message.",
+        "Nearby workers are fetched using the existing nearby-workers flow (do not add filter UI).",
+        "If geolocation is denied/unavailable, the nearby workers section is not shown and the rest of the recovery UI still works.",
+        "The nearby workers list renders safely when optional worker fields are missing (location, skills, phone, photo)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "operation": "modify",
+          "description": "Use the existing useBrowserGeolocation() and useNearbyWorkers() hooks to auto-fetch and render a nearby workers section only when coordinates are available; render results using the existing WorkerCard to ensure safe handling of optional worker fields."
+        },
+        {
+          "path": "frontend/src/hooks/useNearbyWorkers.ts",
+          "operation": "modify",
+          "description": "Adjust the hook to better support the empty-state nearby section (e.g., allow fetching a higher limit for client-side radius filtering and ensure safe behavior when location is missing), without adding any new UI filters."
+        }
+      ]
+    },
+    {
+      "id": "REQ-156",
+      "summary": "Add an i18n-labeled “Expand Search Area” action that increases the effective nearby distance threshold and refreshes nearby workers without page reload (geolocation-only).",
+      "acceptanceCriteria": [
+        "A large, mobile-friendly secondary button labeled via i18n (“Expand Search Area”) is shown in the empty state.",
+        "Clicking the button increases the effective nearby distance threshold and updates the nearby list (e.g., shows more workers / workers from farther away) without a page reload.",
+        "If geolocation is unavailable, the button is either hidden or disabled with safe behavior (no errors)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/i18n/translations.ts",
+          "operation": "modify",
+          "description": "Add i18n keys for the “Expand Search Area” label (English + Tamil) used by the empty-state recovery flow."
+        },
+        {
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "operation": "modify",
+          "description": "Add a large secondary action button wired to a local radius state (only when geolocation coords exist); on click, increase radius and recompute the rendered nearby workers list without reloading the page."
+        }
+      ]
+    },
+    {
+      "id": "REQ-157",
+      "summary": "Show tap-friendly related skill suggestions in the /search empty state derived from current search context and navigate to /search?q=<suggestion> when tapped.",
+      "acceptanceCriteria": [
+        "When there are no workers, a “related suggestions” section appears with a small list of tap-friendly suggestion chips/buttons.",
+        "Tapping a suggestion navigates to /search with search param { q: <suggestion> }.",
+        "Suggestions are derived from existing app data sources (e.g., live suggestions / taxonomy / skills) and are safe when inputs are empty.",
+        "No additional filter UI is added as part of this change."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "operation": "modify",
+          "description": "Add a related suggestions section that derives suggestions from existing sources (prefer q via the existing live suggestions flow when available; otherwise use taxonomy/category/subcategory context). Render suggestions as large, tap-friendly chips/buttons and navigate to /search with { q: suggestion } when tapped. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useLiveSearchSuggestions.ts",
+          "operation": "modify",
+          "description": "Ensure the live suggestions hook can be reused safely by the empty-state flow (e.g., allow on-demand suggestions for a given q prefix and return a deduped, stable list for chip rendering), without introducing new filter UI."
+        },
+        {
+          "path": "frontend/src/utils/humanizeLabel.ts",
+          "operation": "modify",
+          "description": "Add/adjust helper logic if needed to produce safe, human-readable labels for suggestion chips when translations are missing, ensuring raw taxonomy slugs/codes are not shown in the empty-state UI."
+        }
+      ]
+    },
+    {
+      "id": "REQ-158",
+      "summary": "Add two big action buttons to the /search empty state: primary “Post a Work Request” (to /post-job) and secondary “Expand Search Area” with mobile-friendly styling.",
+      "acceptanceCriteria": [
+        "The empty state shows a prominent primary button labeled via i18n: “Post a Work Request”.",
+        "Clicking “Post a Work Request” navigates to the existing job post page at route /post-job.",
+        "Buttons are large and easy to tap on mobile (no tiny links).",
+        "This change does not add new backend notification features; it uses the existing job request submission flow."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/i18n/translations.ts",
+          "operation": "modify",
+          "description": "Add i18n keys for “Post a Work Request” (English + Tamil) used in the new empty-state recovery UI."
+        },
+        {
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "operation": "modify",
+          "description": "Add a prominent primary shadcn-ui Button that navigates to the existing /post-job route, and ensure both primary/secondary actions are styled for mobile (full-width, large size). Verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
           "operation": "modify",
-          "description": "Ensure the Search filters subcategory dropdown correctly reflects Tailoring subcategories from taxonomy, resets subcategory on category change, and handles Tailoring-related canonicalization without breaking URL-synced filters."
+          "description": "Wire the empty-state recovery component so that the new action buttons are reachable exactly when sortedWorkers is empty and loading has finished."
         }
       ]
     },
     {
-      "id": "REQ-91",
-      "summary": "Remove any frontend login/auth gating from Worker Registration submission flow while keeping Admin Panel behavior intact.",
+      "id": "REQ-159",
+      "summary": "Add a WhatsApp help CTA to the /search empty state using i18n for the exact Tamil prompt text and a WhatsApp button that opens a WhatsApp chat/help link.",
       "acceptanceCriteria": [
-        "An anonymous user (not logged in) can submit the Worker Registration form successfully and receives the success confirmation state.",
-        "backend/main.mo:submitWorkerRegistration does not Runtime.trap for non-authenticated callers.",
-        "Admin-only endpoints (approve/reject/feature/verify, admin lists) remain restricted and still trap/deny for non-admins."
+        "The empty state displays the WhatsApp help prompt text via i18n, with Tamil matching exactly: \"உங்களுக்கு உடனடி உதவி வேண்டுமா?\"",
+        "A WhatsApp button is shown; clicking it opens a WhatsApp link (new tab or same tab is acceptable) and does not throw errors.",
+        "The WhatsApp CTA is visually simple and mobile-friendly."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/WorkerRegistrationPage.tsx",
+          "path": "frontend/src/components/i18n/translations.ts",
           "operation": "modify",
-          "description": "Confirm the Worker Registration page does not prompt for Internet Identity login, does not rely on admin-only guards, and presents a user-friendly error if submission fails (without instructing the user to log in)."
+          "description": "Add i18n keys for the WhatsApp help prompt (with exact Tamil text) and WhatsApp button label used in the empty-state recovery flow."
         },
         {
-          "path": "frontend/src/components/admin/AdminGuard.tsx",
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
           "operation": "modify",
-          "description": "Verify Admin Panel protection remains unchanged and isolated to admin routes only (no shared guard logic inadvertently blocking public registration)."
+          "description": "Render a WhatsApp CTA section with bilingual prompt via useI18n().t and BilingualText, and a mobile-friendly WhatsApp button that opens a WhatsApp help link safely (no runtime errors)."
         }
       ]
     },
     {
-      "id": "REQ-93",
-      "summary": "Standardize category/subcategory icon rendering to local generated assets only, and ensure SafeIconImage uses a single local fallback SVG to prevent broken images.",
+      "id": "REQ-160",
+      "summary": "Ensure the /search empty-state recovery UI never displays raw taxonomy slugs/codes and always uses human-readable bilingual labels with safe fallbacks.",
       "acceptanceCriteria": [
-        "All icons used on the Home page category grid and Local Skilled Workers subcategory grid load from frontend/public/assets/generated/* and render correctly.",
-        "SafeIconImage uses a local SVG fallback file (not a .png) that exists at the configured path.",
-        "No broken image placeholders appear when an icon is missing/invalid; the fallback icon renders instead."
+        "No raw taxonomy slugs/codes are displayed in the empty state (including suggestion labels and any category chips).",
+        "Any label derived from stored strings is converted to a human-readable display label using existing helper utilities (and/or i18n mappings).",
+        "If a translation is missing, the UI uses a safe humanized label (not the raw key/slug)."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/icon-fallback.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated fallback SVG asset at frontend/public/assets/generated/icon-fallback.dim_128x128.svg and ensure it is the single shared fallback used across the app."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-construction.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-construction.dim_128x128.svg for the Home page category grid."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-agriculture.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-agriculture.dim_128x128.svg for the Home page category grid."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-home-services.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-home-services.dim_128x128.svg for the Home page category grid."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-transport.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-transport.dim_128x128.svg for the Home page category grid."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg for the Home page category grid."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg for the Home page category grid."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-repairs.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-repairs.dim_128x128.svg for the Home page category grid."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-supplies.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-supplies.dim_128x128.svg for the Home page category grid."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg for Tailoring subcategory icon usage."
-        },
-        {
-          "path": "frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg",
-          "operation": "create",
-          "description": "Add generated SVG asset at frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg for Tailoring subcategory icon usage."
-        },
-        {
-          "path": "frontend/src/components/common/SafeIconImage.tsx",
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
           "operation": "modify",
-          "description": "Switch SafeIconImage default fallback from the .png to the local SVG at frontend/public/assets/generated/icon-fallback.dim_128x128.svg, and keep the existing onError swap behavior to prevent broken image placeholders."
+          "description": "Ensure every visible label in the empty-state flow (section headers, suggestion chips, category/subcategory-derived text) is rendered via existing bilingual label helpers (e.g., bilingualTaxonomy) or safe humanized fallbacks, and never prints raw taxonomy codes."
         },
         {
-          "path": "frontend/src/pages/HomePage.tsx",
+          "path": "frontend/src/utils/bilingualTaxonomy.ts",
           "operation": "modify",
-          "description": "Update the Home page category grid icon paths to use the local generated SVGs (frontend/public/assets/generated/icon-*.dim_128x128.svg) and ensure SafeIconImage fallbackSrc is also set to the SVG fallback asset."
+          "description": "Update/extend label resolution as needed so empty-state suggestions and any category/subcategory labels resolve to human-readable bilingual labels with safe fallbacks (and do not leak raw slugs/codes)."
         },
         {
-          "path": "frontend/src/config/localSkilledWorkers.ts",
+          "path": "frontend/src/utils/humanizeLabel.ts",
           "operation": "modify",
-          "description": "Audit and standardize Local Skilled Workers subcategory icon paths so they reference local generated assets under frontend/public/assets/generated/* (no external URLs), and ensure Tailoring icons use the new SVGs (icon-blouse-designer.dim_128x128.svg, icon-saree-falls-pico-worker.dim_128x128.svg)."
+          "description": "Strengthen the humanization fallback used by the empty-state flow to avoid exposing raw keys/slugs (e.g., handle concatenated taxonomy codes) while still producing readable labels."
         }
       ]
     },
     {
-      "id": "REQ-94",
-      "summary": "Improve UX clarity for Worker Registration and Worker Search category/subcategory selection with clear placeholders, disabled states, and safe empty-state messaging (no new flows/routes).",
+      "id": "REQ-161",
+      "summary": "Extend the i18n translation dictionary with keys required by the new /search empty-state recovery flow and ensure useI18n().t resolves them without showing raw keys.",
       "acceptanceCriteria": [
-        "When no category is selected, the subcategory dropdown is clearly disabled and shows an appropriate placeholder state.",
-        "If taxonomy data is missing or empty, the UI remains usable using safe fallbacks (no crashes) and communicates a clear next step to the user.",
-        "No new flows (booking/payment/chat) are introduced; existing navigation and routes remain intact."
+        "New i18n keys for the empty-state recovery flow exist with both English and Tamil values.",
+        "No new user-visible strings in the recovery flow are hardcoded as raw i18n keys (e.g., \"search.empty.*\" must never appear).",
+        "The Tamil values include the two exact user-provided Tamil sentences for the friendly message and WhatsApp prompt."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/WorkerRegistrationPage.tsx",
+          "path": "frontend/src/components/i18n/translations.ts",
           "operation": "modify",
-          "description": "Refine category/subcategory selection UX: keep subcategory disabled until category selection, ensure placeholders are unambiguous, and add a safe empty-state message when taxonomy is unavailable/empty or a category has no subcategories."
+          "description": "Add all required empty-state recovery i18n keys (friendly message, section labels like “Nearby workers” / “Related suggestions”, button labels including “Post a Work Request” and “Expand Search Area”, WhatsApp prompt) with English + Tamil values; ensure keys are consistent and do not render as raw key strings in UI."
         },
         {
-          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
+          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
           "operation": "modify",
-          "description": "Refine search filter UX: show a clearer placeholder when no category is selected (and keep subcategory disabled), handle missing/empty taxonomy without crashes, and provide a helpful empty-state message for users."
-        },
-        {
-          "path": "frontend/src/hooks/useWorkerTaxonomy.ts",
-          "operation": "modify",
-          "description": "Strengthen safe fallback behavior messaging support by ensuring taxonomy always returns stable categories/subcategories structures (even when backend data is empty), so the UI can reliably render disabled/empty states without errors."
+          "description": "Use useI18n().t for all user-visible text in the empty-state recovery flow (including section headers and button labels) and render bilingual content via BilingualText where appropriate, avoiding hardcoded raw strings."
         }
       ]
     }

@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Upload, CheckCircle2, Loader2 } from 'lucide-react';
 import { useActor } from '@/hooks/useActor';
-import { ExternalBlob } from '@/backend';
+import { ExternalBlob, Location } from '@/backend';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import BilingualText from '@/components/i18n/BilingualText';
 import { useNavigate } from '@tanstack/react-router';
@@ -14,12 +14,14 @@ import { useWorkerTaxonomy, getSubcategoriesForCategory } from '@/hooks/useWorke
 import { getBilingualCategoryLabel, getBilingualSubcategoryLabel } from '@/utils/bilingualTaxonomy';
 import { logError } from '@/utils/errors';
 import PageShell from '@/components/layout/PageShell';
+import { useBrowserGeolocation } from '@/hooks/useBrowserGeolocation';
 
 export default function WorkerRegistrationPage() {
   const { actor } = useActor();
   const navigate = useNavigate();
   const { t } = useI18n();
   const taxonomy = useWorkerTaxonomy();
+  const { fetchLocationOnce } = useBrowserGeolocation();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -36,6 +38,7 @@ export default function WorkerRegistrationPage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [comments, setComments] = useState('');
+  const [skillsStr, setSkillsStr] = useState('');
 
   const registerTitle = t('register.title');
   const registerHelper = t('register.helper');
@@ -108,6 +111,21 @@ export default function WorkerRegistrationPage() {
     setUploadProgress(0);
 
     try {
+      // Attempt to get location (non-blocking, short timeout)
+      let location: Location | null = null;
+      try {
+        const coords = await fetchLocationOnce();
+        if (coords) {
+          location = {
+            lat: coords.latitude,
+            lon: coords.longitude,
+          };
+        }
+      } catch (locError) {
+        // Silently fail - location is optional
+        logError('WorkerRegistration.getLocation', locError);
+      }
+
       const arrayBuffer = await photoFile!.arrayBuffer();
       const photoBytes = new Uint8Array(arrayBuffer);
       
@@ -124,7 +142,9 @@ export default function WorkerRegistrationPage() {
         experience.trim() || 'Not specified',
         workingHours.trim() || 'Flexible',
         photoBlob,
-        comments.trim() || null
+        comments.trim() || null,
+        skillsStr.trim(),
+        location
       );
 
       if (result) {
@@ -139,6 +159,7 @@ export default function WorkerRegistrationPage() {
         setPhotoFile(null);
         setPhotoPreview(null);
         setComments('');
+        setSkillsStr('');
       }
     } catch (err: any) {
       logError('WorkerRegistration.handleSubmit', err);
@@ -430,6 +451,27 @@ export default function WorkerRegistrationPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="skills" className="text-base font-semibold">
+                <BilingualText
+                  english={<span>Skills / Work Tags</span>}
+                  regional={<span className="text-sm">திறன்கள் / வேலை குறிச்சொற்கள்</span>}
+                  containerClassName="flex flex-col"
+                  regionalClassName="text-sm mt-0.5"
+                />
+              </Label>
+              <Textarea
+                id="skills"
+                value={skillsStr}
+                onChange={(e) => setSkillsStr(e.target.value)}
+                placeholder="plumbing, pipe fitting, bathroom work"
+                className="min-h-[80px] resize-none"
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter skills separated by commas (e.g., plumbing, pipe fitting)
+              </p>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="photo" className="text-base font-semibold">
                 <BilingualText
                   english={<span>{fieldPhoto.en}</span>}
@@ -438,27 +480,33 @@ export default function WorkerRegistrationPage() {
                   regionalClassName="text-sm mt-0.5"
                 />
               </Label>
-              <div className="flex items-center gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('photo')?.click()}
-                  className="h-11"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  {buttonChoosePhoto.en}
-                </Button>
+              <div className="flex flex-col items-center gap-4">
                 {photoPreview && (
-                  <img src={photoPreview} alt="Preview" className="h-16 w-16 object-cover rounded-lg border-2 border-border" />
+                  <div className="w-full max-w-xs">
+                    <img
+                      src={photoPreview}
+                      alt="Preview"
+                      className="w-full h-48 object-cover rounded-xl border-2 border-border"
+                    />
+                  </div>
                 )}
+                <label
+                  htmlFor="photo"
+                  className="flex items-center justify-center gap-2 w-full cursor-pointer bg-muted hover:bg-muted/80 text-foreground rounded-xl p-4 border-2 border-dashed border-border transition-colors"
+                >
+                  <Upload className="h-5 w-5" />
+                  <span className="font-medium">
+                    {photoFile ? photoFile.name : buttonChoosePhoto.en}
+                  </span>
+                </label>
+                <input
+                  id="photo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden"
+                />
               </div>
-              <input
-                id="photo"
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="hidden"
-              />
             </div>
 
             <div className="space-y-2">
@@ -475,20 +523,19 @@ export default function WorkerRegistrationPage() {
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
                 placeholder={placeholderComments.en}
-                rows={3}
-                className="resize-none"
+                className="min-h-[100px] resize-none"
               />
             </div>
 
             {uploadProgress > 0 && uploadProgress < 100 && (
               <div className="space-y-2">
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Uploading photo...</span>
-                  <span>{uploadProgress}%</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Uploading photo...</span>
+                  <span className="font-medium text-foreground">{uploadProgress}%</span>
                 </div>
-                <div className="w-full bg-muted rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                   <div
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                    className="bg-primary h-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -498,20 +545,15 @@ export default function WorkerRegistrationPage() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary-dark text-primary-foreground"
+              className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary-dark text-primary-foreground rounded-xl"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   {buttonSubmitting.en}
                 </>
               ) : (
-                <BilingualText
-                  english={<span>{buttonSubmit.en}</span>}
-                  regional={<span className="text-sm">{buttonSubmit.regional}</span>}
-                  containerClassName="flex flex-col"
-                  regionalClassName="text-sm mt-0.5"
-                />
+                buttonSubmit.en
               )}
             </Button>
           </form>

@@ -181,31 +181,3 @@ export function useAdminJobMutations() {
     rejectJob,
   };
 }
-
-export function useAdminBootstrapMutation() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async () => {
-      if (!actor) {
-        logError('upgradeToAdmin', 'Actor not available');
-        return false;
-      }
-      try {
-        const result = await actor.upgradeToAdmin();
-        return result;
-      } catch (error) {
-        logError('upgradeToAdmin', error);
-        return false;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['is-admin'] });
-      queryClient.refetchQueries({ queryKey: ['is-admin'] });
-    },
-    onError: (error) => {
-      logError('upgradeToAdmin.onError', error);
-    },
-  });
-}

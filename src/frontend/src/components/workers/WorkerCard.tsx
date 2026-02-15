@@ -1,170 +1,223 @@
+import { useMemo } from 'react';
+import { Phone, MessageCircle, MapPin, CheckCircle, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Phone, CheckCircle2 } from 'lucide-react';
-import { SiWhatsapp } from 'react-icons/si';
+import { Badge } from '@/components/ui/badge';
 import { Worker } from '@/backend';
-import { useI18n } from '../i18n/I18nProvider';
-import BilingualText from '../i18n/BilingualText';
-import { getBilingualSubcategoryLabel } from '@/utils/bilingualTaxonomy';
+import { logError } from '@/utils/errors';
+import { calculateDistance, formatDistance, type Coordinates } from '@/utils/workerDistance';
+import SafeIconImage from '@/components/common/SafeIconImage';
+import { useI18n } from '@/components/i18n/I18nProvider';
 
 interface WorkerCardProps {
   worker: Worker;
+  userLocation?: Coordinates | null;
 }
 
-export default function WorkerCard({ worker }: WorkerCardProps) {
+export default function WorkerCard({ worker, userLocation }: WorkerCardProps) {
   const { t } = useI18n();
   
   // Safe field access with fallbacks
   const name = worker?.name || 'Unknown';
-  const category = worker?.category || 'General';
-  const subcategory = worker?.subcategory || '';
-  const area = worker?.area || 'Not specified';
-  const experience = worker?.experience || 'Not specified';
-  const workingHours = worker?.workingHours || 'Not specified';
   const phone = worker?.phone || '';
+  const area = worker?.area || 'Not specified';
+  const skills = Array.isArray(worker?.skills) ? worker.skills : [];
   const verified = worker?.verified || false;
-  const comments = worker?.comments || null;
+  const category = worker?.category || '';
+  const subcategory = worker?.subcategory || '';
 
   // Safe photo URL access
-  let photoUrl = '/assets/generated/icon-fallback.dim_128x128.svg';
+  let photoUrl = '';
   try {
     if (worker?.photo && typeof worker.photo.getDirectURL === 'function') {
       photoUrl = worker.photo.getDirectURL();
     }
   } catch (error) {
-    console.error('Error getting photo URL:', error);
+    logError('WorkerCard.photoUrl', error);
   }
 
-  // Safe phone number extraction
-  const phoneNumber = phone.replace(/\D/g, '');
+  // Calculate distance if both user and worker locations are available
+  const distance = useMemo(() => {
+    if (!userLocation || !worker?.location) return null;
+    
+    try {
+      const workerCoords: Coordinates = {
+        latitude: worker.location.lat,
+        longitude: worker.location.lon,
+      };
+      const distanceKm = calculateDistance(userLocation, workerCoords);
+      return formatDistance(distanceKm);
+    } catch (error) {
+      logError('WorkerCard.distance', error);
+      return null;
+    }
+  }, [userLocation, worker?.location]);
+
+  // Derive main skill (first skill, or subcategory, or category)
+  const mainSkill = useMemo(() => {
+    if (skills.length > 0) {
+      return skills[0];
+    }
+    if (subcategory) {
+      return subcategory;
+    }
+    if (category) {
+      return category;
+    }
+    return 'Worker';
+  }, [skills, subcategory, category]);
+
+  // Other skills (remaining skills after main)
+  const otherSkills = useMemo(() => {
+    if (skills.length > 1) {
+      return skills.slice(1);
+    }
+    return [];
+  }, [skills]);
+
+  // Resolve availability status
+  const availability = useMemo(() => {
+    // For now, default to "Call to confirm" since backend doesn't have availability field yet
+    // In future, this would check worker.availability field
+    return 'callToConfirm';
+  }, []);
+
+  // Check if recently active (within last 7 days)
+  const isRecentlyActive = useMemo(() => {
+    if (!worker?.lastActive) return false;
+    
+    try {
+      const lastActiveMs = Number(worker.lastActive) / 1_000_000; // Convert nanoseconds to milliseconds
+      const now = Date.now();
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      return (now - lastActiveMs) < sevenDaysMs;
+    } catch {
+      return false;
+    }
+  }, [worker?.lastActive]);
+
+  // Safe action handlers
+  const handleCall = () => {
+    if (phone) {
+      window.location.href = `tel:${phone}`;
+    }
+  };
+
+  const handleWhatsApp = () => {
+    if (phone) {
+      // Remove any non-digit characters from phone number
+      const cleanPhone = phone.replace(/\D/g, '');
+      window.open(`https://wa.me/${cleanPhone}`, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const hasPhone = !!phone;
 
   // Get translations
-  const callText = t('worker.call');
-  const whatsappText = t('worker.whatsapp');
-  const verifiedText = t('worker.verified');
-  const experienceText = t('worker.experience');
-  const availabilityText = t('worker.availability');
-
-  // Get bilingual subcategory label
-  const subLabel = subcategory ? getBilingualSubcategoryLabel(subcategory, t) : null;
+  const availabilityText = t(`worker.availability.${availability}`);
+  const verifiedText = t('worker.trust.verified');
+  const recentlyActiveText = t('worker.trust.recentlyActive');
+  const whatsappText = t('worker.action.whatsapp');
+  const callText = t('worker.action.call');
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200 border-2 border-border">
-      <CardContent className="p-0">
-        <div className="flex flex-col sm:flex-row gap-4 p-6">
-          {/* Photo */}
-          <div className="flex-shrink-0">
-            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-muted">
-              <img
-                src={photoUrl}
-                alt={`Photo of ${name}`}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = '/assets/generated/icon-fallback.dim_128x128.svg';
-                }}
-              />
-              {verified && (
-                <div className="absolute top-1 right-1 bg-primary rounded-full p-1">
-                  <CheckCircle2 className="h-4 w-4 text-primary-foreground" />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Info */}
-          <div className="flex-1 min-w-0 space-y-3">
-            <div>
-              <h3 className="text-lg font-bold text-foreground truncate">{name}</h3>
-              {subLabel ? (
-                <BilingualText
-                  english={<p className="text-sm text-muted-foreground">{subLabel.en}</p>}
-                  regional={<p className="text-xs text-muted-foreground">{subLabel.regional}</p>}
-                  regionalClassName="text-xs text-muted-foreground mt-0.5"
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground">{category}</p>
-              )}
-              <p className="text-sm text-muted-foreground mt-1">📍 {area}</p>
-            </div>
-
-            <div className="space-y-1 text-sm">
-              <div className="flex items-start gap-2">
-                <BilingualText
-                  english={<span className="text-muted-foreground min-w-[80px]">{experienceText.en}:</span>}
-                  regional={<span className="text-xs text-muted-foreground min-w-[80px]">{experienceText.regional}:</span>}
-                  regionalClassName="text-xs text-muted-foreground"
-                />
-                <span className="text-foreground font-medium">{experience}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <BilingualText
-                  english={<span className="text-muted-foreground min-w-[80px]">{availabilityText.en}:</span>}
-                  regional={<span className="text-xs text-muted-foreground min-w-[80px]">{availabilityText.regional}:</span>}
-                  regionalClassName="text-xs text-muted-foreground"
-                />
-                <span className="text-foreground font-medium">{workingHours}</span>
-              </div>
-            </div>
-
-            {comments && (
-              <p className="text-xs text-muted-foreground italic line-clamp-2">
-                {comments}
-              </p>
-            )}
-
-            {verified && (
-              <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
-                <CheckCircle2 className="h-3 w-3 mr-1" />
-                <BilingualText
-                  english={<span>{verifiedText.en}</span>}
-                  regional={<span className="text-xs">{verifiedText.regional}</span>}
-                  regionalClassName="text-xs"
-                />
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        {phoneNumber && (
-          <div className="border-t border-border p-4 flex gap-2">
-            <Button
-              asChild
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
-              size="sm"
-            >
-              <a href={`tel:${phoneNumber}`}>
-                <Phone className="h-4 w-4 mr-2" />
-                <BilingualText
-                  english={<span>{callText.en}</span>}
-                  regional={<span className="text-xs">{callText.regional}</span>}
-                  regionalClassName="text-xs"
-                />
-              </a>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="flex-1 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
-              size="sm"
-            >
-              <a
-                href={`https://wa.me/${phoneNumber}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <SiWhatsapp className="h-4 w-4 mr-2" />
-                <BilingualText
-                  english={<span>{whatsappText.en}</span>}
-                  regional={<span className="text-xs">{whatsappText.regional}</span>}
-                  regionalClassName="text-xs"
-                />
-              </a>
-            </Button>
+    <Card className="overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300">
+      <div className="relative">
+        {photoUrl ? (
+          <SafeIconImage
+            src={photoUrl}
+            alt={name}
+            className="w-full h-48 object-cover"
+          />
+        ) : (
+          <div className="w-full h-48 bg-muted flex items-center justify-center">
+            <span className="text-4xl text-muted-foreground">👤</span>
           </div>
         )}
+      </div>
+
+      <CardContent className="p-5 space-y-3">
+        {/* 1. Worker Name (large bold) */}
+        <div>
+          <h3 className="text-2xl font-bold text-foreground leading-tight">{name}</h3>
+        </div>
+
+        {/* 2. Main skill (highlight color) */}
+        <div>
+          <Badge className="text-base px-4 py-1.5 bg-primary text-primary-foreground font-semibold">
+            {mainSkill}
+          </Badge>
+        </div>
+
+        {/* 3. Other skills as small tag badges */}
+        {otherSkills.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {otherSkills.map((skill, index) => (
+              <Badge
+                key={index}
+                variant="secondary"
+                className="text-xs px-2 py-0.5 rounded-full bg-secondary/20 text-secondary-foreground"
+              >
+                #{skill}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        {/* 4. Area location */}
+        <div className="flex items-center gap-2 text-sm">
+          <MapPin className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+          <span className="font-medium text-foreground">{area}</span>
+          {distance && (
+            <span className="text-xs text-muted-foreground">• {distance}</span>
+          )}
+        </div>
+
+        {/* 5. Availability */}
+        <div className="text-sm">
+          <span className="text-muted-foreground">
+            {availabilityText.en}
+          </span>
+        </div>
+
+        {/* Trust indicators */}
+        <div className="flex flex-wrap gap-2 items-center text-xs">
+          {verified && (
+            <div className="flex items-center gap-1 text-green-600">
+              <CheckCircle className="h-3.5 w-3.5" />
+              <span className="font-medium">{verifiedText.en}</span>
+            </div>
+          )}
+          {isRecentlyActive && (
+            <div className="flex items-center gap-1 text-blue-600">
+              <Clock className="h-3.5 w-3.5" />
+              <span className="font-medium">{recentlyActiveText.en}</span>
+            </div>
+          )}
+        </div>
+
+        {/* ACTIONS: WhatsApp primary (green large), Call secondary (outline) */}
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <Button
+            onClick={handleWhatsApp}
+            size="lg"
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+            disabled={!hasPhone}
+          >
+            <MessageCircle className="mr-2 h-5 w-5" />
+            {whatsappText.en}
+          </Button>
+          <Button
+            onClick={handleCall}
+            size="lg"
+            variant="outline"
+            className="w-full border-2 font-semibold"
+            disabled={!hasPhone}
+          >
+            <Phone className="mr-2 h-5 w-5" />
+            {callText.en}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

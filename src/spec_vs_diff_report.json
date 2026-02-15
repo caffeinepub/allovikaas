@@ -1,42 +1,94 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T11:57:06.400Z",
-  "summary": "Diff adds Tailoring subcategories (including \"Blouse Stitching\" and saree-related options) to the backend taxonomy, enhances frontend taxonomy fallbacks and subcategory dropdown UX behavior, and standardizes icon rendering via SafeIconImage using a local SVG fallback. However, the diff does not include the requested SVG icon assets themselves, and it appears to introduce a /blog route not required for the requested dropdown/icon/auth changes.",
+  "generatedAt": "2026-02-15T15:58:36.835Z",
+  "summary": "Diff adds a new SearchEmptyRecovery component and wires it into WorkerSearchResultsPage, plus updates nearby-workers fetching logic and modifies i18n internals. However, the diff summary is truncated and does not provide clear evidence that required i18n keys (with exact Tamil strings), WhatsApp CTA, primary/secondary action buttons, and the full related-suggestions navigation behavior are implemented as specified.",
   "missing_requirements": [
     {
-      "id": "REQ-93",
-      "requirement": "Provide the required local generated SVG icon assets (including icon-fallback.dim_128x128.svg and the listed category/subcategory icons) under frontend/public/assets/generated/* so SafeIconImage can successfully fall back and all category/subcategory icons render locally with no broken placeholders.",
-      "reason": "No new files were added in the diff, so the explicitly required SVG assets are not evidenced as being added/updated in frontend/public/assets/generated/*.",
+      "id": "REQ-154",
+      "requirement": "Add a new i18n key for the empty-state friendly message with the exact provided Tamil text, and render it via useI18n().t using the bilingual rendering pattern (BilingualText or equivalent).",
+      "reason": "SearchEmptyRecovery imports BilingualText and useI18n, but the diff summary does not show any new translation keys or the exact Tamil string being added/rendered for the friendly message.",
       "evidence": [
-        "<file-diff>: Added files: none",
-        "frontend/src/components/common/SafeIconImage.tsx (expects /assets/generated/icon-fallback.dim_128x128.svg)",
-        "frontend/src/pages/HomePage.tsx (references /assets/generated/icon-*.dim_128x128.svg)",
-        "frontend/src/config/localSkilledWorkers.ts (references /assets/generated/icon-*.dim_128x128.svg)"
+        "frontend/src/components/search/SearchEmptyRecovery.tsx",
+        "frontend/src/components/i18n/translations.ts (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-156",
+      "requirement": "Add an “Expand Search Area” secondary action (i18n-labeled) that increases the nearby radius and refreshes the nearby workers list without a page reload, only when geolocation is available.",
+      "reason": "SearchEmptyRecovery has radiusKm state and filters workers by radius, but the diff snippet does not show any UI button labeled via i18n that calls setRadiusKm to expand the radius, nor behavior when geolocation is unavailable.",
+      "evidence": [
+        "frontend/src/components/search/SearchEmptyRecovery.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-158",
+      "requirement": "Add a prominent primary button “Post a Work Request” (i18n-labeled) that navigates to /post-job, plus the large secondary “Expand Search Area” button styling in the empty state.",
+      "reason": "WorkerSearchResultsPage now imports SearchEmptyRecovery, but the truncated SearchEmptyRecovery snippet does not show the actual buttons, their i18n labels, or navigation to /post-job.",
+      "evidence": [
+        "frontend/src/components/search/SearchEmptyRecovery.tsx (truncated)",
+        "frontend/src/pages/WorkerSearchResultsPage.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-159",
+      "requirement": "Add a WhatsApp help CTA in the empty state with the exact provided Tamil prompt via i18n and a WhatsApp button that opens a WhatsApp link.",
+      "reason": "SearchEmptyRecovery imports MessageCircle icon but the diff summary does not show the WhatsApp prompt text, the required i18n key/value, or any link/button opening WhatsApp.",
+      "evidence": [
+        "frontend/src/components/search/SearchEmptyRecovery.tsx (truncated)",
+        "frontend/src/components/i18n/translations.ts (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-160",
+      "requirement": "Ensure the empty-state recovery UI never renders raw taxonomy slugs/codes; all displayed labels (including suggestions) must be human-readable and use bilingual label helpers / i18n lookups with safe humanized fallbacks.",
+      "reason": "Related suggestions are built from liveSuggestions (using s.text) and fallbackSkills; the snippet does not show any sanitization/humanization for suggestion labels, nor proof that raw slugs cannot appear in visible text.",
+      "evidence": [
+        "frontend/src/components/search/SearchEmptyRecovery.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-161",
+      "requirement": "Extend frontend/src/components/i18n/translations.ts with all new keys for the recovery flow (friendly message, section labels, button labels, WhatsApp prompt) with both English and Tamil values, and ensure no raw i18n keys appear in UI.",
+      "reason": "The translations file is truncated and the diff summary does not show new keys for the empty-state recovery flow nor the exact Tamil strings required for REQ-154/REQ-159.",
+      "evidence": [
+        "frontend/src/components/i18n/translations.ts (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Introduced/expanded a Blog page route (/blog) in the router.",
-      "reason": "BuildRequest explicitly constrained changes to avoid adding new pages/routes beyond what is necessary for tailoring dropdowns, icon fixes, and anonymous worker registration; a blog route is not part of those requirements.",
+      "description": "I18nProvider changed to hardcode Tamil as primary language/state (selectedState='TN', regionalLanguage='ta') and disables language selection via no-op setSelectedState.",
+      "reason": "BuildRequest only required adding i18n keys and using useI18n().t for the empty-state; it did not request changing global i18n behavior or disabling state/language selection.",
       "evidence": [
-        "frontend/src/App.tsx (imports BlogPage and defines blogRoute at path '/blog')"
+        "frontend/src/components/i18n/I18nProvider.tsx"
+      ]
+    },
+    {
+      "description": "Refactor of getTranslation contract to return {en, regional} and corresponding changes in bilingual field label utility.",
+      "reason": "Not requested by the empty-state recovery flow requirements; appears to be broader i18n API refactoring beyond the specified scope.",
+      "evidence": [
+        "frontend/src/components/i18n/I18nProvider.tsx",
+        "frontend/src/utils/bilingualFields.ts"
+      ]
+    },
+    {
+      "description": "useNearbyWorkers hook now calculates Haversine distance, sorts workers by distance, and slices to a limit client-side.",
+      "reason": "REQ-155 asked to reuse existing nearby-worker flow; the change adds new client-side distance sorting/filtering logic beyond what was explicitly requested (though it may support the feature).",
+      "evidence": [
+        "frontend/src/hooks/useNearbyWorkers.ts"
       ]
     }
   ],
-  "confidence": 0.62,
+  "confidence": 0.55,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/components/admin/AdminGuard.tsx",
-    "frontend/src/components/common/SafeIconImage.tsx",
-    "frontend/src/config/localSkilledWorkers.ts",
-    "frontend/src/hooks/useWorkerTaxonomy.ts",
-    "frontend/src/pages/HomePage.tsx",
-    "frontend/src/pages/WorkerRegistrationPage.tsx",
+    "frontend/src/components/i18n/I18nProvider.tsx",
+    "frontend/src/components/i18n/translations.ts",
+    "frontend/src/components/search/SearchEmptyRecovery.tsx",
+    "frontend/src/hooks/useNearbyWorkers.ts",
     "frontend/src/pages/WorkerSearchResultsPage.tsx",
+    "frontend/src/utils/bilingualFields.ts",
     "project_state.json"
   ]
 }

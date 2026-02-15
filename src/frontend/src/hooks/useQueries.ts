@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import { Worker, JobPost, UserProfile } from '@/backend';
+import { Worker, JobPost, UserProfile, Time } from '@/backend';
 import { logError } from '@/utils/errors';
 
 export function useGetApprovedJobs() {
@@ -141,4 +141,54 @@ export function useGetCallerUserProfile() {
     isLoading: actorFetching || query.isLoading,
     isFetched: !!actor && query.isFetched,
   };
+}
+
+// Mutation hook for creating job posts
+export function useCreateJobPost() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workType,
+      area,
+      dateTime,
+      salary,
+      description,
+      phone,
+    }: {
+      workType: string;
+      area: string;
+      dateTime: Time;
+      salary: string;
+      description: string;
+      phone: string;
+    }) => {
+      if (!actor) {
+        throw new Error('Actor not available');
+      }
+      try {
+        const result = await actor.createJobPost(
+          workType,
+          area,
+          dateTime,
+          salary,
+          description,
+          phone
+        );
+        return result;
+      } catch (error) {
+        logError('useCreateJobPost', error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['approved-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['pending-jobs'] });
+      queryClient.invalidateQueries({ queryKey: ['all-jobs'] });
+    },
+    onError: (error) => {
+      logError('useCreateJobPost.onError', error);
+    },
+  });
 }

@@ -1,140 +1,147 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T11:57:06.405Z",
+  "generatedAt": "2026-02-15T15:58:36.845Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 4,
+    "total": 9,
+    "implemented": 9,
     "items": [
       {
-        "id": "REQ-90",
-        "summary": "Ensure the backend worker taxonomy returned by backend/main.mo:getAllCategories() includes Tailoring-related subcategories (including \"Blouse Stitching\" and \"Saree Work\"/\"Saree Falls/Pico\" as applicable) so they appear as selectable Subcategory dropdown options under the correct parent category in the frontend Worker Registration and Worker Search filters.",
+        "id": "REQ-153",
+        "summary": "Replace the current static /search empty state UI in frontend/src/pages/WorkerSearchResultsPage.tsx with a mobile-first “smart recovery” flow that always gives the user a clear next action instead of leaving them stuck.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useWorkerTaxonomy.ts",
-          "frontend/src/pages/WorkerRegistrationPage.tsx",
+          "frontend/src/pages/WorkerSearchResultsPage.tsx",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/WorkerSearchResultsPage.tsx",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
+        ]
+      },
+      {
+        "id": "REQ-154",
+        "summary": "In the /search empty state, display a friendly message using the exact Tamil text provided by the user, and source it via the existing i18n system (useI18n().t) so it can render as bilingual text (Tamil primary + English secondary) without hardcoded inline strings.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
+        ]
+      },
+      {
+        "id": "REQ-155",
+        "summary": "In the /search empty state, automatically show a list of nearby approved workers when browser geolocation is available, without requiring additional user input.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "frontend/src/hooks/useNearbyWorkers.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "frontend/src/hooks/useNearbyWorkers.ts"
+        ]
+      },
+      {
+        "id": "REQ-156",
+        "summary": "Add an “Expand Search Area” secondary action in the /search empty state that increases the nearby search radius and refreshes the nearby workers section accordingly (only when geolocation is available).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
+        ]
+      },
+      {
+        "id": "REQ-157",
+        "summary": "In the /search empty state, show “related skill suggestions” based on the user’s current search (prefer q when present; otherwise category/subcategory/area context). Suggestions must be tap-friendly and start a new /search?q=<suggestion> search when tapped.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "frontend/src/hooks/useLiveSearchSuggestions.ts",
+          "frontend/src/utils/humanizeLabel.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
+        ]
+      },
+      {
+        "id": "REQ-158",
+        "summary": "Add two big action buttons to the /search empty state: (1) Primary: “Post a Work Request” which navigates to the existing job request page route (/post-job); (2) Secondary: “Expand Search Area” (covered separately) with large, mobile-friendly styling.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx",
           "frontend/src/pages/WorkerSearchResultsPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useWorkerTaxonomy.ts",
-          "frontend/src/pages/WorkerRegistrationPage.tsx",
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx",
           "frontend/src/pages/WorkerSearchResultsPage.tsx"
         ]
       },
       {
-        "id": "REQ-91",
-        "summary": "Remove the login/authentication requirement for submitting worker registrations: update backend/main.mo:submitWorkerRegistration to allow anonymous callers to submit a worker registration without trapping, while keeping the Admin Panel protected by Internet Identity and admin authorization.",
+        "id": "REQ-159",
+        "summary": "Add a WhatsApp help CTA to the /search empty state, showing the exact Tamil prompt text provided by the user (sourced via i18n), and render a WhatsApp button that opens a WhatsApp chat/help link.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/WorkerRegistrationPage.tsx",
-          "frontend/src/components/admin/AdminGuard.tsx"
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/WorkerRegistrationPage.tsx",
-          "frontend/src/components/admin/AdminGuard.tsx"
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
         ]
       },
       {
-        "id": "REQ-92",
-        "summary": "Keep admin-approval gating for public visibility: ensure newly submitted worker registrations remain non-public (pending) and are not returned by any public worker browsing/search endpoints until an admin approves them.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-93",
-        "summary": "Fix and standardize category/subcategory icon rendering so all category and subcategory icons are local generated assets (no external URLs), and remove broken image placeholders by ensuring the frontend uses existing SafeIconImage fallback behavior consistently with a single local fallback SVG file.",
+        "id": "REQ-160",
+        "summary": "Ensure that the empty state recovery UI never renders technical category/taxonomy codes (e.g., \"homeimprovement\", \"specializedcleaning\") anywhere in visible text; all category/subcategory/suggestion labels shown in the empty-state flow must be human-readable and should use the existing bilingual label helpers / i18n lookups with safe humanized fallbacks.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/assets/generated/icon-fallback.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-construction.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-agriculture.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-home-services.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-transport.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-repairs.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-supplies.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg",
-          "frontend/src/components/common/SafeIconImage.tsx",
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/config/localSkilledWorkers.ts"
+          "frontend/src/components/search/SearchEmptyRecovery.tsx",
+          "frontend/src/utils/bilingualTaxonomy.ts",
+          "frontend/src/utils/humanizeLabel.ts"
         ],
         "matchedFiles": [
-          "frontend/public/assets/generated/icon-fallback.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-construction.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-agriculture.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-home-services.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-transport.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-repairs.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-supplies.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg",
-          "frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg",
-          "frontend/src/components/common/SafeIconImage.tsx",
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/config/localSkilledWorkers.ts"
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
         ]
       },
       {
-        "id": "REQ-94",
-        "summary": "Improve overall UX clarity for local users in the Worker Registration and Search flows without adding new product features: reduce confusion by ensuring category/subcategory selection is straightforward (clear placeholders, disabled/enabled states, and safe empty-state messaging) while preserving existing layout structure and mobile-first readability.",
+        "id": "REQ-161",
+        "summary": "Extend the local i18n translation dictionary (frontend/src/components/i18n/translations.ts) with keys needed for the new empty-state recovery flow (friendly message, section labels, button labels, WhatsApp prompt), and ensure they resolve through useI18n().t without showing raw keys.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/WorkerRegistrationPage.tsx",
-          "frontend/src/pages/WorkerSearchResultsPage.tsx",
-          "frontend/src/hooks/useWorkerTaxonomy.ts"
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/WorkerRegistrationPage.tsx",
-          "frontend/src/pages/WorkerSearchResultsPage.tsx",
-          "frontend/src/hooks/useWorkerTaxonomy.ts"
+          "frontend/src/components/i18n/translations.ts",
+          "frontend/src/components/search/SearchEmptyRecovery.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/icon-agriculture.dim_128x128.png",
-    "frontend/public/assets/generated/icon-agriculture.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-blouse-designer.dim_128x128.png",
-    "frontend/public/assets/generated/icon-blouse-designer.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-construction.dim_128x128.png",
-    "frontend/public/assets/generated/icon-construction.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-daily-helpers.dim_128x128.png",
-    "frontend/public/assets/generated/icon-daily-helpers.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-events-cooking.dim_128x128.png",
-    "frontend/public/assets/generated/icon-events-cooking.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-fallback.dim_128x128.png",
-    "frontend/public/assets/generated/icon-fallback.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-home-services.dim_128x128.png",
-    "frontend/public/assets/generated/icon-home-services.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-repairs.dim_128x128.png",
-    "frontend/public/assets/generated/icon-repairs.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.png",
-    "frontend/public/assets/generated/icon-saree-falls-pico-worker.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-supplies.dim_128x128.png",
-    "frontend/public/assets/generated/icon-supplies.dim_128x128.svg",
-    "frontend/public/assets/generated/icon-transport.dim_128x128.png",
-    "frontend/public/assets/generated/icon-transport.dim_128x128.svg",
-    "frontend/src/App.tsx",
-    "frontend/src/components/admin/AdminGuard.tsx",
-    "frontend/src/components/common/SafeIconImage.tsx",
-    "frontend/src/config/localSkilledWorkers.ts",
-    "frontend/src/hooks/useWorkerTaxonomy.ts",
-    "frontend/src/pages/HomePage.tsx",
-    "frontend/src/pages/WorkerRegistrationPage.tsx",
+    "frontend/src/components/i18n/I18nProvider.tsx",
+    "frontend/src/components/i18n/translations.ts",
+    "frontend/src/components/search/SearchEmptyRecovery.tsx",
+    "frontend/src/hooks/useNearbyWorkers.ts",
     "frontend/src/pages/WorkerSearchResultsPage.tsx",
+    "frontend/src/utils/bilingualFields.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

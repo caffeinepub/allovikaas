@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-ensure-the-backend-worker-taxonomy-returned-by-backend-main-mo-getallcategories-includes-tailoring-related-subcategories-including-blouse-stitching-and-saree-work-saree-falls-pico-as-applicable-so-they-appear-as-selectable-subcategory-dropdown-options-under-the-correct-parent-category-in-the-frontend-worker-registration-and-worker-search-filters",
-      "featureTitle": "Ensure the backend worker taxonomy returned by backend/main.mo:getAllCategories() includes Tailoring-related subcategories (including \"Blouse Stitching\" and \"Saree Work\"/\"Saree Falls/Pico\" as applicable) so they appear as selectable Subcategory dropdown options under the correct parent category in the frontend Worker Registration and Worker Search filters.",
+      "featureId": "feature-replace-the-current-static-search-empty-state-ui-in-frontend-src-pages-workersearchresultspage-tsx-with-a-mobile-first-smart-recovery-flow-that-always-gives-the-user-a-clear-next-action-instead-of-leaving-them-stuck",
+      "featureTitle": "Replace the current static /search empty state UI in frontend/src/pages/WorkerSearchResultsPage.tsx with a mobile-first “smart recovery” flow that always gives the user a clear next action instead of leaving them stuck.",
       "files": [
-        "frontend/src/hooks/useWorkerTaxonomy.ts",
-        "frontend/src/pages/WorkerRegistrationPage.tsx",
+        "frontend/src/components/search/SearchEmptyRecovery.tsx",
         "frontend/src/pages/WorkerSearchResultsPage.tsx"
       ],
       "components": [
@@ -20,16 +19,16 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-90"
+        "REQ-153"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-remove-the-login-authentication-requirement-for-submitting-worker-registrations-update-backend-main-mo-submitworkerregistration-to-allow-anonymous-callers-to-submit-a-worker-registration-without-trapping-while-keeping-the-admin-panel-protected-by-internet-identity-and-admin-authorization",
-      "featureTitle": "Remove the login/authentication requirement for submitting worker registrations: update backend/main.mo:submitWorkerRegistration to allow anonymous callers to submit a worker registration without trapping, while keeping the Admin Panel protected by Internet Identity and admin authorization.",
+      "featureId": "feature-in-the-search-empty-state-display-a-friendly-message-using-the-exact-tamil-text-provided-by-the-user-and-source-it-via-the-existing-i18n-system-usei18n-t-so-it-can-render-as-bilingual-text-tamil-primary-english-secondary-without-hardcoded-inline-strings",
+      "featureTitle": "In the /search empty state, display a friendly message using the exact Tamil text provided by the user, and source it via the existing i18n system (useI18n().t) so it can render as bilingual text (Tamil primary + English secondary) without hardcoded inline strings.",
       "files": [
-        "frontend/src/components/admin/AdminGuard.tsx",
-        "frontend/src/pages/WorkerRegistrationPage.tsx"
+        "frontend/src/components/i18n/translations.ts",
+        "frontend/src/components/search/SearchEmptyRecovery.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -42,17 +41,16 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-91"
+        "REQ-154"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-fix-and-standardize-category-subcategory-icon-rendering-so-all-category-and-subcategory-icons-are-local-generated-assets-no-external-urls-and-remove-broken-image-placeholders-by-ensuring-the-frontend-uses-existing-safeiconimage-fallback-behavior-consistently-with-a-single-local-fallback-svg-file",
-      "featureTitle": "Fix and standardize category/subcategory icon rendering so all category and subcategory icons are local generated assets (no external URLs), and remove broken image placeholders by ensuring the frontend uses existing SafeIconImage fallback behavior consistently with a single local fallback SVG file.",
+      "featureId": "feature-in-the-search-empty-state-automatically-show-a-list-of-nearby-approved-workers-when-browser-geolocation-is-available-without-requiring-additional-user-input",
+      "featureTitle": "In the /search empty state, automatically show a list of nearby approved workers when browser geolocation is available, without requiring additional user input.",
       "files": [
-        "frontend/src/components/common/SafeIconImage.tsx",
-        "frontend/src/config/localSkilledWorkers.ts",
-        "frontend/src/pages/HomePage.tsx"
+        "frontend/src/components/search/SearchEmptyRecovery.tsx",
+        "frontend/src/hooks/useNearbyWorkers.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -65,16 +63,59 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-93"
+        "REQ-155"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-improve-overall-ux-clarity-for-local-users-in-the-worker-registration-and-search-flows-without-adding-new-product-features-reduce-confusion-by-ensuring-category-subcategory-selection-is-straightforward-clear-placeholders-disabled-enabled-states-and-safe-empty-state-messaging-while-preserving-existing-layout-structure-and-mobile-first-readability",
-      "featureTitle": "Improve overall UX clarity for local users in the Worker Registration and Search flows without adding new product features: reduce confusion by ensuring category/subcategory selection is straightforward (clear placeholders, disabled/enabled states, and safe empty-state messaging) while preserving existing layout structure and mobile-first readability.",
+      "featureId": "feature-add-an-expand-search-area-secondary-action-in-the-search-empty-state-that-increases-the-nearby-search-radius-and-refreshes-the-nearby-workers-section-accordingly-only-when-geolocation-is-available",
+      "featureTitle": "Add an “Expand Search Area” secondary action in the /search empty state that increases the nearby search radius and refreshes the nearby workers section accordingly (only when geolocation is available).",
       "files": [
-        "frontend/src/hooks/useWorkerTaxonomy.ts",
-        "frontend/src/pages/WorkerRegistrationPage.tsx",
+        "frontend/src/components/i18n/translations.ts",
+        "frontend/src/components/search/SearchEmptyRecovery.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-156"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-the-search-empty-state-show-related-skill-suggestions-based-on-the-user-s-current-search-prefer-q-when-present-otherwise-category-subcategory-area-context-suggestions-must-be-tap-friendly-and-start-a-new-search-q-suggestion-search-when-tapped",
+      "featureTitle": "In the /search empty state, show “related skill suggestions” based on the user’s current search (prefer q when present; otherwise category/subcategory/area context). Suggestions must be tap-friendly and start a new /search?q=<suggestion> search when tapped.",
+      "files": [
+        "frontend/src/components/search/SearchEmptyRecovery.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-157"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-two-big-action-buttons-to-the-search-empty-state-1-primary-post-a-work-request-which-navigates-to-the-existing-job-request-page-route-post-job-2-secondary-expand-search-area-covered-separately-with-large-mobile-friendly-styling",
+      "featureTitle": "Add two big action buttons to the /search empty state: (1) Primary: “Post a Work Request” which navigates to the existing job request page route (/post-job); (2) Secondary: “Expand Search Area” (covered separately) with large, mobile-friendly styling.",
+      "files": [
+        "frontend/src/components/i18n/translations.ts",
+        "frontend/src/components/search/SearchEmptyRecovery.tsx",
         "frontend/src/pages/WorkerSearchResultsPage.tsx"
       ],
       "components": [
@@ -88,7 +129,72 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-94"
+        "REQ-158"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-whatsapp-help-cta-to-the-search-empty-state-showing-the-exact-tamil-prompt-text-provided-by-the-user-sourced-via-i18n-and-render-a-whatsapp-button-that-opens-a-whatsapp-chat-help-link",
+      "featureTitle": "Add a WhatsApp help CTA to the /search empty state, showing the exact Tamil prompt text provided by the user (sourced via i18n), and render a WhatsApp button that opens a WhatsApp chat/help link.",
+      "files": [
+        "frontend/src/components/i18n/translations.ts",
+        "frontend/src/components/search/SearchEmptyRecovery.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-159"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-that-the-empty-state-recovery-ui-never-renders-technical-category-taxonomy-codes-e-g-homeimprovement-specializedcleaning-anywhere-in-visible-text-all-category-subcategory-suggestion-labels-shown-in-the-empty-state-flow-must-be-human-readable-and-should-use-the-existing-bilingual-label-helpers-i18n-lookups-with-safe-humanized-fallbacks",
+      "featureTitle": "Ensure that the empty state recovery UI never renders technical category/taxonomy codes (e.g., \"homeimprovement\", \"specializedcleaning\") anywhere in visible text; all category/subcategory/suggestion labels shown in the empty-state flow must be human-readable and should use the existing bilingual label helpers / i18n lookups with safe humanized fallbacks.",
+      "files": [
+        "frontend/src/components/search/SearchEmptyRecovery.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-160"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-extend-the-local-i18n-translation-dictionary-frontend-src-components-i18n-translations-ts-with-keys-needed-for-the-new-empty-state-recovery-flow-friendly-message-section-labels-button-labels-whatsapp-prompt-and-ensure-they-resolve-through-usei18n-t-without-showing-raw-keys",
+      "featureTitle": "Extend the local i18n translation dictionary (frontend/src/components/i18n/translations.ts) with keys needed for the new empty-state recovery flow (friendly message, section labels, button labels, WhatsApp prompt), and ensure they resolve through useI18n().t without showing raw keys.",
+      "files": [
+        "frontend/src/components/i18n/translations.ts",
+        "frontend/src/components/search/SearchEmptyRecovery.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-161"
       ],
       "confidence": "high"
     }

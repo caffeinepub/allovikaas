@@ -1,24 +1,24 @@
-import { ReactNode } from 'react';
+import React from 'react';
 
 interface BilingualTextProps {
-  english: ReactNode;
-  regional: ReactNode;
+  english: React.ReactNode;
+  regional: React.ReactNode;
+  containerClassName?: string;
   englishClassName?: string;
   regionalClassName?: string;
-  containerClassName?: string;
 }
 
 export default function BilingualText({
   english,
   regional,
-  englishClassName = '',
-  regionalClassName = 'text-sm mt-1 opacity-80',
   containerClassName = '',
+  englishClassName = '',
+  regionalClassName = '',
 }: BilingualTextProps) {
   return (
     <div className={containerClassName}>
-      <div className={regionalClassName}>{regional}</div>
       <div className={englishClassName}>{english}</div>
+      <div className={regionalClassName}>{regional}</div>
     </div>
   );
 }

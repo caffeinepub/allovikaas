@@ -49,6 +49,10 @@ export const WorkerStatus = IDL.Variant({
   'rejected' : IDL.Text,
 });
 export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const Location = IDL.Record({
+  'lat' : IDL.Float64,
+  'lon' : IDL.Float64,
+});
 export const Worker = IDL.Record({
   'id' : IDL.Nat,
   'status' : WorkerStatus,
@@ -64,11 +68,24 @@ export const Worker = IDL.Record({
   'comments' : IDL.Opt(IDL.Text),
   'phone' : IDL.Text,
   'photo' : ExternalBlob,
+  'skills' : IDL.Vec(IDL.Text),
+  'lastActive' : IDL.Opt(Time),
+  'location' : IDL.Opt(Location),
 });
 export const UserProfile = IDL.Record({
   'name' : IDL.Text,
   'email' : IDL.Opt(IDL.Text),
   'phone' : IDL.Opt(IDL.Text),
+});
+export const Suggestion = IDL.Record({
+  'source' : IDL.Variant({
+    'subcategory' : IDL.Null,
+    'area' : IDL.Null,
+    'skill' : IDL.Null,
+    'category' : IDL.Null,
+    'workerName' : IDL.Null,
+  }),
+  'text' : IDL.Text,
 });
 export const ApprovalStatus = IDL.Variant({
   'pending' : IDL.Null,
@@ -126,6 +143,11 @@ export const idlService = IDL.Service({
   'getCategoryBySubcategory' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
   'getFeaturedWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
   'getJobPostById' : IDL.Func([IDL.Nat], [IDL.Opt(JobPost)], ['query']),
+  'getLiveSearchSuggestions' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(Suggestion)],
+      ['query'],
+    ),
   'getPendingJobPosts' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
   'getPendingWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
   'getUserProfile' : IDL.Func(
@@ -140,6 +162,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(Worker)],
       ['query'],
     ),
+  'getWorkersWithDistance' : IDL.Func([Location], [IDL.Vec(Worker)], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isCallerApproved' : IDL.Func([], [IDL.Bool], ['query']),
   'listApprovals' : IDL.Func([], [IDL.Vec(UserApprovalInfo)], ['query']),
@@ -149,6 +172,7 @@ export const idlService = IDL.Service({
   'repairDataIntegrity' : IDL.Func([], [IDL.Text], []),
   'requestApproval' : IDL.Func([], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'searchApprovedWorkers' : IDL.Func([IDL.Text], [IDL.Vec(Worker)], ['query']),
   'searchWorkersByArea' : IDL.Func([IDL.Text], [IDL.Vec(Worker)], ['query']),
   'searchWorkersByAreaAndCategory' : IDL.Func(
       [IDL.Text, IDL.Text],
@@ -172,12 +196,14 @@ export const idlService = IDL.Service({
         IDL.Text,
         ExternalBlob,
         IDL.Opt(IDL.Text),
+        IDL.Text,
+        IDL.Opt(Location),
       ],
       [IDL.Text],
       [],
     ),
   'unfeatureWorker' : IDL.Func([IDL.Nat], [], []),
-  'upgradeToAdmin' : IDL.Func([], [IDL.Bool], []),
+  'universalSearch' : IDL.Func([IDL.Text], [IDL.Vec(Worker)], ['query']),
 });
 
 export const idlInitArgs = [];
@@ -224,6 +250,7 @@ export const idlFactory = ({ IDL }) => {
     'rejected' : IDL.Text,
   });
   const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const Location = IDL.Record({ 'lat' : IDL.Float64, 'lon' : IDL.Float64 });
   const Worker = IDL.Record({
     'id' : IDL.Nat,
     'status' : WorkerStatus,
@@ -239,11 +266,24 @@ export const idlFactory = ({ IDL }) => {
     'comments' : IDL.Opt(IDL.Text),
     'phone' : IDL.Text,
     'photo' : ExternalBlob,
+    'skills' : IDL.Vec(IDL.Text),
+    'lastActive' : IDL.Opt(Time),
+    'location' : IDL.Opt(Location),
   });
   const UserProfile = IDL.Record({
     'name' : IDL.Text,
     'email' : IDL.Opt(IDL.Text),
     'phone' : IDL.Opt(IDL.Text),
+  });
+  const Suggestion = IDL.Record({
+    'source' : IDL.Variant({
+      'subcategory' : IDL.Null,
+      'area' : IDL.Null,
+      'skill' : IDL.Null,
+      'category' : IDL.Null,
+      'workerName' : IDL.Null,
+    }),
+    'text' : IDL.Text,
   });
   const ApprovalStatus = IDL.Variant({
     'pending' : IDL.Null,
@@ -301,6 +341,11 @@ export const idlFactory = ({ IDL }) => {
     'getCategoryBySubcategory' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
     'getFeaturedWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
     'getJobPostById' : IDL.Func([IDL.Nat], [IDL.Opt(JobPost)], ['query']),
+    'getLiveSearchSuggestions' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(Suggestion)],
+        ['query'],
+      ),
     'getPendingJobPosts' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
     'getPendingWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
     'getUserProfile' : IDL.Func(
@@ -315,6 +360,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Worker)],
         ['query'],
       ),
+    'getWorkersWithDistance' : IDL.Func(
+        [Location],
+        [IDL.Vec(Worker)],
+        ['query'],
+      ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isCallerApproved' : IDL.Func([], [IDL.Bool], ['query']),
     'listApprovals' : IDL.Func([], [IDL.Vec(UserApprovalInfo)], ['query']),
@@ -324,6 +374,11 @@ export const idlFactory = ({ IDL }) => {
     'repairDataIntegrity' : IDL.Func([], [IDL.Text], []),
     'requestApproval' : IDL.Func([], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'searchApprovedWorkers' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(Worker)],
+        ['query'],
+      ),
     'searchWorkersByArea' : IDL.Func([IDL.Text], [IDL.Vec(Worker)], ['query']),
     'searchWorkersByAreaAndCategory' : IDL.Func(
         [IDL.Text, IDL.Text],
@@ -347,12 +402,14 @@ export const idlFactory = ({ IDL }) => {
           IDL.Text,
           ExternalBlob,
           IDL.Opt(IDL.Text),
+          IDL.Text,
+          IDL.Opt(Location),
         ],
         [IDL.Text],
         [],
       ),
     'unfeatureWorker' : IDL.Func([IDL.Nat], [], []),
-    'upgradeToAdmin' : IDL.Func([], [IDL.Bool], []),
+    'universalSearch' : IDL.Func([IDL.Text], [IDL.Vec(Worker)], ['query']),
   });
 };
 

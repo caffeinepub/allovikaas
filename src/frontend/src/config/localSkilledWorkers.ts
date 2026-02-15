@@ -9,6 +9,11 @@ export interface LocalSkilledWorker {
   };
 }
 
+// Normalize subcategory key for robust matching
+function normalizeSubcategoryKey(key: string): string {
+  return key.toLowerCase().trim().replace(/\s+/g, '').replace(/\//g, '').replace(/-/g, '');
+}
+
 const localSkilledWorkers: LocalSkilledWorker[] = [
   {
     subcategory: 'Mason',
@@ -171,11 +176,65 @@ export function getAllLocalSkilledWorkersSubcategories(): string[] {
 }
 
 export function getLocalSkilledWorkerIcon(subcategory: string): string {
-  const worker = localSkilledWorkers.find((w) => w.subcategory === subcategory);
-  return worker?.icon || '/assets/generated/icon-fallback.dim_128x128.svg';
+  if (!subcategory) {
+    return '/assets/generated/icon-fallback.dim_128x128.svg';
+  }
+
+  // Try exact match first
+  const exactMatch = localSkilledWorkers.find((w) => w.subcategory === subcategory);
+  if (exactMatch) {
+    return exactMatch.icon;
+  }
+
+  // Try case-insensitive match
+  const caseInsensitiveMatch = localSkilledWorkers.find(
+    (w) => w.subcategory.toLowerCase() === subcategory.toLowerCase()
+  );
+  if (caseInsensitiveMatch) {
+    return caseInsensitiveMatch.icon;
+  }
+
+  // Try normalized match (remove spaces, slashes, hyphens)
+  const normalizedInput = normalizeSubcategoryKey(subcategory);
+  const normalizedMatch = localSkilledWorkers.find(
+    (w) => normalizeSubcategoryKey(w.subcategory) === normalizedInput
+  );
+  if (normalizedMatch) {
+    return normalizedMatch.icon;
+  }
+
+  // Return fallback if no match found
+  return '/assets/generated/icon-fallback.dim_128x128.svg';
 }
 
 export function getLocalSkilledWorkerLabel(subcategory: string): { en: string; regional: string } {
-  const worker = localSkilledWorkers.find((w) => w.subcategory === subcategory);
-  return worker?.label || { en: subcategory, regional: subcategory };
+  if (!subcategory) {
+    return { en: 'Worker', regional: 'தொழிலாளி' };
+  }
+
+  // Try exact match first
+  const exactMatch = localSkilledWorkers.find((w) => w.subcategory === subcategory);
+  if (exactMatch) {
+    return exactMatch.label;
+  }
+
+  // Try case-insensitive match
+  const caseInsensitiveMatch = localSkilledWorkers.find(
+    (w) => w.subcategory.toLowerCase() === subcategory.toLowerCase()
+  );
+  if (caseInsensitiveMatch) {
+    return caseInsensitiveMatch.label;
+  }
+
+  // Try normalized match
+  const normalizedInput = normalizeSubcategoryKey(subcategory);
+  const normalizedMatch = localSkilledWorkers.find(
+    (w) => normalizeSubcategoryKey(w.subcategory) === normalizedInput
+  );
+  if (normalizedMatch) {
+    return normalizedMatch.label;
+  }
+
+  // Return original subcategory as fallback
+  return { en: subcategory, regional: subcategory };
 }

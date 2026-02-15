@@ -14,24 +14,24 @@ export class ExternalBlob {
     static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
-export interface UserApprovalInfo {
-    status: ApprovalStatus;
-    principal: Principal;
+export interface Location {
+    lat: number;
+    lon: number;
 }
 export type Time = bigint;
-export interface CategoryMapping {
-    category: string;
-    subcategories: Array<string>;
-}
 export interface JobPost {
     id: bigint;
-    status: ApprovalStatus;
+    status: Variant_pending_approved_rejected;
     workType: string;
     salary: string;
     area: string;
     description: string;
     phone: string;
     dateTime: Time;
+}
+export interface Suggestion {
+    source: Variant_subcategory_area_skill_category_workerName;
+    text: string;
 }
 export type WorkerStatus = {
     __kind__: "pendingVerification";
@@ -43,6 +43,14 @@ export type WorkerStatus = {
     __kind__: "rejected";
     rejected: string;
 };
+export interface UserApprovalInfo {
+    status: ApprovalStatus;
+    principal: Principal;
+}
+export interface CategoryMapping {
+    category: string;
+    subcategories: Array<string>;
+}
 export interface Worker {
     id: bigint;
     status: WorkerStatus;
@@ -58,21 +66,31 @@ export interface Worker {
     comments?: string;
     phone: string;
     photo: ExternalBlob;
+    skills: Array<string>;
+    lastActive?: Time;
+    location?: Location;
 }
 export interface UserProfile {
     name: string;
     email?: string;
     phone?: string;
 }
-export enum ApprovalStatus {
-    pending = "pending",
-    approved = "approved",
-    rejected = "rejected"
-}
 export enum UserRole {
     admin = "admin",
     user = "user",
     guest = "guest"
+}
+export enum Variant_pending_approved_rejected {
+    pending = "pending",
+    approved = "approved",
+    rejected = "rejected"
+}
+export enum Variant_subcategory_area_skill_category_workerName {
+    subcategory = "subcategory",
+    area = "area",
+    skill = "skill",
+    category = "category",
+    workerName = "workerName"
 }
 export interface backendInterface {
     approveJobPost(jobId: bigint): Promise<boolean>;
@@ -89,12 +107,14 @@ export interface backendInterface {
     getCategoryBySubcategory(subcategory: string): Promise<string | null>;
     getFeaturedWorkers(): Promise<Array<Worker>>;
     getJobPostById(id: bigint): Promise<JobPost | null>;
+    getLiveSearchSuggestions(prefix: string): Promise<Array<Suggestion>>;
     getPendingJobPosts(): Promise<Array<JobPost>>;
     getPendingWorkers(): Promise<Array<Worker>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     getWorkerById(id: bigint): Promise<Worker | null>;
     getWorkersByCategory(category: string): Promise<Array<Worker>>;
     getWorkersBySubcategory(subcategory: string): Promise<Array<Worker>>;
+    getWorkersWithDistance(location: Location): Promise<Array<Worker>>;
     isCallerAdmin(): Promise<boolean>;
     isCallerApproved(): Promise<boolean>;
     listApprovals(): Promise<Array<UserApprovalInfo>>;
@@ -104,11 +124,12 @@ export interface backendInterface {
     repairDataIntegrity(): Promise<string>;
     requestApproval(): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    searchApprovedWorkers(searchTerm: string): Promise<Array<Worker>>;
     searchWorkersByArea(area: string): Promise<Array<Worker>>;
     searchWorkersByAreaAndCategory(area: string, category: string): Promise<Array<Worker>>;
     searchWorkersByAreaAndSubcategory(area: string, subcategory: string): Promise<Array<Worker>>;
     setApproval(user: Principal, status: ApprovalStatus): Promise<void>;
-    submitWorkerRegistration(name: string, phone: string, category: string, subcategory: string, area: string, experience: string, workingHours: string, photo: ExternalBlob, comments: string | null): Promise<string>;
+    submitWorkerRegistration(name: string, phone: string, category: string, subcategory: string, area: string, experience: string, workingHours: string, photo: ExternalBlob, comments: string | null, skillsStr: string, location: Location | null): Promise<string>;
     unfeatureWorker(workerId: bigint): Promise<void>;
-    upgradeToAdmin(): Promise<boolean>;
+    universalSearch(searchText: string): Promise<Array<Worker>>;
 }

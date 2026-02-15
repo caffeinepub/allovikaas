@@ -30,6 +30,15 @@ export interface JobPost {
   'phone' : string,
   'dateTime' : Time,
 }
+export interface Location { 'lat' : number, 'lon' : number }
+export interface Suggestion {
+  'source' : { 'subcategory' : null } |
+    { 'area' : null } |
+    { 'skill' : null } |
+    { 'category' : null } |
+    { 'workerName' : null },
+  'text' : string,
+}
 export type Time = bigint;
 export interface UserApprovalInfo {
   'status' : ApprovalStatus,
@@ -58,6 +67,9 @@ export interface Worker {
   'comments' : [] | [string],
   'phone' : string,
   'photo' : ExternalBlob,
+  'skills' : Array<string>,
+  'lastActive' : [] | [Time],
+  'location' : [] | [Location],
 }
 export type WorkerStatus = { 'pendingVerification' : null } |
   { 'approved' : null } |
@@ -107,12 +119,14 @@ export interface _SERVICE {
   'getCategoryBySubcategory' : ActorMethod<[string], [] | [string]>,
   'getFeaturedWorkers' : ActorMethod<[], Array<Worker>>,
   'getJobPostById' : ActorMethod<[bigint], [] | [JobPost]>,
+  'getLiveSearchSuggestions' : ActorMethod<[string], Array<Suggestion>>,
   'getPendingJobPosts' : ActorMethod<[], Array<JobPost>>,
   'getPendingWorkers' : ActorMethod<[], Array<Worker>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getWorkerById' : ActorMethod<[bigint], [] | [Worker]>,
   'getWorkersByCategory' : ActorMethod<[string], Array<Worker>>,
   'getWorkersBySubcategory' : ActorMethod<[string], Array<Worker>>,
+  'getWorkersWithDistance' : ActorMethod<[Location], Array<Worker>>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isCallerApproved' : ActorMethod<[], boolean>,
   'listApprovals' : ActorMethod<[], Array<UserApprovalInfo>>,
@@ -122,6 +136,7 @@ export interface _SERVICE {
   'repairDataIntegrity' : ActorMethod<[], string>,
   'requestApproval' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'searchApprovedWorkers' : ActorMethod<[string], Array<Worker>>,
   'searchWorkersByArea' : ActorMethod<[string], Array<Worker>>,
   'searchWorkersByAreaAndCategory' : ActorMethod<
     [string, string],
@@ -143,11 +158,13 @@ export interface _SERVICE {
       string,
       ExternalBlob,
       [] | [string],
+      string,
+      [] | [Location],
     ],
     string
   >,
   'unfeatureWorker' : ActorMethod<[bigint], undefined>,
-  'upgradeToAdmin' : ActorMethod<[], boolean>,
+  'universalSearch' : ActorMethod<[string], Array<Worker>>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

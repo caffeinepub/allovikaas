@@ -1,26 +1,52 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, MapPin, Briefcase, Users, Heart } from 'lucide-react';
-import { useState } from 'react';
-import { useI18n } from '@/components/i18n/I18nProvider';
 import BilingualText from '@/components/i18n/BilingualText';
-import SafeIconImage from '@/components/common/SafeIconImage';
-import PageShell from '@/components/layout/PageShell';
-import { LOCAL_SKILLED_WORKERS_CATEGORY, getLocalSkilledWorkersSubcategories } from '@/config/localSkilledWorkers';
+import { useI18n } from '@/components/i18n/I18nProvider';
+import LiveSuggestionSearchBox from '@/components/search/LiveSuggestionSearchBox';
+import WorkerCard from '@/components/workers/WorkerCard';
+import { useBrowserGeolocation } from '@/hooks/useBrowserGeolocation';
+import { useNearbyWorkers } from '@/hooks/useNearbyWorkers';
+import { MapPin, Loader2 } from 'lucide-react';
+import ConstructionIcon from '@/icons/ConstructionIcon';
+import AgricultureIcon from '@/icons/AgricultureIcon';
+import HomeIcon from '@/icons/HomeIcon';
+import TransportIcon from '@/icons/TransportIcon';
+import CookingIcon from '@/icons/CookingIcon';
+import HelperIcon from '@/icons/HelperIcon';
+import RepairIcon from '@/icons/RepairIcon';
+import SuppliesIcon from '@/icons/SuppliesIcon';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { t } = useI18n();
-  const [searchArea, setSearchArea] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleAreaSearch = () => {
-    if (searchArea.trim()) {
+  // Request geolocation on mount
+  const { coords, isRequesting, isGranted, requestLocation } = useBrowserGeolocation(true);
+
+  // Fetch nearby workers when location is available
+  const { data: nearbyWorkers = [], isLoading: isLoadingNearby } = useNearbyWorkers({
+    location: coords ? { lat: coords.latitude, lon: coords.longitude } : null,
+    limit: 12,
+    enabled: isGranted && !!coords,
+  });
+
+  const handleSearch = (query: string) => {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) {
       navigate({
         to: '/search',
-        search: { area: searchArea.trim() },
+        search: { q: trimmedQuery },
       });
     }
+  };
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    navigate({
+      to: '/search',
+      search: { q: suggestion },
+    });
   };
 
   const handleCategoryClick = (category: string) => {
@@ -30,200 +56,129 @@ export default function HomePage() {
     });
   };
 
-  const heroTitle = t('home.hero.title');
-  const heroSubtitle = t('home.hero.subtitle');
-  const heroSearchPlaceholder = t('home.hero.searchPlaceholder');
-  const heroSearchButton = t('home.hero.searchButton');
-
-  const categoriesTitle = t('home.categories.title');
-  const categoriesSubtitle = t('home.categories.subtitle');
-
-  const localWorkersTitle = t('home.localWorkers.title');
-  const localWorkersSubtitle = t('home.localWorkers.subtitle');
-
-  const ctaTitle = t('home.cta.title');
-  const ctaSubtitle = t('home.cta.subtitle');
-  const ctaButton = t('home.cta.button');
-
   const categories = [
-    { name: 'Construction', icon: '/assets/generated/icon-construction.dim_128x128.svg' },
-    { name: 'Agriculture', icon: '/assets/generated/icon-agriculture.dim_128x128.svg' },
-    { name: 'Home Services', icon: '/assets/generated/icon-home-services.dim_128x128.svg' },
-    { name: 'Transport', icon: '/assets/generated/icon-transport.dim_128x128.svg' },
-    { name: 'Events & Cooking', icon: '/assets/generated/icon-events-cooking.dim_128x128.svg' },
-    { name: 'Daily Helpers', icon: '/assets/generated/icon-daily-helpers.dim_128x128.svg' },
-    { name: 'Repairs', icon: '/assets/generated/icon-repairs.dim_128x128.svg' },
-    { name: 'Supplies', icon: '/assets/generated/icon-supplies.dim_128x128.svg' },
+    { key: 'Construction', Icon: ConstructionIcon },
+    { key: 'Agriculture', Icon: AgricultureIcon },
+    { key: 'Home Services', Icon: HomeIcon },
+    { key: 'Transport', Icon: TransportIcon },
+    { key: 'Event Work', Icon: CookingIcon },
+    { key: 'Daily Helpers', Icon: HelperIcon },
+    { key: 'Repairs', Icon: RepairIcon },
+    { key: 'Supplies', Icon: SuppliesIcon },
   ];
 
-  const localSkilledWorkers = getLocalSkilledWorkersSubcategories();
+  const heroTitle = t('home.hero.title');
+  const heroSubtitle = t('home.hero.subtitle');
+  const searchPlaceholder = t('home.search.placeholder');
+  const categoriesTitle = t('home.categories.title');
+
+  const showNearbySection = isGranted && coords && nearbyWorkers.length > 0;
 
   return (
-    <PageShell>
-      <div className="max-w-7xl mx-auto space-y-12">
-        {/* Hero Section */}
-        <div className="text-center space-y-6 py-8">
-          <div className="space-y-3">
-            <BilingualText
-              english={<h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">{heroTitle.en}</h1>}
-              regional={<p className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">{heroTitle.regional}</p>}
-              regionalClassName="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight mt-3"
-            />
-            <BilingualText
-              english={<p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">{heroSubtitle.en}</p>}
-              regional={<p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">{heroSubtitle.regional}</p>}
-              regionalClassName="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mt-2"
-            />
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
+      {/* Hero Section */}
+      <section className="pt-16 pb-12 px-4">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <BilingualText
+            english={<h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">{heroTitle.en}</h1>}
+            regional={<p className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">{heroTitle.regional}</p>}
+            regionalClassName="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mt-3"
+          />
 
-          <div className="max-w-2xl mx-auto">
-            <div className="flex gap-3">
-              <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  value={searchArea}
-                  onChange={(e) => setSearchArea(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAreaSearch()}
-                  placeholder={heroSearchPlaceholder.en}
-                  className="pl-10 h-12 text-base"
-                />
-              </div>
-              <Button onClick={handleAreaSearch} size="lg" className="h-12 px-6 bg-primary hover:bg-primary-dark text-primary-foreground">
-                <Search className="h-5 w-5 mr-2" />
-                {heroSearchButton.en}
-              </Button>
+          <BilingualText
+            english={<p className="text-lg md:text-xl text-muted-foreground">{heroSubtitle.en}</p>}
+            regional={<p className="text-base md:text-lg text-muted-foreground">{heroSubtitle.regional}</p>}
+            regionalClassName="text-base md:text-lg text-muted-foreground mt-2"
+          />
+
+          {/* Search Box with Live Suggestions */}
+          <div className="max-w-2xl mx-auto mt-8">
+            <LiveSuggestionSearchBox
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={handleSearch}
+              onSuggestionSelect={handleSuggestionSelect}
+              placeholder={`${searchPlaceholder.en} / ${searchPlaceholder.regional}`}
+            />
+            <p className="text-sm text-muted-foreground mt-2 text-center">{searchPlaceholder.regional}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Nearby Workers Section */}
+      {showNearbySection && (
+        <section className="py-8 px-4 bg-gradient-to-r from-primary/5 to-secondary/5">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <MapPin className="h-5 w-5 text-primary" />
+              <p className="text-base font-medium text-foreground">
+                Showing workers near you
+              </p>
             </div>
-          </div>
-        </div>
 
-        {/* Categories Section */}
-        <div className="space-y-5">
-          <div className="text-center space-y-2">
-            <BilingualText
-              english={<h2 className="text-3xl md:text-4xl font-bold text-foreground">{categoriesTitle.en}</h2>}
-              regional={<p className="text-2xl md:text-3xl font-semibold text-foreground">{categoriesTitle.regional}</p>}
-              regionalClassName="text-2xl md:text-3xl font-semibold text-foreground mt-2"
-            />
-            <BilingualText
-              english={<p className="text-base md:text-lg text-muted-foreground">{categoriesSubtitle.en}</p>}
-              regional={<p className="text-sm md:text-base text-muted-foreground">{categoriesSubtitle.regional}</p>}
-              regionalClassName="text-sm md:text-base text-muted-foreground mt-1"
-            />
+            {isLoadingNearby ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {nearbyWorkers.map((worker) => (
+                  <WorkerCard key={worker.id.toString()} worker={worker} />
+                ))}
+              </div>
+            )}
           </div>
+        </section>
+      )}
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.map((category) => {
-              const label = t(`categories.${category.name.toLowerCase().replace(/\s+/g, '')}`);
-              return (
-                <button
-                  key={category.name}
-                  onClick={() => handleCategoryClick(category.name)}
-                  className="bg-card hover:bg-accent/50 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-200 group"
-                >
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className="bg-primary/10 rounded-xl p-4 group-hover:bg-primary/20 transition-colors">
-                      <SafeIconImage
-                        src={category.icon}
-                        alt={category.name}
-                        className="h-12 w-12 object-contain"
-                        fallbackSrc="/assets/generated/icon-fallback.dim_128x128.svg"
-                      />
-                    </div>
-                    <div className="text-center space-y-1">
-                      <p className="font-semibold text-foreground text-sm">{label.en}</p>
-                      <p className="text-xs text-muted-foreground">{label.regional}</p>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+      {/* Categories Section */}
+      <section className="py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          <BilingualText
+            english={<h2 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-8">{categoriesTitle.en}</h2>}
+            regional={<p className="text-2xl md:text-3xl font-bold text-foreground text-center">{categoriesTitle.regional}</p>}
+            regionalClassName="text-2xl md:text-3xl font-bold text-foreground text-center mt-2 mb-8"
+          />
 
-        {/* Local Skilled Workers Section */}
-        <div className="space-y-5">
-          <div className="text-center space-y-2">
-            <BilingualText
-              english={<h2 className="text-3xl md:text-4xl font-bold text-foreground">{localWorkersTitle.en}</h2>}
-              regional={<p className="text-2xl md:text-3xl font-semibold text-foreground">{localWorkersTitle.regional}</p>}
-              regionalClassName="text-2xl md:text-3xl font-semibold text-foreground mt-2"
-            />
-            <BilingualText
-              english={<p className="text-base md:text-lg text-muted-foreground">{localWorkersSubtitle.en}</p>}
-              regional={<p className="text-sm md:text-base text-muted-foreground">{localWorkersSubtitle.regional}</p>}
-              regionalClassName="text-sm md:text-base text-muted-foreground mt-1"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {localSkilledWorkers.map((worker) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {categories.map(({ key, Icon }) => (
               <button
-                key={worker.subcategory}
-                onClick={() => navigate({
-                  to: '/search',
-                  search: { category: LOCAL_SKILLED_WORKERS_CATEGORY, subcategory: worker.subcategory },
-                })}
-                className="bg-card hover:bg-accent/50 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200 group"
+                key={key}
+                onClick={() => handleCategoryClick(key)}
+                className="group bg-card hover:bg-accent/10 border-2 border-border hover:border-primary rounded-2xl p-6 transition-all duration-200 hover:shadow-2xl hover:scale-105"
               >
-                <div className="flex flex-col items-center space-y-2">
-                  <div className="bg-secondary/10 rounded-lg p-3 group-hover:bg-secondary/20 transition-colors">
-                    <SafeIconImage
-                      src={worker.icon}
-                      alt={worker.subcategory}
-                      className="h-10 w-10 object-contain"
-                      fallbackSrc="/assets/generated/icon-fallback.dim_128x128.svg"
-                    />
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="w-20 h-20 flex items-center justify-center">
+                    <Icon className="w-full h-full" />
                   </div>
-                  <div className="text-center space-y-0.5">
-                    <p className="font-medium text-foreground text-xs">{worker.label.en}</p>
-                    <p className="text-xs text-muted-foreground">{worker.label.regional}</p>
-                  </div>
+                  <span className="text-sm md:text-base font-semibold text-foreground text-center group-hover:text-primary">
+                    {key}
+                  </span>
                 </div>
               </button>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* CTA Section */}
-        <div className="bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 rounded-3xl p-8 md:p-12 text-center space-y-5">
-          <div className="space-y-3">
-            <BilingualText
-              english={<h2 className="text-3xl md:text-4xl font-bold text-foreground">{ctaTitle.en}</h2>}
-              regional={<p className="text-2xl md:text-3xl font-semibold text-foreground">{ctaTitle.regional}</p>}
-              regionalClassName="text-2xl md:text-3xl font-semibold text-foreground mt-2"
-            />
-            <BilingualText
-              english={<p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">{ctaSubtitle.en}</p>}
-              regional={<p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">{ctaSubtitle.regional}</p>}
-              regionalClassName="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto mt-2"
-            />
-          </div>
+      {/* CTA Section */}
+      <section className="py-16 px-4 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10">
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+            Are you a skilled worker?
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Join our network and connect with customers in your area
+          </p>
           <Button
-            onClick={() => navigate({ to: '/register-worker' })}
             size="lg"
-            className="h-12 px-8 text-base font-semibold bg-primary hover:bg-primary-dark text-primary-foreground"
+            onClick={() => navigate({ to: '/register-worker' })}
+            className="h-14 px-10 text-lg rounded-xl bg-primary hover:bg-primary-dark text-primary-foreground font-semibold shadow-lg"
           >
-            <Briefcase className="h-5 w-5 mr-2" />
-            {ctaButton.en}
+            Register as Worker
           </Button>
         </div>
-
-        {/* Footer Attribution */}
-        <div className="text-center py-6 border-t border-border/50">
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-            Built with <Heart className="h-4 w-4 text-red-500 fill-red-500" /> using{' '}
-            <a
-              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline font-medium"
-            >
-              caffeine.ai
-            </a>
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">© {new Date().getFullYear()} AREA WORKER. All rights reserved.</p>
-        </div>
-      </div>
-    </PageShell>
+      </section>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface SafeIconImageProps {
   src: string;
@@ -8,43 +8,40 @@ interface SafeIconImageProps {
 }
 
 /**
- * SafeIconImage component with enhanced validation and error handling.
- * - Validates src before rendering to prevent broken image placeholders
- * - Falls back to a default SVG icon on error or invalid src
- * - Resets error state when src prop changes
- * - Prevents infinite error loops with single-attempt recovery
+ * Image component with safe fallback handling for missing or invalid sources.
+ * Supports both PNG and SVG fallbacks with single-attempt error recovery.
  */
-export default function SafeIconImage({ src, alt, className = '', fallbackSrc = '/assets/generated/icon-fallback.dim_128x128.svg' }: SafeIconImageProps) {
-  const [imgSrc, setImgSrc] = useState<string>(src);
-  const [hasError, setHasError] = useState(false);
+export default function SafeIconImage({
+  src,
+  alt,
+  className = '',
+  fallbackSrc = '/assets/generated/icon-fallback.dim_128x128.png',
+}: SafeIconImageProps) {
+  const [imgSrc, setImgSrc] = useState(src);
+  const [hasErrored, setHasErrored] = useState(false);
 
-  // Reset error state when src changes
-  useEffect(() => {
-    // Validate src before setting
-    if (!src || typeof src !== 'string' || src.trim() === '') {
-      setImgSrc(fallbackSrc);
-      setHasError(true);
-    } else {
-      setImgSrc(src);
-      setHasError(false);
-    }
-  }, [src, fallbackSrc]);
+  // Reset error state when src prop changes
+  if (src !== imgSrc && !hasErrored) {
+    setImgSrc(src);
+    setHasErrored(false);
+  }
 
   const handleError = () => {
-    // Only attempt fallback once to prevent infinite loops
-    if (!hasError && imgSrc !== fallbackSrc) {
+    if (!hasErrored) {
+      setHasErrored(true);
       setImgSrc(fallbackSrc);
-      setHasError(true);
     }
   };
 
+  // Validate src is not empty or invalid
+  const validSrc = imgSrc && imgSrc.trim() !== '' ? imgSrc : fallbackSrc;
+
   return (
     <img
-      src={imgSrc}
+      src={validSrc}
       alt={alt}
       className={className}
       onError={handleError}
-      loading="lazy"
     />
   );
 }
