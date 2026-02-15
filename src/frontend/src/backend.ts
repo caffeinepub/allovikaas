@@ -90,6 +90,10 @@ export class ExternalBlob {
     }
 }
 export type Time = bigint;
+export interface CategoryMapping {
+    category: string;
+    subcategories: Array<string>;
+}
 export interface JobPost {
     id: bigint;
     status: Variant_pending_approved_rejected;
@@ -165,11 +169,13 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createJobPost(workType: string, area: string, dateTime: Time, salary: string, description: string, phone: string): Promise<string>;
     featureWorker(workerId: bigint): Promise<void>;
+    getAllCategories(): Promise<Array<CategoryMapping>>;
     getAllJobPosts(): Promise<Array<JobPost>>;
     getAllWorkers(): Promise<Array<Worker>>;
     getApprovedJobs(): Promise<Array<JobPost>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getCategoryBySubcategory(subcategory: string): Promise<string | null>;
     getFeaturedWorkers(): Promise<Array<Worker>>;
     getJobPostById(id: bigint): Promise<JobPost | null>;
     getPendingJobPosts(): Promise<Array<JobPost>>;
@@ -363,6 +369,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getAllCategories(): Promise<Array<CategoryMapping>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllCategories();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllCategories();
+            return result;
+        }
+    }
     async getAllJobPosts(): Promise<Array<JobPost>> {
         if (this.processError) {
             try {
@@ -431,6 +451,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getCallerUserRole();
             return from_candid_UserRole_n24(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getCategoryBySubcategory(arg0: string): Promise<string | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCategoryBySubcategory(arg0);
+                return from_candid_opt_n19(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCategoryBySubcategory(arg0);
+            return from_candid_opt_n19(this._uploadFile, this._downloadFile, result);
         }
     }
     async getFeaturedWorkers(): Promise<Array<Worker>> {

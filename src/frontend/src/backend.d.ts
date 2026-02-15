@@ -15,6 +15,10 @@ export class ExternalBlob {
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
 export type Time = bigint;
+export interface CategoryMapping {
+    category: string;
+    subcategories: Array<string>;
+}
 export interface JobPost {
     id: bigint;
     status: Variant_pending_approved_rejected;
@@ -72,11 +76,13 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createJobPost(workType: string, area: string, dateTime: Time, salary: string, description: string, phone: string): Promise<string>;
     featureWorker(workerId: bigint): Promise<void>;
+    getAllCategories(): Promise<Array<CategoryMapping>>;
     getAllJobPosts(): Promise<Array<JobPost>>;
     getAllWorkers(): Promise<Array<Worker>>;
     getApprovedJobs(): Promise<Array<JobPost>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getCategoryBySubcategory(subcategory: string): Promise<string | null>;
     getFeaturedWorkers(): Promise<Array<Worker>>;
     getJobPostById(id: bigint): Promise<JobPost | null>;
     getPendingJobPosts(): Promise<Array<JobPost>>;

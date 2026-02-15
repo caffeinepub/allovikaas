@@ -2,9 +2,13 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-local-svg-icon-assets-for-every-homepage-category-and-every-local-skilled-workers-subcategory-under-frontend-public-assets-generated-and-ensure-no-category-subcategory-icon-uses-any-external-url",
-      "featureTitle": "Add local SVG icon assets for every homepage category and every \"Local Skilled Workers\" subcategory under frontend/public/assets/generated, and ensure no category/subcategory icon uses any external URL.",
-      "files": [],
+      "featureId": "feature-add-bilingual-english-tamil-label-support-for-all-local-skilled-workers-group-names-and-subcategory-names-and-render-them-as-two-line-labels-english-first-line-tamil-second-line-wherever-local-skilled-workers-groups-subcategories-are-shown-including-the-home-page-local-skilled-workers-grid",
+      "featureTitle": "Add bilingual (English + Tamil) label support for all Local Skilled Workers group names and subcategory names, and render them as two-line labels (English first line, Tamil second line) wherever Local Skilled Workers groups/subcategories are shown (including the Home page Local Skilled Workers grid).",
+      "files": [
+        "frontend/src/config/localSkilledWorkers.ts",
+        "frontend/src/pages/HomePage.tsx",
+        "frontend/src/utils/bilingualTaxonomy.ts"
+      ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
@@ -15,16 +19,16 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-42"
+        "REQ-59"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-category-and-subcategory-icon-references-in-the-frontend-to-use-the-new-local-svg-icon-filenames-replacing-current-png-references-including-icons-defined-in-frontend-src-pages-homepage-tsx-and-frontend-src-config-localskilledworkers-ts",
-      "featureTitle": "Update the category and subcategory icon references in the frontend to use the new local SVG icon filenames (replacing current .png references), including icons defined in frontend/src/pages/HomePage.tsx and frontend/src/config/localSkilledWorkers.ts.",
+      "featureId": "feature-update-the-worker-registration-page-to-show-bilingual-english-tamil-labels-for-all-form-titles-field-labels-placeholders-validation-error-messages-and-primary-secondary-buttons-using-the-existing-i18n-system",
+      "featureTitle": "Update the Worker Registration page to show bilingual (English + Tamil) labels for all form titles, field labels, placeholders, validation/error messages, and primary/secondary buttons using the existing i18n system.",
       "files": [
-        "frontend/src/config/localSkilledWorkers.ts",
-        "frontend/src/pages/HomePage.tsx"
+        "frontend/src/pages/WorkerRegistrationPage.tsx",
+        "frontend/src/utils/bilingualTaxonomy.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -36,17 +40,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-43"
+        "REQ-60"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-a-default-fallback-icon-behavior-for-category-and-subcategory-icons-if-an-icon-path-is-missing-empty-or-fails-to-load-render-a-local-fallback-svg-icon-instead-of-hiding-the-image-or-leaving-it-broken",
-      "featureTitle": "Implement a default fallback icon behavior for category and subcategory icons: if an icon path is missing, empty, or fails to load, render a local fallback SVG icon instead of hiding the image or leaving it broken.",
+      "featureId": "feature-update-the-worker-search-results-page-to-show-bilingual-english-tamil-labels-for-the-page-title-filter-labels-placeholders-action-buttons-empty-loading-error-states-and-the-active-filter-chips-using-the-existing-i18n-system",
+      "featureTitle": "Update the Worker Search Results page to show bilingual (English + Tamil) labels for the page title, filter labels/placeholders, action buttons, empty/loading/error states, and the active filter chips using the existing i18n system.",
       "files": [
-        "frontend/src/components/common/SafeIconImage.tsx",
-        "frontend/src/config/localSkilledWorkers.ts",
-        "frontend/src/pages/HomePage.tsx"
+        "frontend/src/utils/bilingualTaxonomy.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -58,7 +60,27 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-44"
+        "REQ-61"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-extend-the-i18n-translation-dictionary-to-include-keys-needed-for-the-new-bilingual-labels-added-in-home-page-local-skilled-workers-group-subcategory-ui-worker-registration-page-and-worker-search-results-page-english-tamil-at-minimum",
+      "featureTitle": "Extend the i18n translation dictionary to include keys needed for the new bilingual labels added in Home page Local Skilled Workers group/subcategory UI, Worker Registration page, and Worker Search Results page (English + Tamil at minimum).",
+      "files": [
+        "frontend/src/components/i18n/I18nProvider.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-62"
       ],
       "confidence": "high"
     }

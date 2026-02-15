@@ -26,8 +26,8 @@ export const LOCAL_SKILLED_WORKERS_GROUPS: CategoryGroup[] = [
   {
     groupName: 'Wood & Metal',
     subcategories: [
-      { label: 'Door Maker (Kathavu seibavar)', icon: '/assets/generated/icon-door-maker.dim_128x128.svg' },
-      { label: 'Window Maker (Jannal seibavar)', icon: '/assets/generated/icon-window-maker.dim_128x128.svg' },
+      { label: 'Door Maker', icon: '/assets/generated/icon-door-maker.dim_128x128.svg' },
+      { label: 'Window Maker', icon: '/assets/generated/icon-window-maker.dim_128x128.svg' },
       { label: 'Carpenter', icon: '/assets/generated/icon-carpenter.dim_128x128.svg' },
       { label: 'Grill / Gate Fabricator', icon: '/assets/generated/icon-grill-gate-fabricator.dim_128x128.svg' },
       { label: 'Welder', icon: '/assets/generated/icon-welder.dim_128x128.svg' },
@@ -36,8 +36,8 @@ export const LOCAL_SKILLED_WORKERS_GROUPS: CategoryGroup[] = [
   {
     groupName: 'Tree & Land Works',
     subcategories: [
-      { label: 'Tree Cutter (Maram aruppavar)', icon: '/assets/generated/icon-tree-cutter.dim_128x128.svg' },
-      { label: 'Coconut Tree Climber (Thennai maram yeripavar)', icon: '/assets/generated/icon-coconut-tree-climber.dim_128x128.svg' },
+      { label: 'Tree Cutter', icon: '/assets/generated/icon-tree-cutter.dim_128x128.svg' },
+      { label: 'Coconut Tree Climber', icon: '/assets/generated/icon-coconut-tree-climber.dim_128x128.svg' },
       { label: 'Coconut Picker', icon: '/assets/generated/icon-coconut-picker.dim_128x128.svg' },
       { label: 'Firewood Cutter', icon: '/assets/generated/icon-firewood-cutter.dim_128x128.svg' },
     ],
@@ -45,7 +45,7 @@ export const LOCAL_SKILLED_WORKERS_GROUPS: CategoryGroup[] = [
   {
     groupName: 'Handcraft & Small Work',
     subcategories: [
-      { label: 'Basket Maker (Koodai pinnubavar)', icon: '/assets/generated/icon-basket-maker.dim_128x128.svg' },
+      { label: 'Basket Maker', icon: '/assets/generated/icon-basket-maker.dim_128x128.svg' },
       { label: 'Rope Maker', icon: '/assets/generated/icon-rope-maker.dim_128x128.svg' },
       { label: 'Mat Weaver', icon: '/assets/generated/icon-mat-weaver.dim_128x128.svg' },
       { label: 'Pot Maker', icon: '/assets/generated/icon-pot-maker.dim_128x128.svg' },
@@ -55,7 +55,7 @@ export const LOCAL_SKILLED_WORKERS_GROUPS: CategoryGroup[] = [
     groupName: 'Home & Daily Help',
     subcategories: [
       { label: 'House Maid', icon: '/assets/generated/icon-house-maid.dim_128x128.svg' },
-      { label: 'One Day Cooking Worker (Orunaal samayal)', icon: '/assets/generated/icon-one-day-cooking-worker.dim_128x128.svg' },
+      { label: 'One Day Cooking Worker', icon: '/assets/generated/icon-one-day-cooking-worker.dim_128x128.svg' },
       { label: 'Function Cooking Team', icon: '/assets/generated/icon-function-cooking-team.dim_128x128.svg' },
       { label: 'Cleaning Worker', icon: '/assets/generated/icon-cleaning-worker.dim_128x128.svg' },
     ],

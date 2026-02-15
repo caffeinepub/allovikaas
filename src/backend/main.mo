@@ -11,14 +11,233 @@ import MixinStorage "blob-storage/Mixin";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-
-
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
   include MixinStorage();
 
-  // User Profile Type
+  public type Category = {
+    name : Text;
+    subcategories : [Text];
+  };
+
+  public type CategoryMapping = {
+    category : Text;
+    subcategories : [Text];
+  };
+
+  type SubcategoryMapping = {
+    subcategory : Text;
+    parentCategory : Text;
+  };
+
+  type SubcategoryToCategory = {
+    subcategory : Text;
+    category : Text;
+  };
+
+  var categories : [Category] = [
+    {
+      name = "Household Services";
+      subcategories = ["Plumber", "Electrician", "Painter", "Carpenter", "Maid"];
+    },
+    {
+      name = "Vehicle Services";
+      subcategories = ["Mechanic", "Driver", "Car Wash"];
+    },
+    {
+      name = "Home Improvement";
+      subcategories = ["Interior Designer", "Architect", "Landscape Gardener"];
+    },
+    {
+      name = "Specialized Cleaning";
+      subcategories = [
+        "Carpet Cleaner",
+        "Window Washer",
+        "Upholstery Cleaner",
+        "Deep Cleaning Specialist",
+      ];
+    },
+    {
+      name = "Skilled Trades";
+      subcategories = [
+        "Welder",
+        "Tiler",
+        "Bricklayer",
+        "Roofer",
+        "Plasterer",
+      ];
+    },
+    {
+      name = "Electronics & Appliances";
+      subcategories = [
+        "AC Repair",
+        "Refrigeration Specialist",
+        "TV/Audio",
+        "Appliance Installer",
+      ];
+    },
+    {
+      name = "Security Services";
+      subcategories = [
+        "Security Camera Installer",
+        "Locksmith",
+        "Alarm System Specialist",
+      ];
+    },
+    {
+      name = "Pest Control";
+      subcategories = [
+        "Pest Control",
+        "Termite Treatment",
+        "Fumigation",
+      ];
+    },
+    {
+      name = "Beauty & Wellness";
+      subcategories = [
+        "Barber",
+        "Beautician",
+        "Masseuse",
+        "Manicurist",
+      ];
+    },
+    {
+      name = "Fitness Services";
+      subcategories = ["Personal Trainer", "Yoga Instructor"];
+    },
+    {
+      name = "Tutoring & Education";
+      subcategories = [
+        "Private Tutor",
+        "Music Teacher",
+        "Dance Instructor",
+      ];
+    },
+    {
+      name = "Event Services";
+      subcategories = [
+        "Event Planner",
+        "Catering",
+        "Photographer",
+        "Decorator",
+      ];
+    },
+    {
+      name = "General Services";
+      subcategories = [
+        "Admin",
+        "Helper",
+        "Handyman",
+        "Laborer",
+        "Driver",
+        "Housekeeper",
+      ];
+    },
+    {
+      name = "Construction";
+      subcategories = [
+        "Construction",
+        "Builder",
+        "Contractor",
+        "Mason",
+        "Laborer",
+      ];
+    },
+    {
+      name = "Healthcare & Wellness";
+      subcategories = [
+        "Nurse",
+        "Healthcare Aide",
+        "Physical Therapist",
+        "Homeopathy",
+      ];
+    },
+    {
+      name = "Local Skilled Workers";
+      subcategories = [
+        "Plumber",
+        "Electrician",
+        "Painter",
+        "Maid",
+        "Housekeeper",
+        "Barber",
+        "Beautician",
+        "Driver",
+        "Security",
+        "Daily Labours",
+        "Helper",
+        "Admin",
+        "Labour",
+        "General Labour",
+        "Admin Assistant",
+        "Household Helper",
+      ];
+    },
+  ];
+
+  let generalSubcategories : [SubcategoryToCategory] = [
+    { subcategory = "Plumber"; category = "Local Skilled Workers" },
+    { subcategory = "Electrician"; category = "Local Skilled Workers" },
+    { subcategory = "Painter"; category = "Local Skilled Workers" },
+    { subcategory = "Maid"; category = "Local Skilled Workers" },
+    { subcategory = "Housekeeper"; category = "Local Skilled Workers" },
+    { subcategory = "Barber"; category = "Local Skilled Workers" },
+    { subcategory = "Beautician"; category = "Local Skilled Workers" },
+    { subcategory = "Driver"; category = "Local Skilled Workers" },
+    { subcategory = "Security"; category = "Local Skilled Workers" },
+    { subcategory = "Daily Labours"; category = "Local Skilled Workers" },
+    { subcategory = "Helper"; category = "Local Skilled Workers" },
+    { subcategory = "Admin"; category = "Local Skilled Workers" },
+    { subcategory = "Labour"; category = "Local Skilled Workers" },
+    { subcategory = "General Labour"; category = "Local Skilled Workers" },
+    { subcategory = "Admin Assistant"; category = "Local Skilled Workers" },
+    { subcategory = "Household Helper"; category = "Local Skilled Workers" },
+  ];
+
+  var subcategoryToCategoryMap : [(Text, Text)] = [
+    ("Plumber", "Local Skilled Workers"),
+    ("Electrician", "Local Skilled Workers"),
+    ("Painter", "Local Skilled Workers"),
+    ("Maid", "Local Skilled Workers"),
+    ("Housekeeper", "Local Skilled Workers"),
+    ("Barber", "Local Skilled Workers"),
+    ("Beautician", "Local Skilled Workers"),
+    ("Driver", "Local Skilled Workers"),
+    ("Security", "Local Skilled Workers"),
+    ("Daily Labours", "Local Skilled Workers"),
+    ("Helper", "Local Skilled Workers"),
+    ("Admin", "Local Skilled Workers"),
+    ("Labour", "Local Skilled Workers"),
+    ("General Labour", "Local Skilled Workers"),
+    ("Admin Assistant", "Local Skilled Workers"),
+    ("Household Helper", "Local Skilled Workers"),
+  ];
+
+  public func getAllCategories() : async [CategoryMapping] {
+    let mappedCategories = categories.map(
+      func(cat) {
+        {
+          category = cat.name;
+          subcategories = cat.subcategories;
+        };
+      }
+    );
+    mappedCategories;
+  };
+
+  public func getCategoryBySubcategory(subcategory : Text) : async ?Text {
+    let mapped = generalSubcategories.find(
+      func(mapping) {
+        Text.equal(mapping.subcategory, subcategory);
+      }
+    );
+    switch (mapped) {
+      case (null) { null };
+      case (?mapping) { ?mapping.category };
+    };
+  };
+
   public type UserProfile = {
     name : Text;
     phone : ?Text;
@@ -27,7 +246,6 @@ actor {
 
   let userProfiles = Map.empty<Principal, UserProfile>();
 
-  // User Profile Functions
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -49,14 +267,7 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  type Location = {
-    latitude : Float;
-    longitude : Float;
-    city : Text;
-    pincode : Text;
-  };
-
-  type WorkerStatus = {
+  public type WorkerStatus = {
     #pendingVerification;
     #approved;
     #rejected : Text;
@@ -100,7 +311,6 @@ actor {
   let workers = Map.empty<Nat, Worker>();
   let jobPosts = Map.empty<Nat, JobPost>();
 
-  // Worker Registration - Public, any authenticated user can register
   public shared ({ caller }) func submitWorkerRegistration(
     name : Text,
     phone : Text,
@@ -140,28 +350,24 @@ actor {
     "We will verify and publish";
   };
 
-  // Worker Search by Area/Pincode - Public query, no auth needed
   public query func searchWorkersByArea(area : Text) : async [Worker] {
     workers.values().toArray().filter(
       func(w) { w.area.contains(#text(area)) and w.status == #approved }
     );
   };
 
-  // Category Browsing - Public query, no auth needed
   public query func getWorkersByCategory(category : Text) : async [Worker] {
     workers.values().toArray().filter(
       func(w) { w.category == category and w.status == #approved }
     );
   };
 
-  // Subcategory Search - Fully supports all subcategory searches
   public query func getWorkersBySubcategory(subcategory : Text) : async [Worker] {
     workers.values().toArray().filter(
       func(w) { w.subcategory == subcategory and w.status == #approved }
     );
   };
 
-  // Combined Area and Category Filtering
   public query func searchWorkersByAreaAndCategory(area : Text, category : Text) : async [Worker] {
     workers.values().toArray().filter(
       func(w) {
@@ -170,7 +376,6 @@ actor {
     );
   };
 
-  // Combined Area and Subcategory Filtering
   public query func searchWorkersByAreaAndSubcategory(area : Text, subcategory : Text) : async [Worker] {
     workers.values().toArray().filter(
       func(w) {
@@ -179,7 +384,6 @@ actor {
     );
   };
 
-  // Job Request Posting - Public, any authenticated user can post
   public shared ({ caller }) func createJobPost(
     workType : Text,
     area : Text,
@@ -210,14 +414,11 @@ actor {
     "Job post submitted for approval";
   };
 
-  // Get Approved Jobs for "Workers Needed Today" - Public query
   public query func getApprovedJobs() : async [JobPost] {
     jobPosts.values().toArray().filter(
       func(j) { j.status == #approved }
     );
   };
-
-  // Admin Functions - All require admin authorization
 
   public shared ({ caller }) func approveWorker(workerId : Nat) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
@@ -316,7 +517,6 @@ actor {
     workers.add(workerId, updatedWorker);
   };
 
-  // Public query functions - no auth needed for browsing
   public query func getFeaturedWorkers() : async [Worker] {
     workers.values().toArray().filter(
       func(w) { w.featured and w.status == #approved }
@@ -331,7 +531,6 @@ actor {
     jobPosts.get(id);
   };
 
-  // Admin query functions - require admin authorization
   public query ({ caller }) func getAllWorkers() : async [Worker] {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can view all workers");
@@ -364,13 +563,11 @@ actor {
     );
   };
 
-  // Data Integrity Repair Administration (Admin-only)
   public shared ({ caller }) func repairDataIntegrity() : async Text {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can repair data integrity");
     };
 
-    // Remove invalid/broken workers
     let filteredWorkers = workers.filter(
       func(_, w) {
         w.name.size() > 0 and w.phone.size() > 0 and w.category.size() > 0 and w.area.size() > 0 and w.experience.size() > 0 and w.workingHours.size() > 0
@@ -382,7 +579,6 @@ actor {
       workers.add(k, v);
     };
 
-    // Remove invalid job posts
     let filteredJobs = jobPosts.filter(
       func(_, j) {
         j.workType.size() > 0 and j.area.size() > 0 and j.salary.size() > 0 and j.description.size() > 0 and j.phone.size() > 0
@@ -397,13 +593,11 @@ actor {
     "Data successfully repaired. Now " # workers.size().toText() # " workers and " # jobPosts.size().toText() # " valid job posts remain.";
   };
 
-  // Error Handling - Prevent Trapping
   public query func safeQueryWorker(id : Nat) : async ?Worker {
     let worker = workers.get(id);
     worker;
   };
 
-  // Defensive Default Category Fallback
   public query func getSafeCategoryWorkers(category : Text) : async [Worker] {
     let cat = if (category.size() == 0) { "General" } else { category };
     workers.values().toArray().filter(

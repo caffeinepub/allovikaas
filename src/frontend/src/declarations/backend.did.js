@@ -25,6 +25,10 @@ export const UserRole = IDL.Variant({
   'guest' : IDL.Null,
 });
 export const Time = IDL.Int;
+export const CategoryMapping = IDL.Record({
+  'category' : IDL.Text,
+  'subcategories' : IDL.Vec(IDL.Text),
+});
 export const JobPost = IDL.Record({
   'id' : IDL.Nat,
   'status' : IDL.Variant({
@@ -104,11 +108,13 @@ export const idlService = IDL.Service({
       [],
     ),
   'featureWorker' : IDL.Func([IDL.Nat], [], []),
+  'getAllCategories' : IDL.Func([], [IDL.Vec(CategoryMapping)], []),
   'getAllJobPosts' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
   'getAllWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
   'getApprovedJobs' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getCategoryBySubcategory' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
   'getFeaturedWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
   'getJobPostById' : IDL.Func([IDL.Nat], [IDL.Opt(JobPost)], ['query']),
   'getPendingJobPosts' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
@@ -182,6 +188,10 @@ export const idlFactory = ({ IDL }) => {
     'guest' : IDL.Null,
   });
   const Time = IDL.Int;
+  const CategoryMapping = IDL.Record({
+    'category' : IDL.Text,
+    'subcategories' : IDL.Vec(IDL.Text),
+  });
   const JobPost = IDL.Record({
     'id' : IDL.Nat,
     'status' : IDL.Variant({
@@ -261,11 +271,13 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'featureWorker' : IDL.Func([IDL.Nat], [], []),
+    'getAllCategories' : IDL.Func([], [IDL.Vec(CategoryMapping)], []),
     'getAllJobPosts' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
     'getAllWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
     'getApprovedJobs' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getCategoryBySubcategory' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
     'getFeaturedWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
     'getJobPostById' : IDL.Func([IDL.Nat], [IDL.Opt(JobPost)], ['query']),
     'getPendingJobPosts' : IDL.Func([], [IDL.Vec(JobPost)], ['query']),

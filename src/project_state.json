@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 17,
+  "projectStateVersion": 29,
   "summary": "Build a production-ready multilingual hyperlocal services platform named “AREA WORKARS” (always uppercase) that connects (1) people searching for workers, (2) workers listing their services, and (3) businesses posting job requirements. Mobile-first, premium colorful corporate-but-rural-friendly UI. Search by area/pincode, browse categories with meaningful icons, view worker cards with direct Call/WhatsApp (no booking). Includes worker registration, public job request posting + job board, and an admin approval panel for workers and job posts. Multilingual: English default with an auto-selected regional language shown below based on selected state (Tamil/Kannada/Malayalam/Telugu/Hindi).",
   "architectural_notes": [
     "Brand style: trustworthy, simple, rural+urban friendly; not corporate, not ecommerce; community-service feel",
@@ -12,14 +12,14 @@
     "Worker registration fields: name, phone number, work category dropdown, area, experience, working time, upload photo; after submit show 'We will verify and publish your number' message",
     "SEO targets: optimize for local intent searches (e.g., 'worker near me', 'maram vetra aal near me', 'electrician near me tamilnadu')",
     "User preference: background should feel vibrant and more corporate in style (ensure readability on mobile).",
-    "Project renamed to “AREA WORKER” with tagline: “Find People Who Work Near You / உங்கள் அருகில் வேலை செய்யும் நபர்களை கண்டுபிடிக்கவும்”."
+    "Branding: Platform name must be “AREA WORKARS” (uppercase) everywhere; keep all other UI/UX unchanged."
   ],
   "known_issues": [
     "App crash showing \"Something went wrong\" (observed after adding categories); likely caused by missing/invalid category/subcategory relations or unhandled API errors.",
-    "Broken/missing images/icons on the site; need local SVG icons for all categories/subcategories with a fallback icon when missing."
+    "Broken/missing images/icons on the site; need local SVG icons for all categories/subcategories with a fallback icon when missing.",
+    "Broken image placeholders are visible on category icons; must use local SVG icons only with a fallback icon when missing."
   ],
-  "isFixRequest": true,
-  "imageRequirements": "## Required Images\n- Default generic fallback icon, simple flat monochrome badge/worker-symbol style (icon-fallback.dim_128x128.svg)\n- Construction category icon, simple flat monochrome (icon-construction.dim_128x128.svg)\n- Agriculture category icon, simple flat monochrome (icon-agriculture.dim_128x128.svg)\n- Home services category icon, simple flat monochrome (icon-home-services.dim_128x128.svg)\n- Transport category icon, simple flat monochrome (icon-transport.dim_128x128.svg)\n- Events & cooking category icon, simple flat monochrome (icon-events-cooking.dim_128x128.svg)\n- Daily helpers category icon, simple flat monochrome (icon-daily-helpers.dim_128x128.svg)\n- Repairs category icon, simple flat monochrome (icon-repairs.dim_128x128.svg)\n- Supplies category icon, simple flat monochrome (icon-supplies.dim_128x128.svg)\n- Local skilled workers category icon, simple flat monochrome (icon-local-skilled-workers.dim_128x128.svg)\n- Mason subcategory icon, simple flat monochrome (icon-mason.dim_128x128.svg)\n- Coolie helper subcategory icon, simple flat monochrome (icon-coolie-helper.dim_128x128.svg)\n- Centring worker subcategory icon, simple flat monochrome (icon-centring-worker.dim_128x128.svg)\n- Bar bending worker subcategory icon, simple flat monochrome (icon-bar-bending-worker.dim_128x128.svg)\n- Door maker subcategory icon, simple flat monochrome (icon-door-maker.dim_128x128.svg)\n- Window maker subcategory icon, simple flat monochrome (icon-window-maker.dim_128x128.svg)\n- Carpenter subcategory icon, simple flat monochrome (icon-carpenter.dim_128x128.svg)\n- Grill/gate fabricator subcategory icon, simple flat monochrome (icon-grill-gate-fabricator.dim_128x128.svg)\n- Welder subcategory icon, simple flat monochrome (icon-welder.dim_128x128.svg)\n- Tree cutter subcategory icon, simple flat monochrome (icon-tree-cutter.dim_128x128.svg)\n- Coconut tree climber subcategory icon, simple flat monochrome (icon-coconut-tree-climber.dim_128x128.svg)\n- Coconut picker subcategory icon, simple flat monochrome (icon-coconut-picker.dim_128x128.svg)\n- Firewood cutter subcategory icon, simple flat monochrome (icon-firewood-cutter.dim_128x128.svg)\n- Basket maker subcategory icon, simple flat monochrome (icon-basket-maker.dim_128x128.svg)\n- Rope maker subcategory icon, simple flat monochrome (icon-rope-maker.dim_128x128.svg)\n- Mat weaver subcategory icon, simple flat monochrome (icon-mat-weaver.dim_128x128.svg)\n- Pot maker subcategory icon, simple flat monochrome (icon-pot-maker.dim_128x128.svg)\n- House maid subcategory icon, simple flat monochrome (icon-house-maid.dim_128x128.svg)\n- One day cooking worker subcategory icon, simple flat monochrome (icon-one-day-cooking-worker.dim_128x128.svg)\n- Function cooking team subcategory icon, simple flat monochrome (icon-function-cooking-team.dim_128x128.svg)\n- Cleaning worker subcategory icon, simple flat monochrome (icon-cleaning-worker.dim_128x128.svg)\n- Tailor subcategory icon, simple flat monochrome (icon-tailor.dim_128x128.svg)\n- Aari worker subcategory icon, simple flat monochrome (icon-aari-worker.dim_128x128.svg)\n- Blouse designer subcategory icon, simple flat monochrome (icon-blouse-designer.dim_128x128.svg)\n- Saree falls/pico worker subcategory icon, simple flat monochrome (icon-saree-falls-pico-worker.dim_128x128.svg)\n- Ironing service subcategory icon, simple flat monochrome (icon-ironing-service.dim_128x128.svg)\n- Farm labour subcategory icon, simple flat monochrome (icon-farm-labour.dim_128x128.svg)\n- Planting worker subcategory icon, simple flat monochrome (icon-planting-worker.dim_128x128.svg)\n- Harvest worker subcategory icon, simple flat monochrome (icon-harvest-worker.dim_128x128.svg)\n- Sprayer worker subcategory icon, simple flat monochrome (icon-sprayer-worker.dim_128x128.svg)",
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-build-a-single-page-premium-modern-corporate-landing-page-for-the-textile-production-network-brand-named-allovikaas-optimized-to-recruit-saree-manufacturers-weavers-loom-owners-and-cloth-producers-into-a-manufacturing-ecosystem-network",
@@ -332,6 +332,94 @@
         "REQ-44"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-frontend-category-subcategory-dropdown-options-on-worker-registration-and-worker-search-results-pages-to-use-the-backend-provided-taxonomy-instead-of-hardcoded-lists-while-keeping-the-current-ui-layout-and-preserving-existing-local-skilled-workers-icon-behavior",
+      "title": "Update the frontend category/subcategory dropdown options on Worker Registration and Worker Search Results pages to use the backend-provided taxonomy (instead of hardcoded lists), while keeping the current UI layout and preserving existing Local Skilled Workers icon behavior.",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-rename-the-platform-name-to-area-workars-always-uppercase-everywhere-it-is-shown-to-users-without-changing-any-other-copy-layout-styling-behavior-routes-or-internal-storage-keys",
+      "title": "Rename the platform name to “AREA WORKARS” (always uppercase) everywhere it is shown to users, without changing any other copy, layout, styling, behavior, routes, or internal storage keys.",
+      "reqIds": [
+        "REQ-48"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-prevent-frontend-runtime-crashes-when-category-subcategory-data-is-missing-invalid-or-inconsistent-by-adding-null-undefined-guards-and-safe-fallbacks-across-search-filter-flows-without-changing-any-existing-ui-layout-or-styling",
+      "title": "Prevent frontend runtime crashes when category/subcategory data is missing, invalid, or inconsistent by adding null/undefined guards and safe fallbacks across search + filter flows, without changing any existing UI layout or styling.",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-all-react-query-query-functions-and-mutation-functions-that-call-the-backend-actor-are-wrapped-with-error-handling-so-they-never-throw-unhandled-errors-that-trigger-the-global-something-went-wrong-state-they-must-resolve-to-safe-defaults-when-the-actor-is-missing-or-when-a-call-fails",
+      "title": "Ensure all React Query query functions and mutation functions that call the backend actor are wrapped with error handling so they never throw unhandled errors that trigger the global “Something went wrong” state; they must resolve to safe defaults when the actor is missing or when a call fails.",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-standardize-the-icon-fallback-behavior-so-category-subcategory-icons-always-render-a-valid-local-svg-fallback-when-an-icon-path-is-missing-empty-or-fails-to-load",
+      "title": "Standardize the icon fallback behavior so category/subcategory icons always render a valid local SVG fallback when an icon path is missing, empty, or fails to load.",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-the-missing-generated-static-svg-icon-assets-required-by-the-homepage-category-grid-and-local-skilled-workers-taxonomy-under-frontend-public-assets-generated-including-a-dedicated-fallback-svg-icon-file",
+      "title": "Add the missing generated static SVG icon assets required by the homepage category grid and Local Skilled Workers taxonomy under frontend/public/assets/generated, including a dedicated fallback SVG icon file.",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-frontend-category-subcategory-dropdowns-and-filters-display-the-new-subcategories-via-the-existing-taxonomy-hook-frontend-src-hooks-useworkertaxonomy-ts-without-requiring-hardcoded-additions-in-pages",
+      "title": "Ensure frontend category/subcategory dropdowns and filters display the new subcategories via the existing taxonomy hook (frontend/src/hooks/useWorkerTaxonomy.ts) without requiring hardcoded additions in pages.",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-bilingual-english-tamil-label-support-for-all-local-skilled-workers-group-names-and-subcategory-names-and-render-them-as-two-line-labels-english-first-line-tamil-second-line-wherever-local-skilled-workers-groups-subcategories-are-shown-including-the-home-page-local-skilled-workers-grid",
+      "title": "Add bilingual (English + Tamil) label support for all Local Skilled Workers group names and subcategory names, and render them as two-line labels (English first line, Tamil second line) wherever Local Skilled Workers groups/subcategories are shown (including the Home page Local Skilled Workers grid).",
+      "reqIds": [
+        "REQ-59"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-worker-registration-page-to-show-bilingual-english-tamil-labels-for-all-form-titles-field-labels-placeholders-validation-error-messages-and-primary-secondary-buttons-using-the-existing-i18n-system",
+      "title": "Update the Worker Registration page to show bilingual (English + Tamil) labels for all form titles, field labels, placeholders, validation/error messages, and primary/secondary buttons using the existing i18n system.",
+      "reqIds": [
+        "REQ-60"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-worker-search-results-page-to-show-bilingual-english-tamil-labels-for-the-page-title-filter-labels-placeholders-action-buttons-empty-loading-error-states-and-the-active-filter-chips-using-the-existing-i18n-system",
+      "title": "Update the Worker Search Results page to show bilingual (English + Tamil) labels for the page title, filter labels/placeholders, action buttons, empty/loading/error states, and the active filter chips using the existing i18n system.",
+      "reqIds": [
+        "REQ-61"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-i18n-translation-dictionary-to-include-keys-needed-for-the-new-bilingual-labels-added-in-home-page-local-skilled-workers-group-subcategory-ui-worker-registration-page-and-worker-search-results-page-english-tamil-at-minimum",
+      "title": "Extend the i18n translation dictionary to include keys needed for the new bilingual labels added in Home page Local Skilled Workers group/subcategory UI, Worker Registration page, and Worker Search Results page (English + Tamil at minimum).",
+      "reqIds": [
+        "REQ-62"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -468,6 +556,92 @@
     {
       "id": "AR-43",
       "summary": "Fix broken images by generating and using local SVG icons for every category and subcategory (no external URLs), and show a default fallback icon when an icon is missing; do not modify database or UI layout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-45",
+      "summary": "Extend worker categories data model: add new subcategories and correctly map them to their parent categories while preserving all existing/old worker data (additive change, no deletions).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-46",
+      "summary": "Extend the backend worker categories taxonomy by adding the new subcategories provided by the user and defining an explicit mapping of subcategory → parent category, without deleting or modifying any existing worker records.",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-47",
+      "summary": "Add backend query APIs that return the full category taxonomy for use by the frontend, and ensure worker registration inputs are validated/mapped using this taxonomy while still accepting legacy category/subcategory values to preserve old data.",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-48",
+      "summary": "Rename/rebrand all user-facing platform name text to “AREA WORKARS” (uppercase) everywhere; do not change anything else",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-49",
+      "summary": "Bilingual display everywhere with Tamil as primary line and English as secondary smaller line; no language switch; apply across homepage, categories, forms, worker cards, buttons, and error messages",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-50",
+      "summary": "Extend Local Workers taxonomy with the new subcategories provided (Construction/Wood & Metal/Tree Work/Home Help/Tailoring/Agriculture) and ensure each appears in register form + search filters, with proper parent mapping",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-53",
+      "summary": "Harden backend APIs in backend/main.mo so that public/query endpoints and user-facing shared endpoints do not trap due to unexpected inputs or missing records; use defensive handling (try/catch where applicable, or explicit option/result-style returns) so the frontend receives safe responses instead of canister traps.",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-54",
+      "summary": "Validate and repair backend data integrity for workers and job posts: detect invalid/broken records, enforce category/subcategory relation consistency, remove or sanitize invalid records, and add an automatic repair path for legacy/old records (without changing UI).",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-56",
+      "summary": "Audit and fix all category and Local Skilled Workers subcategory icon path references so they point to existing local SVG files under frontend/public/assets/generated, with no external icon URLs and no stale .png icon references for these icons.",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-57",
+      "summary": "Extend the backend worker taxonomy returned by backend/main.mo:getAllCategories() to include the full set of worker subcategories required by the app, including the \"Local Skilled Workers\" category with all of its defined subcategories from frontend/src/config/localSkilledWorkers.ts.",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-58",
+      "summary": "Update the backend subcategory-to-category lookup so that every \"Local Skilled Workers\" subcategory can be mapped to its parent category when needed (e.g., via backend/main.mo:getCategoryBySubcategory or an equivalent backend mapping used by the canister).",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-59",
+      "summary": "Add bilingual labels (Tamil + English) to UI elements (e.g., categories/buttons/forms) so both languages are shown together",
       "reqIds": [],
       "status": "pending"
     }

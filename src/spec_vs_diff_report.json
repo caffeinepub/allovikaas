@@ -1,43 +1,53 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T03:47:44.713Z",
-  "summary": "Updated category/subcategory icon paths to local /assets/generated/*.svg and introduced a SafeIconImage component intended to provide onError/empty-src fallback to a local fallback SVG. However, the diff does not include the required SVG asset files under frontend/public/assets/generated, and usage of the fallback behavior in the actual category/subcategory rendering is not fully evidenced in the provided truncation.",
+  "generatedAt": "2026-02-15T04:55:09.139Z",
+  "summary": "Diff adds a bilingual taxonomy utility and starts using the i18n/BilingualText system on HomePage and WorkerRegistrationPage, plus expands the I18nProvider translation table. However, Worker Search Results page changes are not shown, registration validation/errors are still English-only in the visible code, and the needed i18n keys for Local Skilled Workers groups/subcategories and registration/search UI are not evidenced in the (truncated) translation dictionary.",
   "missing_requirements": [
     {
-      "id": "REQ-42",
-      "requirement": "Add local SVG icon assets for every homepage category and every \"Local Skilled Workers\" subcategory under frontend/public/assets/generated, ensuring no icon uses any external URL.",
-      "reason": "No new SVG files under frontend/public/assets/generated are shown as added in the diff summary (only a TSX component and config/page edits).",
+      "id": "REQ-61",
+      "requirement": "Update the Worker Search Results page to show bilingual (English + Tamil) labels for title, filters, buttons, states, and chips; keep taxonomy values in English.",
+      "reason": "No diff entry shows modifications to a Worker Search Results page/component (no file resembling search results was modified), so the required bilingual UI for that page is not evidenced.",
       "evidence": [
-        "File diff summary shows ADDED: frontend/src/components/common/SafeIconImage.tsx בלבד; no added files under frontend/public/assets/generated/"
+        "File diff summary: no modified/added file for Worker Search Results page"
       ]
     },
     {
-      "id": "REQ-44",
-      "requirement": "Implement default fallback icon behavior for category and subcategory icons so that missing/empty/failed icons render a local fallback SVG instead of a broken/hidden image.",
-      "reason": "SafeIconImage implements fallback logic, but the diff does not clearly show it being used in the homepage category grid or the Local Skilled Workers subcategory grid rendering (HomePage.tsx is truncated after the import, and no subcategory grid component changes are shown).",
+      "id": "REQ-60",
+      "requirement": "Show bilingual (English + Tamil) validation/error messages on Worker Registration page using existing i18n system.",
+      "reason": "Visible validation sets `setError(errorMsg.en)` which would display only English; also there is a hardcoded English error string for missing actor/backend connection.",
       "evidence": [
-        "frontend/src/components/common/SafeIconImage.tsx",
-        "frontend/src/pages/HomePage.tsx (shows import of SafeIconImage, but usage not visible in truncated content)"
+        "frontend/src/pages/WorkerRegistrationPage.tsx (validateForm uses `setError(errorMsg.en)` for multiple errors)",
+        "frontend/src/pages/WorkerRegistrationPage.tsx (`setError('Backend connection not available. Please try again.')`)"
       ]
-    }
-  ],
-  "hallucinated_features": [
+    },
     {
-      "description": "Added/modified project metadata/state tracking files unrelated to icon asset generation or icon reference updates.",
-      "reason": "Not requested by BuildRequest requirements (REQ-42/43/44) and does not contribute directly to icon assets/paths/fallback behavior.",
+      "id": "REQ-62",
+      "requirement": "Extend i18n translation dictionary with keys needed for Home page Local Skilled Workers bilingual labels, Worker Registration page, and Worker Search Results page (English + Tamil minimum).",
+      "reason": "New code references many new i18n keys (e.g., `lsw.group.*`, `lsw.sub.*`, `register.*`, and `category.localSkilledWorkers`), but the truncated I18nProvider snippet does not show these keys being added; therefore presence of required keys/translations is not evidenced.",
       "evidence": [
-        "project_state.json",
-        "frontend-file-summaries.txt"
+        "frontend/src/utils/bilingualTaxonomy.ts (uses `lsw.group.*`, `lsw.sub.*`, `category.localSkilledWorkers`)",
+        "frontend/src/pages/WorkerRegistrationPage.tsx (uses `register.title`, `register.helper`, `register.success`, `register.error.*`)",
+        "frontend/src/components/i18n/I18nProvider.tsx (translation table shown but new keys not visible in provided truncated portion)"
+      ]
+    },
+    {
+      "id": "REQ-59",
+      "requirement": "Render Local Skilled Workers group/subcategory names as two-line bilingual labels (English first line, Tamil second line) wherever shown, including Home page grid.",
+      "reason": "Although HomePage imports `getBilingualGroupLabel/getBilingualSubcategoryLabel` and `BilingualText`, the provided truncated portion does not include the Local Skilled Workers grid rendering, so the required two-line bilingual rendering for group headings and subcategory tiles is not fully evidenced.",
+      "evidence": [
+        "frontend/src/pages/HomePage.tsx (imports `LOCAL_SKILLED_WORKERS_GROUPS`, `getBilingualGroupLabel`, `getBilingualSubcategoryLabel`, `BilingualText`, but grid section not visible in truncated snippet)"
       ]
     }
   ],
-  "confidence": 0.74,
+  "hallucinated_features": [],
+  "confidence": 0.62,
   "changed_files": [
-    "frontend-file-summaries.txt",
-    "frontend/src/components/common/SafeIconImage.tsx",
+    "frontend/src/components/i18n/I18nProvider.tsx",
     "frontend/src/config/localSkilledWorkers.ts",
     "frontend/src/pages/HomePage.tsx",
+    "frontend/src/pages/WorkerRegistrationPage.tsx",
+    "frontend/src/utils/bilingualTaxonomy.ts",
     "project_state.json"
   ]
 }

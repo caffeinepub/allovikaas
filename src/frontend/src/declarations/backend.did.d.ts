@@ -10,6 +10,10 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface CategoryMapping {
+  'category' : string,
+  'subcategories' : Array<string>,
+}
 export type ExternalBlob = Uint8Array;
 export interface JobPost {
   'id' : bigint,
@@ -87,11 +91,13 @@ export interface _SERVICE {
     string
   >,
   'featureWorker' : ActorMethod<[bigint], undefined>,
+  'getAllCategories' : ActorMethod<[], Array<CategoryMapping>>,
   'getAllJobPosts' : ActorMethod<[], Array<JobPost>>,
   'getAllWorkers' : ActorMethod<[], Array<Worker>>,
   'getApprovedJobs' : ActorMethod<[], Array<JobPost>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getCategoryBySubcategory' : ActorMethod<[string], [] | [string]>,
   'getFeaturedWorkers' : ActorMethod<[], Array<Worker>>,
   'getJobPostById' : ActorMethod<[bigint], [] | [JobPost]>,
   'getPendingJobPosts' : ActorMethod<[], Array<JobPost>>,

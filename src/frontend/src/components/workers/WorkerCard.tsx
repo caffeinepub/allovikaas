@@ -13,14 +13,37 @@ interface WorkerCardProps {
 
 export default function WorkerCard({ worker }: WorkerCardProps) {
   const { t } = useI18n();
-  const callLabel = t('worker.call');
-  const whatsappLabel = t('worker.whatsapp');
-  const verifiedLabel = t('worker.verified');
-  const experienceLabel = t('worker.experience');
-  const availabilityLabel = t('worker.availability');
+  
+  // Safe field access with fallbacks
+  const name = worker?.name || 'Unknown';
+  const category = worker?.category || 'General';
+  const subcategory = worker?.subcategory || '';
+  const area = worker?.area || 'Not specified';
+  const experience = worker?.experience || 'Not specified';
+  const workingHours = worker?.workingHours || 'Not specified';
+  const phone = worker?.phone || '';
+  const verified = worker?.verified || false;
+  const comments = worker?.comments || null;
 
-  const photoUrl = worker.photo.getDirectURL();
-  const phoneNumber = worker.phone.replace(/\D/g, '');
+  // Safe photo URL access
+  let photoUrl = '/assets/generated/icon-fallback.dim_128x128.png';
+  try {
+    if (worker?.photo && typeof worker.photo.getDirectURL === 'function') {
+      photoUrl = worker.photo.getDirectURL();
+    }
+  } catch (error) {
+    console.error('Error getting photo URL:', error);
+  }
+
+  // Safe phone number extraction
+  const phoneNumber = phone.replace(/\D/g, '');
+
+  // Get translations
+  const callText = t('worker.call');
+  const whatsappText = t('worker.whatsapp');
+  const verifiedText = t('worker.verified');
+  const experienceText = t('worker.experience');
+  const availabilityText = t('worker.availability');
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200 border-2 border-border">
@@ -31,10 +54,14 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
             <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-muted">
               <img
                 src={photoUrl}
-                alt={`Photo of ${worker.name}`}
+                alt={`Photo of ${name}`}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/assets/generated/icon-fallback.dim_128x128.png';
+                }}
               />
-              {worker.verified && (
+              {verified && (
                 <div className="absolute top-1 right-1 bg-primary rounded-full p-1">
                   <CheckCircle2 className="h-4 w-4 text-primary-foreground" />
                 </div>
@@ -42,97 +69,76 @@ export default function WorkerCard({ worker }: WorkerCardProps) {
             </div>
           </div>
 
-          {/* Details */}
-          <div className="flex-1 space-y-3">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className="text-xl font-bold text-foreground">{worker.name}</h3>
-                <p className="text-base text-muted-foreground mt-0.5">{worker.category}</p>
-                {worker.subcategory && (
-                  <p className="text-sm text-muted-foreground">{worker.subcategory}</p>
-                )}
-              </div>
-              {worker.verified && (
-                <Badge className="bg-primary/10 text-primary border-primary/20 flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3" />
-                  <BilingualText
-                    english={<span className="text-xs">{verifiedLabel.en}</span>}
-                    regional={<span className="text-xs">{verifiedLabel.regional}</span>}
-                    containerClassName="flex flex-col"
-                    regionalClassName="text-xs opacity-80"
-                  />
-                </Badge>
-              )}
+          {/* Info */}
+          <div className="flex-1 min-w-0 space-y-3">
+            <div>
+              <h3 className="text-lg font-bold text-foreground truncate">{name}</h3>
+              <p className="text-sm text-muted-foreground">
+                {category}{subcategory ? ` - ${subcategory}` : ''}
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">📍 {area}</p>
             </div>
 
             <div className="space-y-1 text-sm">
-              <p className="text-foreground">
-                <span className="font-medium">Area:</span> {worker.area}
-              </p>
-              {worker.experience && (
-                <BilingualText
-                  english={
-                    <p className="text-foreground">
-                      <span className="font-medium">{experienceLabel.en}:</span> {worker.experience}
-                    </p>
-                  }
-                  regional={
-                    <p className="text-muted-foreground text-xs">
-                      {experienceLabel.regional}: {worker.experience}
-                    </p>
-                  }
-                  regionalClassName="text-xs opacity-80"
-                />
-              )}
-              {worker.workingHours && (
-                <BilingualText
-                  english={
-                    <p className="text-foreground">
-                      <span className="font-medium">{availabilityLabel.en}:</span> {worker.workingHours}
-                    </p>
-                  }
-                  regional={
-                    <p className="text-muted-foreground text-xs">
-                      {availabilityLabel.regional}: {worker.workingHours}
-                    </p>
-                  }
-                  regionalClassName="text-xs opacity-80"
-                />
-              )}
+              <div className="flex items-start gap-2">
+                <span className="text-muted-foreground min-w-[80px]">
+                  <BilingualText english={experienceText.en} regional={experienceText.regional} />:
+                </span>
+                <span className="text-foreground font-medium">{experience}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-muted-foreground min-w-[80px]">
+                  <BilingualText english={availabilityText.en} regional={availabilityText.regional} />:
+                </span>
+                <span className="text-foreground font-medium">{workingHours}</span>
+              </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-2 pt-2">
-              <a href={`tel:${phoneNumber}`} className="flex-1 min-w-[120px]">
-                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Phone className="h-4 w-4 mr-2" />
-                  <BilingualText
-                    english={<span>{callLabel.en}</span>}
-                    regional={<span className="text-xs">{callLabel.regional}</span>}
-                    containerClassName="flex flex-col items-start"
-                    regionalClassName="text-xs opacity-90"
-                  />
-                </Button>
+            {comments && (
+              <p className="text-xs text-muted-foreground italic line-clamp-2">
+                {comments}
+              </p>
+            )}
+
+            {verified && (
+              <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                <BilingualText english={verifiedText.en} regional={verifiedText.regional} />
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        {phoneNumber && (
+          <div className="border-t border-border p-4 flex gap-2">
+            <Button
+              asChild
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+              size="sm"
+            >
+              <a href={`tel:${phoneNumber}`}>
+                <Phone className="h-4 w-4 mr-2" />
+                <BilingualText english={callText.en} regional={callText.regional} />
               </a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="flex-1 border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10"
+              size="sm"
+            >
               <a
                 href={`https://wa.me/${phoneNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 min-w-[120px]"
               >
-                <Button className="w-full bg-[#25D366] hover:bg-[#20BA5A] text-white">
-                  <SiWhatsapp className="h-4 w-4 mr-2" />
-                  <BilingualText
-                    english={<span>{whatsappLabel.en}</span>}
-                    regional={<span className="text-xs">{whatsappLabel.regional}</span>}
-                    containerClassName="flex flex-col items-start"
-                    regionalClassName="text-xs opacity-90"
-                  />
-                </Button>
+                <SiWhatsapp className="h-4 w-4 mr-2" />
+                <BilingualText english={whatsappText.en} regional={whatsappText.regional} />
               </a>
-            </div>
+            </Button>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

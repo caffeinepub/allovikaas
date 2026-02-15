@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Fix broken homepage category and “Local Skilled Workers” subcategory icons by replacing external/PNG icon references with locally hosted SVG assets and adding a local fallback icon behavior.
+**Goal:** Add consistent English + Tamil bilingual (two-line) labels across Local Skilled Workers taxonomy displays, Worker Registration, and Worker Search Results using the existing i18n system.
 
 **Planned changes:**
-- Add local SVG icon assets for every homepage category and every “Local Skilled Workers” subcategory under `frontend/public/assets/generated`, ensuring no icon uses an external URL.
-- Update frontend icon references to point to the new local `.svg` files (replacing `.png`), including paths in `frontend/src/pages/HomePage.tsx` and `frontend/src/config/localSkilledWorkers.ts`.
-- Implement a default fallback icon for category/subcategory icons when an icon path is missing/empty or fails to load, using a local SVG under `/assets/generated/` without changing layout or spacing.
+- Update Local Skilled Workers group names and subcategory names to support bilingual labels and render them as two-line text (English first line, Tamil second line) wherever shown, including the Home page grid.
+- Update the Worker Registration page to render bilingual labels for the page title/helper text, all field labels, placeholders, validation/error messages, and primary/secondary buttons; show bilingual dropdown option text while keeping submitted values as the existing English strings.
+- Update the Worker Search Results page to render bilingual labels for the page title, filters/placeholders, action buttons, loading/error/empty states, and active filter chips; show bilingual dropdown option text while keeping internal filter values as the existing English strings.
+- Extend the i18n translation dictionary with keys for all newly bilingualized UI strings (English + Tamil), relying on existing fallback behavior for missing keys.
 
-**User-visible outcome:** Category and subcategory icons render reliably (no broken images), using local SVGs with a consistent local fallback icon when any icon can’t be loaded.
+**User-visible outcome:** When Tamil Nadu (TN) is selected, Local Skilled Workers categories/subcategories, registration form text (including errors), and search/filter UI display as two-line English + Tamil labels while keeping backend-facing category/subcategory values unchanged.

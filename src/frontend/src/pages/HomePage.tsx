@@ -10,6 +10,7 @@ import {
   LOCAL_SKILLED_WORKERS_CATEGORY,
   LOCAL_SKILLED_WORKERS_GROUPS,
 } from '@/config/localSkilledWorkers';
+import { getBilingualGroupLabel, getBilingualSubcategoryLabel } from '@/utils/bilingualTaxonomy';
 
 const categories = [
   { key: 'construction', icon: '/assets/generated/icon-construction.dim_128x128.svg' },
@@ -69,7 +70,7 @@ export default function HomePage() {
           <div className="text-center space-y-8">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold text-primary leading-tight">
-                {appName?.en || 'AREA WORKER'}
+                {appName?.en || 'AREA WORKARS'}
               </h1>
               <BilingualText
                 english={<p className="text-xl md:text-3xl text-foreground font-medium">{tagline?.en || 'Find Local Workers'}</p>}
@@ -106,111 +107,88 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Category Grid */}
+          {/* Main Categories Grid */}
           <div className="space-y-6">
             <h2 className="text-2xl md:text-3xl font-bold text-center text-foreground">
               Browse by Category
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {categories.map((category) => {
-                try {
-                  const categoryLabel = t(`category.${category.key}`);
-                  return (
-                    <button
-                      key={category.key}
-                      onClick={() => handleCategoryClick(category.key)}
-                      className="group bg-card hover:bg-accent border-2 border-border hover:border-primary rounded-3xl p-6 md:p-8 transition-all duration-200 shadow-md hover:shadow-xl flex flex-col items-center gap-4"
-                    >
+              {categories.map((cat) => {
+                const label = t(`category.${cat.key}`);
+                return (
+                  <button
+                    key={cat.key}
+                    onClick={() => handleCategoryClick(cat.key)}
+                    className="group bg-card hover:bg-accent/10 border-2 border-border hover:border-primary rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:scale-105"
+                  >
+                    <div className="flex flex-col items-center gap-4">
                       <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
                         <SafeIconImage
-                          src={category.icon}
-                          alt={categoryLabel?.en || category.key}
-                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200"
+                          src={cat.icon}
+                          alt={label?.en || cat.key}
+                          className="w-full h-full object-contain"
                         />
                       </div>
                       <BilingualText
-                        english={
-                          <span className="text-base md:text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                            {categoryLabel?.en || category.key}
-                          </span>
-                        }
-                        regional={
-                          <span className="text-sm md:text-base font-medium opacity-80">
-                            {categoryLabel?.regional || ''}
-                          </span>
-                        }
-                        containerClassName="text-center"
+                        english={<span className="text-base md:text-lg font-semibold text-foreground group-hover:text-primary transition-colors">{label?.en || cat.key}</span>}
+                        regional={<span className="text-sm md:text-base">{label?.regional || ''}</span>}
                         regionalClassName="text-sm md:text-base mt-1 opacity-80"
                       />
-                    </button>
-                  );
-                } catch (error) {
-                  console.error('Error rendering category:', category.key, error);
-                  return null;
-                }
+                    </div>
+                  </button>
+                );
               })}
             </div>
           </div>
 
           {/* Local Skilled Workers Section */}
-          <div className="space-y-8 bg-accent/20 rounded-3xl p-6 md:p-10 border-2 border-primary/20">
-            <div className="text-center space-y-2">
+          <div className="space-y-8">
+            <div className="text-center">
               <BilingualText
-                english={
-                  <h2 className="text-3xl md:text-4xl font-bold text-primary">
-                    {localSkilledWorkersLabel?.en || LOCAL_SKILLED_WORKERS_CATEGORY}
-                  </h2>
-                }
-                regional={
-                  <p className="text-xl md:text-2xl font-semibold text-primary/90">
-                    {localSkilledWorkersLabel?.regional || ''}
-                  </p>
-                }
-                regionalClassName="text-xl md:text-2xl mt-2"
+                english={<h2 className="text-2xl md:text-3xl font-bold text-foreground">{localSkilledWorkersLabel?.en || 'Local Skilled Workers'}</h2>}
+                regional={<p className="text-xl md:text-2xl font-semibold">{localSkilledWorkersLabel?.regional || ''}</p>}
+                regionalClassName="text-xl md:text-2xl mt-2 opacity-90"
               />
             </div>
 
-            {LOCAL_SKILLED_WORKERS_GROUPS.map((group, groupIndex) => {
-              try {
-                return (
-                  <div key={groupIndex} className="space-y-4">
-                    <h3 className="text-xl md:text-2xl font-bold text-foreground border-b-2 border-primary/30 pb-2">
-                      {group.groupName || 'Category'}
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
-                      {(group.subcategories || []).map((subcategory, subIndex) => {
-                        try {
-                          return (
-                            <button
-                              key={subIndex}
-                              onClick={() => handleSubcategoryClick(subcategory.label)}
-                              className="group bg-card hover:bg-primary/10 border-2 border-border hover:border-primary rounded-2xl p-4 md:p-5 transition-all duration-200 shadow-sm hover:shadow-lg flex flex-col items-center gap-3"
-                            >
-                              <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
-                                <SafeIconImage
-                                  src={subcategory.icon || '/assets/generated/icon-fallback.dim_128x128.svg'}
-                                  alt={subcategory.label || 'Worker'}
-                                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200"
-                                  fallbackSrc="/assets/generated/icon-fallback.dim_128x128.svg"
-                                />
-                              </div>
-                              <span className="text-xs md:text-sm font-semibold text-foreground text-center leading-tight group-hover:text-primary transition-colors">
-                                {subcategory.label || 'Worker'}
-                              </span>
-                            </button>
-                          );
-                        } catch (error) {
-                          console.error('Error rendering subcategory:', subcategory, error);
-                          return null;
-                        }
-                      })}
-                    </div>
+            {LOCAL_SKILLED_WORKERS_GROUPS.map((group) => {
+              const groupLabel = getBilingualGroupLabel(group.groupName, t);
+              return (
+                <div key={group.groupName} className="space-y-4">
+                  <BilingualText
+                    english={<h3 className="text-xl md:text-2xl font-bold text-foreground">{groupLabel.en}</h3>}
+                    regional={<p className="text-lg md:text-xl font-semibold text-foreground/90">{groupLabel.regional}</p>}
+                    regionalClassName="text-lg md:text-xl mt-1 opacity-90"
+                  />
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {group.subcategories.map((sub) => {
+                      const subLabel = getBilingualSubcategoryLabel(sub.label, t);
+                      return (
+                        <button
+                          key={sub.label}
+                          onClick={() => handleSubcategoryClick(sub.label)}
+                          className="group bg-card hover:bg-accent/10 border border-border hover:border-primary rounded-2xl p-4 transition-all duration-300 hover:shadow-xl hover:scale-105"
+                        >
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                              <SafeIconImage
+                                src={sub.icon}
+                                alt={subLabel.en}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                            <BilingualText
+                              english={<span className="text-sm md:text-base font-medium text-foreground group-hover:text-primary transition-colors text-center">{subLabel.en}</span>}
+                              regional={<span className="text-xs md:text-sm text-center">{subLabel.regional}</span>}
+                              regionalClassName="text-xs md:text-sm mt-1 opacity-80"
+                            />
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
-                );
-              } catch (error) {
-                console.error('Error rendering group:', group, error);
-                return null;
-              }
+                </div>
+              );
             })}
           </div>
         </div>

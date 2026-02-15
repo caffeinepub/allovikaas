@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import { Worker, JobPost } from '@/backend';
+import { Worker, JobPost, UserProfile } from '@/backend';
+import { logError } from '@/utils/errors';
 
 export function useGetApprovedJobs() {
   const { actor, isFetching } = useActor();
@@ -10,9 +11,10 @@ export function useGetApprovedJobs() {
     queryFn: async () => {
       if (!actor) return [];
       try {
-        return await actor.getApprovedJobs();
+        const jobs = await actor.getApprovedJobs();
+        return Array.isArray(jobs) ? jobs : [];
       } catch (error) {
-        console.error('Error fetching approved jobs:', error);
+        logError('useGetApprovedJobs', error);
         return [];
       }
     },
@@ -28,9 +30,10 @@ export function useGetPendingWorkers() {
     queryFn: async () => {
       if (!actor) return [];
       try {
-        return await actor.getPendingWorkers();
+        const workers = await actor.getPendingWorkers();
+        return Array.isArray(workers) ? workers : [];
       } catch (error) {
-        console.error('Error fetching pending workers:', error);
+        logError('useGetPendingWorkers', error);
         return [];
       }
     },
@@ -46,9 +49,10 @@ export function useGetAllWorkers() {
     queryFn: async () => {
       if (!actor) return [];
       try {
-        return await actor.getAllWorkers();
+        const workers = await actor.getAllWorkers();
+        return Array.isArray(workers) ? workers : [];
       } catch (error) {
-        console.error('Error fetching all workers:', error);
+        logError('useGetAllWorkers', error);
         return [];
       }
     },
@@ -64,9 +68,10 @@ export function useGetPendingJobPosts() {
     queryFn: async () => {
       if (!actor) return [];
       try {
-        return await actor.getPendingJobPosts();
+        const jobs = await actor.getPendingJobPosts();
+        return Array.isArray(jobs) ? jobs : [];
       } catch (error) {
-        console.error('Error fetching pending job posts:', error);
+        logError('useGetPendingJobPosts', error);
         return [];
       }
     },
@@ -82,9 +87,10 @@ export function useGetAllJobPosts() {
     queryFn: async () => {
       if (!actor) return [];
       try {
-        return await actor.getAllJobPosts();
+        const jobs = await actor.getAllJobPosts();
+        return Array.isArray(jobs) ? jobs : [];
       } catch (error) {
-        console.error('Error fetching all job posts:', error);
+        logError('useGetAllJobPosts', error);
         return [];
       }
     },
@@ -100,12 +106,39 @@ export function useIsCallerAdmin() {
     queryFn: async () => {
       if (!actor) return false;
       try {
-        return await actor.isCallerAdmin();
+        const result = await actor.isCallerAdmin();
+        return typeof result === 'boolean' ? result : false;
       } catch (error) {
-        console.error('Error checking admin status:', error);
+        logError('useIsCallerAdmin', error);
         return false;
       }
     },
     enabled: !!actor && !isFetching,
   });
+}
+
+export function useGetCallerUserProfile() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery<UserProfile | null>({
+    queryKey: ['currentUserProfile'],
+    queryFn: async () => {
+      if (!actor) return null;
+      try {
+        const profile = await actor.getCallerUserProfile();
+        return profile || null;
+      } catch (error) {
+        logError('useGetCallerUserProfile', error);
+        return null;
+      }
+    },
+    enabled: !!actor && !actorFetching,
+    retry: false,
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
 }

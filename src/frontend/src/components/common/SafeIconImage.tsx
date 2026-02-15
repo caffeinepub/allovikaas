@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SafeIconImageProps {
   src: string;
@@ -15,23 +15,32 @@ export default function SafeIconImage({
   className = '',
   fallbackSrc = DEFAULT_FALLBACK,
 }: SafeIconImageProps) {
-  const [imgSrc, setImgSrc] = useState(src || fallbackSrc);
+  // Check if src is empty/whitespace/undefined immediately
+  const isInvalidSrc = !src || typeof src !== 'string' || src.trim() === '';
+  const initialSrc = isInvalidSrc ? fallbackSrc : src;
+  
+  const [imgSrc, setImgSrc] = useState(initialSrc);
   const [hasError, setHasError] = useState(false);
 
+  // Reset error state when src or fallbackSrc changes
+  useEffect(() => {
+    const newSrc = !src || typeof src !== 'string' || src.trim() === '' ? fallbackSrc : src;
+    setImgSrc(newSrc);
+    setHasError(false);
+  }, [src, fallbackSrc]);
+
   const handleError = () => {
+    // Only switch to fallback once to prevent infinite loops
     if (!hasError && imgSrc !== fallbackSrc) {
       setHasError(true);
       setImgSrc(fallbackSrc);
     }
   };
 
-  // Use fallback if src is empty or invalid
-  const finalSrc = !src || src.trim() === '' ? fallbackSrc : imgSrc;
-
   return (
     <img
-      src={finalSrc}
-      alt={alt}
+      src={imgSrc}
+      alt={alt || 'Icon'}
       className={className}
       onError={handleError}
     />

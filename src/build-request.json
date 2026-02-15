@@ -1,127 +1,92 @@
 {
   "kind": "build_request",
-  "title": "Fix broken category icons by generating local SVGs with fallback handling",
+  "title": "Add Tamil + English bilingual labels across categories, filters, and forms",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-42",
-      "text": "Add local SVG icon assets for every homepage category and every \"Local Skilled Workers\" subcategory under frontend/public/assets/generated, and ensure no category/subcategory icon uses any external URL.",
+      "id": "REQ-59",
+      "text": "Add bilingual (English + Tamil) label support for all Local Skilled Workers group names and subcategory names, and render them as two-line labels (English first line, Tamil second line) wherever Local Skilled Workers groups/subcategories are shown (including the Home page Local Skilled Workers grid).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "Fix broken images.\n\nGenerate local SVG icons for every category and subcategory.\nDo not use external URLs."
+          "Now add Tamil and English labels."
         ]
       },
       "acceptanceCriteria": [
-        "All category and subcategory icons used by the UI resolve to local paths under /assets/generated/ and do not reference any external URL.",
-        "All new icon files are SVGs and are committed as static assets under frontend/public/assets/generated.",
-        "The app builds successfully and category/subcategory icons render without broken image placeholders in the browser."
+        "On the Home page, each Local Skilled Workers group heading is shown bilingually (English line + Tamil line) instead of English-only (e.g., 'Construction Related' plus a Tamil translation below it).",
+        "On the Home page, each Local Skilled Workers subcategory tile shows a two-line bilingual label (English line + Tamil line) instead of a single combined string like 'Door Maker (Kathavu seibavar)'.",
+        "All bilingual rendering uses the existing i18n system (I18nProvider + BilingualText) so English is always shown and Tamil appears as the regional line when Tamil Nadu (TN) is selected."
       ]
     },
     {
-      "id": "REQ-43",
-      "text": "Update the category and subcategory icon references in the frontend to use the new local SVG icon filenames (replacing current .png references), including icons defined in frontend/src/pages/HomePage.tsx and frontend/src/config/localSkilledWorkers.ts.",
+      "id": "REQ-60",
+      "text": "Update the Worker Registration page to show bilingual (English + Tamil) labels for all form titles, field labels, placeholders, validation/error messages, and primary/secondary buttons using the existing i18n system.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "Fix broken images.\n\nGenerate local SVG icons for every category and subcategory."
+          "Now add Tamil and English labels."
         ]
       },
       "acceptanceCriteria": [
-        "frontend/src/pages/HomePage.tsx category icon paths reference .svg files under /assets/generated/ (not .png).",
-        "frontend/src/config/localSkilledWorkers.ts subcategory icon paths reference .svg files under /assets/generated/ (not .png).",
-        "No remaining references to the old icon .png filenames are required for correct rendering of category/subcategory icons."
+        "The Worker Registration page header, helper text, each field label (e.g., Full Name, Phone Number, Category, Sub Category, Area / Location, Experience, Working Hours, Photo, Additional Comments), placeholders, and submit button text are displayed bilingually (English first line, Tamil second line) when TN is selected.",
+        "Validation errors (e.g., 'Name is required', 'Phone number must be 10 digits', 'Category is required') are displayed bilingually (English + Tamil) and do not introduce runtime errors.",
+        "Category and subcategory dropdown option display text is bilingual (English + Tamil), while the selected value submitted to the backend remains the existing English category/subcategory string."
       ]
     },
     {
-      "id": "REQ-44",
-      "text": "Implement a default fallback icon behavior for category and subcategory icons: if an icon path is missing, empty, or fails to load, render a local fallback SVG icon instead of hiding the image or leaving it broken.",
+      "id": "REQ-61",
+      "text": "Update the Worker Search Results page to show bilingual (English + Tamil) labels for the page title, filter labels/placeholders, action buttons, empty/loading/error states, and the active filter chips using the existing i18n system.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "If icon missing show default fallback icon."
+          "Now add Tamil and English labels."
         ]
       },
       "acceptanceCriteria": [
-        "On the homepage category grid, when an icon fails to load, the UI displays the fallback icon (the icon is not hidden).",
-        "On the Local Skilled Workers subcategory grid, when an icon fails to load, the UI displays the fallback icon.",
-        "Fallback uses a local SVG file under /assets/generated/ and does not load from any external URL.",
-        "The fallback behavior does not change spacing, sizing, or layout of the existing category/subcategory cards (only the image source changes)."
+        "The Worker Search Results page title ('Find Workers'), filter placeholders (area, category, subcategory), buttons ('Search', 'Clear Filters'), loading text, error text, empty state text, and filter chip prefixes ('Area:', 'Category:', 'Subcategory:') display bilingually (English first line + Tamil second line) when TN is selected.",
+        "Category/Subcategory dropdown option display text is bilingual (English + Tamil), while the internal values used for filtering remain the existing English category/subcategory strings coming from taxonomy.",
+        "No changes introduce new crashes; the page continues to render safely even if taxonomy data is loading or incomplete."
+      ]
+    },
+    {
+      "id": "REQ-62",
+      "text": "Extend the i18n translation dictionary to include keys needed for the new bilingual labels added in Home page Local Skilled Workers group/subcategory UI, Worker Registration page, and Worker Search Results page (English + Tamil at minimum).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Now add Tamil and English labels."
+        ]
+      },
+      "acceptanceCriteria": [
+        "All newly bilingualized UI strings are sourced from i18n keys (not hardcoded English-only strings).",
+        "For each new key, English and Tamil translations are present; missing keys fall back safely without breaking UI (consistent with existing I18nProvider fallback behavior)."
       ]
     }
   ],
   "constraints": [
-    "Do not modify the database or backend state/schema.",
-    "Do not modify UI layout (no changes to grid/card structure, spacing, or component placement).",
-    "Do not use external image/icon URLs for category or subcategory icons; icons must be local static assets."
+    "Use English for any user-facing text in this build request.",
+    "Do not edit files under frontend/src/components/ui (read-only components); compose them as-is.",
+    "Keep category/subcategory values sent to and compared with the backend as the existing English strings to avoid breaking search and registration compatibility."
   ],
   "nonGoals": [
-    "Changing worker profile photos or how worker photos are stored/served.",
-    "Adding new categories/subcategories or changing taxonomy labels.",
-    "Redesigning the homepage/category UI or altering visual layout."
+    "Do not change the backend Motoko category/subcategory taxonomy schema or stored worker/job records as part of this change.",
+    "Do not regenerate or modify icon assets; this request is only about labels.",
+    "Do not add new languages beyond the existing regional-language system; focus on ensuring English + Tamil labels are present and rendered correctly."
   ],
   "imageRequirements": {
-    "required": [
-      "Default generic fallback icon, simple flat monochrome badge/worker-symbol style (icon-fallback.dim_128x128.svg)",
-      "Construction category icon, simple flat monochrome (icon-construction.dim_128x128.svg)",
-      "Agriculture category icon, simple flat monochrome (icon-agriculture.dim_128x128.svg)",
-      "Home services category icon, simple flat monochrome (icon-home-services.dim_128x128.svg)",
-      "Transport category icon, simple flat monochrome (icon-transport.dim_128x128.svg)",
-      "Events & cooking category icon, simple flat monochrome (icon-events-cooking.dim_128x128.svg)",
-      "Daily helpers category icon, simple flat monochrome (icon-daily-helpers.dim_128x128.svg)",
-      "Repairs category icon, simple flat monochrome (icon-repairs.dim_128x128.svg)",
-      "Supplies category icon, simple flat monochrome (icon-supplies.dim_128x128.svg)",
-      "Local skilled workers category icon, simple flat monochrome (icon-local-skilled-workers.dim_128x128.svg)",
-      "Mason subcategory icon, simple flat monochrome (icon-mason.dim_128x128.svg)",
-      "Coolie helper subcategory icon, simple flat monochrome (icon-coolie-helper.dim_128x128.svg)",
-      "Centring worker subcategory icon, simple flat monochrome (icon-centring-worker.dim_128x128.svg)",
-      "Bar bending worker subcategory icon, simple flat monochrome (icon-bar-bending-worker.dim_128x128.svg)",
-      "Door maker subcategory icon, simple flat monochrome (icon-door-maker.dim_128x128.svg)",
-      "Window maker subcategory icon, simple flat monochrome (icon-window-maker.dim_128x128.svg)",
-      "Carpenter subcategory icon, simple flat monochrome (icon-carpenter.dim_128x128.svg)",
-      "Grill/gate fabricator subcategory icon, simple flat monochrome (icon-grill-gate-fabricator.dim_128x128.svg)",
-      "Welder subcategory icon, simple flat monochrome (icon-welder.dim_128x128.svg)",
-      "Tree cutter subcategory icon, simple flat monochrome (icon-tree-cutter.dim_128x128.svg)",
-      "Coconut tree climber subcategory icon, simple flat monochrome (icon-coconut-tree-climber.dim_128x128.svg)",
-      "Coconut picker subcategory icon, simple flat monochrome (icon-coconut-picker.dim_128x128.svg)",
-      "Firewood cutter subcategory icon, simple flat monochrome (icon-firewood-cutter.dim_128x128.svg)",
-      "Basket maker subcategory icon, simple flat monochrome (icon-basket-maker.dim_128x128.svg)",
-      "Rope maker subcategory icon, simple flat monochrome (icon-rope-maker.dim_128x128.svg)",
-      "Mat weaver subcategory icon, simple flat monochrome (icon-mat-weaver.dim_128x128.svg)",
-      "Pot maker subcategory icon, simple flat monochrome (icon-pot-maker.dim_128x128.svg)",
-      "House maid subcategory icon, simple flat monochrome (icon-house-maid.dim_128x128.svg)",
-      "One day cooking worker subcategory icon, simple flat monochrome (icon-one-day-cooking-worker.dim_128x128.svg)",
-      "Function cooking team subcategory icon, simple flat monochrome (icon-function-cooking-team.dim_128x128.svg)",
-      "Cleaning worker subcategory icon, simple flat monochrome (icon-cleaning-worker.dim_128x128.svg)",
-      "Tailor subcategory icon, simple flat monochrome (icon-tailor.dim_128x128.svg)",
-      "Aari worker subcategory icon, simple flat monochrome (icon-aari-worker.dim_128x128.svg)",
-      "Blouse designer subcategory icon, simple flat monochrome (icon-blouse-designer.dim_128x128.svg)",
-      "Saree falls/pico worker subcategory icon, simple flat monochrome (icon-saree-falls-pico-worker.dim_128x128.svg)",
-      "Ironing service subcategory icon, simple flat monochrome (icon-ironing-service.dim_128x128.svg)",
-      "Farm labour subcategory icon, simple flat monochrome (icon-farm-labour.dim_128x128.svg)",
-      "Planting worker subcategory icon, simple flat monochrome (icon-planting-worker.dim_128x128.svg)",
-      "Harvest worker subcategory icon, simple flat monochrome (icon-harvest-worker.dim_128x128.svg)",
-      "Sprayer worker subcategory icon, simple flat monochrome (icon-sprayer-worker.dim_128x128.svg)"
-    ],
+    "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }
