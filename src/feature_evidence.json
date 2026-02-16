@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-perform-a-forced-clean-production-rebuild-of-the-current-codebase-clear-frontend-caches-build-artifacts-and-ensure-the-production-build-completes-successfully-no-build-errors",
-      "featureTitle": "Perform a forced clean production rebuild of the current codebase (clear frontend caches/build artifacts) and ensure the production build completes successfully (no build errors).",
+      "featureId": "feature-add-a-microphone-button-inside-the-main-search-input-ui-so-users-can-trigger-voice-search-on-mobile-browsers-this-must-be-integrated-into-the-existing-home-page-natural-language-search-input-frontend-src-pages-homepage-tsx-without-requiring-login",
+      "featureTitle": "Add a microphone button inside the main search input UI so users can trigger voice search on mobile browsers. This must be integrated into the existing Home page natural-language search input (frontend/src/pages/HomePage.tsx) without requiring login.",
       "files": [
-        "frontend/DEPLOYMENT_CLEAN_REBUILD.md",
-        "frontend/scripts/clean-production-build.sh"
+        "frontend/src/components/search/VoiceSearchButton.tsx",
+        "frontend/src/pages/HomePage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -19,16 +19,17 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-208"
+        "REQ-231"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-deploy-the-clean-production-build-directly-to-the-live-environment-so-the-live-domain-https-areaworkars-caffeine-ai-is-created-and-serves-the-app-do-not-create-or-publish-any-draft-preview-deployment-as-part-of-this-redeploy",
-      "featureTitle": "Deploy the clean production build directly to the live environment so the live domain https://areaworkars.caffeine.ai is created and serves the app; do not create or publish any draft/preview deployment as part of this redeploy.",
+      "featureId": "feature-implement-speech-to-text-voice-recognition-so-that-when-the-microphone-button-is-tapped-1-speech-recognition-starts-2-speech-is-converted-to-text-3-the-recognized-text-auto-fills-the-search-input-and-4-search-is-automatically-triggered-using-the-existing-search-submit-navigation-behavior",
+      "featureTitle": "Implement speech-to-text voice recognition so that when the microphone button is tapped: (1) speech recognition starts, (2) speech is converted to text, (3) the recognized text auto-fills the search input, and (4) search is automatically triggered using the existing search submit/navigation behavior.",
       "files": [
-        "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
-        "frontend/scripts/deploy-live.sh"
+        "frontend/src/components/search/VoiceSearchButton.tsx",
+        "frontend/src/hooks/useSpeechRecognition.ts",
+        "frontend/src/pages/HomePage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -41,17 +42,16 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-209"
+        "REQ-232"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-deployment-verification-step-after-the-live-deploy-that-checks-the-live-url-https-areaworkars-caffeine-ai-returns-a-successful-response-and-renders-the-app-shell-not-a-blank-page-so-deployment-failures-are-detected-immediately",
-      "featureTitle": "Add a deployment verification step after the live deploy that checks the live URL (https://areaworkars.caffeine.ai) returns a successful response and renders the app shell (not a blank page) so deployment failures are detected immediately.",
+      "featureId": "feature-support-both-tamil-and-english-speech-recognition-for-voice-search-configure-recognition-to-work-for-typical-user-utterances-in-tamil-english-mixed-queries-examples-include-tindivanam-plumber-irukana-painting-work-venum-ac-repair-near-me-samayal-aunty-venum-nalaiku",
+      "featureTitle": "Support both Tamil and English speech recognition for voice search. Configure recognition to work for typical user utterances in Tamil/English mixed queries (examples include: \"tindivanam plumber irukana\", \"painting work venum\", \"AC repair near me\", \"samayal aunty venum nalaiku\").",
       "files": [
-        "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
-        "frontend/scripts/deploy-live.sh",
-        "frontend/scripts/verify-live-deploy.sh"
+        "frontend/src/hooks/useSpeechRecognition.ts",
+        "frontend/src/pages/HomePage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -64,7 +64,50 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-210"
+        "REQ-233"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-provide-a-safe-fallback-behavior-on-browsers-that-do-not-support-web-speech-api-speech-recognition-disable-or-hide-the-microphone-button-and-optionally-show-a-simple-english-only-message-indicating-voice-search-is-not-supported-on-this-browser-without-affecting-normal-typed-search",
+      "featureTitle": "Provide a safe fallback behavior on browsers that do not support Web Speech API speech recognition: disable or hide the microphone button and (optionally) show a simple English-only message indicating voice search is not supported on this browser, without affecting normal typed search.",
+      "files": [
+        "frontend/src/hooks/useSpeechRecognition.ts",
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-234"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-voice-search-integrates-cleanly-with-existing-search-ui-behaviors-debounced-preview-matching-on-home-page-and-navigation-to-search-and-does-not-introduce-new-authentication-booking-payment-or-in-app-chat-functionality",
+      "featureTitle": "Ensure voice search integrates cleanly with existing search UI behaviors (debounced preview matching on Home page and navigation to /search) and does not introduce new authentication, booking, payment, or in-app chat functionality.",
+      "files": [
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-235"
       ],
       "confidence": "high"
     }

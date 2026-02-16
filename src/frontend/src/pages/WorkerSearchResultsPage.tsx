@@ -1,40 +1,83 @@
 import { useMemo } from 'react';
 import { useSearch } from '@tanstack/react-router';
-import { useWorkerSearch } from '@/hooks/useWorkerSearch';
+import { useGetPublicWorkers } from '@/hooks/useQueries';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import WorkerCard from '@/components/workers/WorkerCard';
 import PageShell from '@/components/layout/PageShell';
 import { sortWorkersByRelevance } from '@/utils/workerRelevanceSort';
 import { groupWorkersBySubcategory } from '@/utils/workerSubgrouping';
-import SearchEmptyRecovery from '@/components/search/SearchEmptyRecovery';
-import { useBrowserGeolocation } from '@/hooks/useBrowserGeolocation';
 import { formatTaxonomyLabel } from '@/utils/formatTaxonomyLabel';
+import { workerMatchesFuzzyQuery, normalizeForSearch } from '@/utils/fuzzyWorkerSearch';
+import { Worker } from '@/backend';
 
 export default function WorkerSearchResultsPage() {
   const { t } = useI18n();
   const search = useSearch({ from: '/search' }) as any;
   const { area, category, subcategory, q } = search;
 
-  const { data: workers = [], isLoading, error } = useWorkerSearch(
-    area || '',
-    category || '',
-    subcategory || ''
-  );
-  const { coords } = useBrowserGeolocation(false);
+  // Get public workers (active only)
+  const { data: allWorkers = [], isLoading, error } = useGetPublicWorkers();
+
+  // Filter workers client-side
+  const filteredWorkers = useMemo(() => {
+    if (!allWorkers || allWorkers.length === 0) return [];
+    
+    // Only show active workers (already filtered by backend, but double-check)
+    let filtered = allWorkers.filter(w => w.status.__kind__ === 'active');
+    
+    // Filter by category (fuzzy match)
+    if (category) {
+      const normalizedCategory = normalizeForSearch(category);
+      filtered = filtered.filter(w => 
+        workerMatchesFuzzyQuery(
+          { category: w.category },
+          normalizedCategory,
+          0.75
+        )
+      );
+    }
+    
+    // Filter by area (fuzzy match)
+    if (area) {
+      const normalizedArea = normalizeForSearch(area);
+      filtered = filtered.filter(w => 
+        workerMatchesFuzzyQuery(
+          { area: w.area },
+          normalizedArea,
+          0.75
+        )
+      );
+    }
+    
+    // Filter by search query (fuzzy match across all fields)
+    if (q) {
+      filtered = filtered.filter(w => 
+        workerMatchesFuzzyQuery(
+          {
+            name: w.name,
+            category: w.category,
+            area: w.area,
+            skills: w.skills,
+          },
+          q,
+          0.75
+        )
+      );
+    }
+    
+    return filtered;
+  }, [allWorkers, area, category, q]);
 
   // Sort workers by relevance
   const sortedWorkers = useMemo(() => {
-    if (!workers || workers.length === 0) return [];
-    return sortWorkersByRelevance(workers, {
-      searchQuery: q || category || subcategory,
-      areaQuery: area,
-    });
-  }, [workers, area, category, subcategory, q]);
+    if (!filteredWorkers || filteredWorkers.length === 0) return [];
+    return sortWorkersByRelevance(filteredWorkers, q || category || '');
+  }, [filteredWorkers, q, category]);
 
   // Group workers if category requires it
   const groupedWorkers = useMemo(() => {
     if (!category || sortedWorkers.length === 0) return null;
-    const groups = groupWorkersBySubcategory(category, sortedWorkers);
+    const groups = groupWorkersBySubcategory(sortedWorkers);
     return groups.length > 0 ? groups : null;
   }, [sortedWorkers, category]);
 
@@ -42,10 +85,9 @@ export default function WorkerSearchResultsPage() {
   const searchContext = useMemo(() => {
     return {
       category: category || undefined,
-      subcategory: subcategory || undefined,
       area: area || undefined,
     };
-  }, [category, subcategory, area]);
+  }, [category, area]);
 
   // Title construction with formatted labels
   const titleParts: string[] = [];
@@ -62,11 +104,6 @@ export default function WorkerSearchResultsPage() {
   }
 
   const pageTitle = titleParts.length > 0 ? titleParts.join(' ') : 'Search Results';
-
-  // Convert coords for WorkerCard
-  const userCoords = coords
-    ? { latitude: coords.latitude, longitude: coords.longitude }
-    : null;
 
   if (isLoading) {
     return (
@@ -99,14 +136,12 @@ export default function WorkerSearchResultsPage() {
   if (sortedWorkers.length === 0) {
     return (
       <PageShell>
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold text-foreground mb-6">{pageTitle}</h1>
-          <SearchEmptyRecovery
-            searchQuery={q}
-            category={category}
-            subcategory={subcategory}
-            area={area}
-          />
+          <div className="bg-muted/50 rounded-xl p-12 text-center">
+            <p className="text-lg text-muted-foreground">No workers found matching your search</p>
+            <p className="text-sm text-muted-foreground mt-2">Try adjusting your search criteria</p>
+          </div>
         </div>
       </PageShell>
     );
@@ -126,16 +161,15 @@ export default function WorkerSearchResultsPage() {
           // Grouped display
           <div className="space-y-12">
             {groupedWorkers.map((subgroup) => (
-              <div key={subgroup.id} className="space-y-6">
+              <div key={subgroup.subgroupName} className="space-y-6">
                 <h2 className="text-2xl font-bold text-foreground border-b-2 border-primary pb-2">
-                  {formatTaxonomyLabel(subgroup.id)}
+                  {formatTaxonomyLabel(subgroup.subgroupName)}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {subgroup.workers.map((worker) => (
                     <WorkerCard
                       key={worker.id.toString()}
                       worker={worker}
-                      userLocation={userCoords}
                       searchContext={searchContext}
                     />
                   ))}
@@ -150,7 +184,6 @@ export default function WorkerSearchResultsPage() {
               <WorkerCard
                 key={worker.id.toString()}
                 worker={worker}
-                userLocation={userCoords}
                 searchContext={searchContext}
               />
             ))}

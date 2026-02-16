@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 107,
-  "summary": "Build a production-ready multilingual hyperlocal services platform named “AREA WORKARS” (always uppercase) connecting (1) people searching for workers, (2) workers listing services, and (3) businesses posting job requirements. Mobile-first, premium colorful corporate-but-rural-friendly UI. Search by area/pincode and by free-text skill tags; browse categories with meaningful local SVG icons, view worker cards with direct Call/WhatsApp (no booking). Includes worker registration (with Skills/Work Tags), public job request posting + job board, and an admin approval panel for workers and job posts. Bilingual everywhere with Tamil as primary line and English as secondary smaller line shown below (no language switch).",
+  "projectStateVersion": 117,
+  "summary": "Build a production-ready multilingual hyperlocal services platform named “AREA WORKARS” (always uppercase) connecting (1) people searching for workers, (2) workers listing services, and (3) businesses posting job requirements. Mobile-first, premium colorful corporate-but-rural-friendly UI. Search by area/pincode and by free-text skill tags; browse categories with meaningful local SVG icons, view worker cards with direct Call/WhatsApp (no booking). Includes worker registration (with Skills/Work Tags), public job request posting + job board. Worker registrations become publicly visible immediately after submission (no admin approval / no pending state); workers are stored in a public collection \"workers\" with status=active by default. Bilingual everywhere with Tamil as primary line and English as secondary smaller line shown below (no language switch).",
   "architectural_notes": [
     "Brand style: trustworthy, simple, rural+urban friendly; not corporate, not ecommerce; community-service feel",
     "Color palette: dark green + white + light grey; emphasize accessibility and readability",
@@ -26,7 +26,7 @@
     "Regression: after last update, category/subcategory text labels reverted to raw i18n keys (e.g., category.homeservices, category.events) indicating broken label mapping/translation key resolution.",
     "Category icons are not loading and all cards are showing the fallback icon (likely due to public assets placement, icon path mapping, filename/case-sensitivity mismatches, or incorrect import/loading method)."
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-build-a-single-page-premium-modern-corporate-landing-page-for-the-textile-production-network-brand-named-allovikaas-optimized-to-recruit-saree-manufacturers-weavers-loom-owners-and-cloth-producers-into-a-manufacturing-ecosystem-network",
@@ -1451,6 +1451,174 @@
         "REQ-210"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-worker-registration-ui-frontend-src-pages-workerregistrationpage-tsx-to-match-this-simple-field-list-exactly-name-phone-area-location-category-skills-tags-comma-separated-available-time-experience-remove-any-user-facing-requirements-ui-for-fields-not-in-this-list-e-g-subcategory-photo-upload-comments-about-working-hours-so-users-can-submit-with-only-the-requested-fields",
+      "title": "Update the Worker Registration UI (frontend/src/pages/WorkerRegistrationPage.tsx) to match this simple field list exactly: Name, Phone, Area / Location, Category, Skills / Tags (comma separated), Available time, Experience. Remove any user-facing requirements/UI for fields not in this list (e.g., Subcategory, Photo upload, Comments/About, Working hours) so users can submit with only the requested fields.",
+      "reqIds": [
+        "REQ-211"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-worker-registration-submission-flow-to-show-a-success-confirmation-message-after-submit-and-handle-backend-errors-safely-without-crashing-the-page",
+      "title": "Update the worker registration submission flow to show a success confirmation message after submit, and handle backend errors safely without crashing the page.",
+      "reqIds": [
+        "REQ-213"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-worker-registration-feature-does-not-introduce-any-chat-ai-or-in-app-messaging-functionality",
+      "title": "Ensure the worker registration feature does not introduce any chat, AI, or in-app messaging functionality.",
+      "reqIds": [
+        "REQ-214"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-admin-approval-user-approval-gate-from-worker-registration-so-any-visitor-including-anonymous-can-submit-the-worker-registration-form-and-the-backend-saves-the-worker-as-active-by-default-no-pending-state",
+      "title": "Remove the admin approval / user-approval gate from worker registration so any visitor (including anonymous) can submit the Worker Registration form and the backend saves the worker as active by default (no pending state).",
+      "reqIds": [
+        "REQ-215"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-worker-listing-and-search-flows-to-use-the-public-workers-endpoint-and-filter-by-status-active-not-approved-so-all-newly-registered-workers-appear-in-category-pages-and-search-results-without-admin-actions",
+      "title": "Update frontend worker listing and search flows to use the public workers endpoint and filter by status=active (not approved), so all newly registered workers appear in category pages and search results without admin actions.",
+      "reqIds": [
+        "REQ-218"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-or-neutralize-the-admin-worker-approval-ui-actions-so-the-admin-panel-no-longer-shows-a-pending-worker-registrations-queue-or-approve-reject-controls-for-workers-and-no-user-facing-copy-implies-waiting-for-admin-approval",
+      "title": "Remove or neutralize the admin worker approval UI/actions so the admin panel no longer shows a “Pending Worker Registrations” queue or Approve/Reject controls for workers, and no user-facing copy implies waiting for admin approval.",
+      "reqIds": [
+        "REQ-219"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enable-live-refresh-after-worker-submission-so-that-a-newly-submitted-active-worker-can-appear-immediately-in-the-ui-without-a-manual-page-reload-by-invalidating-refetching-relevant-react-query-caches-after-submit",
+      "title": "Enable live refresh after worker submission so that a newly submitted active worker can appear immediately in the UI without a manual page reload by invalidating/refetching relevant React Query caches after submit.",
+      "reqIds": [
+        "REQ-220"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-home-page-frontend-src-pages-homepage-tsx-hero-search-area-to-add-a-new-ai-style-natural-language-search-ui-with-the-exact-english-title-text-ask-for-a-worker-and-the-exact-english-subtitle-text-type-like-talking-to-a-person-the-input-must-be-big-rounded-chat-style-and-mobile-friendly-with-a-green-search-button",
+      "title": "Update the Home page (frontend/src/pages/HomePage.tsx) Hero search area to add a new AI-style natural-language search UI with the exact English title text \"Ask for a worker\" and the exact English subtitle text \"Type like talking to a person\". The input must be big, rounded, chat-style, and mobile-friendly, with a green Search button.",
+      "reqIds": [
+        "REQ-222"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-natural-language-query-parsing-matching-layer-for-the-home-page-search-so-users-can-type-full-sentences-in-tamil-or-english-and-still-get-relevant-matches-the-system-must-1-extract-skill-keywords-2-extract-location-words-3-match-against-worker-skills-tags-category-and-area-and-4-show-matching-workers-instantly-as-the-user-types-debounced-use-the-existing-public-workers-data-source-getpublicworkers-and-keep-the-underlying-navigation-search-params-unchanged",
+      "title": "Implement a natural-language query parsing + matching layer for the Home page search so users can type full sentences in Tamil or English and still get relevant matches. The system must (1) extract skill keywords, (2) extract location words, (3) match against worker skills/tags, category, and area, and (4) show matching workers instantly as the user types (debounced). Use the existing public workers data source (getPublicWorkers) and keep the underlying navigation/search params unchanged.",
+      "reqIds": [
+        "REQ-223"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-home-page-render-an-instant-results-preview-list-under-the-new-natural-language-search-box-showing-matching-workers-limit-to-a-small-mobile-friendly-number-such-as-top-5-10-each-preview-item-must-use-the-existing-worker-card-navigation-pattern-i-e-user-can-tap-through-to-view-the-worker-and-must-render-safely-when-optional-fields-are-missing-skills-area-phone-etc",
+      "title": "On the Home page, render an instant results preview list under the new natural-language search box showing matching workers (limit to a small, mobile-friendly number such as top 5–10). Each preview item must use the existing worker card/navigation pattern (i.e., user can tap through to view the worker) and must render safely when optional fields are missing (skills, area, phone, etc.).",
+      "reqIds": [
+        "REQ-224"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-when-the-home-page-natural-language-search-has-zero-matches-show-the-exact-message-no-workers-found-try-another-word-english-user-facing-text-this-message-must-appear-in-the-home-page-search-preview-area-not-only-on-the-search-page",
+      "title": "When the Home page natural-language search has zero matches, show the exact message: \"No workers found — try another word\" (English user-facing text). This message must appear in the Home page search preview area (not only on the /search page).",
+      "reqIds": [
+        "REQ-225"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-i18n-keys-for-the-new-home-page-natural-language-search-title-subtitle-and-the-new-no-results-message-so-that-they-never-render-as-raw-keys-in-the-ui-ensure-english-values-match-the-exact-strings-provided-by-the-user",
+      "title": "Add i18n keys for the new Home page natural-language search title/subtitle and the new no-results message so that they never render as raw keys in the UI. Ensure English values match the exact strings provided by the user.",
+      "reqIds": [
+        "REQ-226"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-centralized-fuzzy-matching-normalization-utility-for-worker-search-that-makes-matching-typo-tolerant-and-not-dependent-on-exact-spelling-normalization-must-lowercase-remove-punctuation-collapse-trim-whitespace-and-ignore-case-spaces-for-comparisons-fuzzy-matching-must-match-based-on-similarity-not-exact-equality-so-that-similar-misspellings-can-still-match-worker-name-area-category-and-tags",
+      "title": "Implement a centralized fuzzy-matching + normalization utility for worker search that makes matching typo-tolerant and not dependent on exact spelling. Normalization must: lowercase, remove punctuation, collapse/trim whitespace, and ignore case/spaces for comparisons. Fuzzy matching must match based on similarity (not exact equality) so that similar misspellings can still match worker name, area, category, and tags.",
+      "reqIds": [
+        "REQ-227"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-universal-free-text-search-filtering-to-use-the-new-fuzzy-matching-normalization-logic-when-comparing-the-user-query-against-worker-fields-name-area-category-and-tags-this-must-apply-to-the-client-side-universal-search-hook-frontend-src-hooks-useworkertextsearch-ts-and-any-other-universal-query-filtering-used-to-power-search-results",
+      "title": "Update universal free-text search filtering to use the new fuzzy matching + normalization logic when comparing the user query against worker fields: name, area, category, and tags. This must apply to the client-side universal search hook (frontend/src/hooks/useWorkerTextSearch.ts) and any other universal query filtering used to power search results.",
+      "reqIds": [
+        "REQ-228"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-search-page-filtering-and-relevance-sorting-to-use-the-fuzzy-matching-normalization-logic-for-q-based-searches-while-preserving-existing-category-area-filter-behavior-and-existing-layout-ensure-fuzzy-matching-is-applied-when-comparing-q-against-name-area-category-and-tags",
+      "title": "Update the /search page filtering and relevance sorting to use the fuzzy matching + normalization logic for q-based searches, while preserving existing category/area filter behavior and existing layout. Ensure fuzzy matching is applied when comparing q against name, area, category, and tags.",
+      "reqIds": [
+        "REQ-229"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-home-page-instant-preview-natural-language-matching-to-be-typo-tolerant-by-applying-the-shared-normalization-including-punctuation-removal-and-fuzzy-similarity-matching-when-scoring-matching-against-worker-category-area-and-skills-tags-this-must-improve-matches-for-misspelled-skills-without-requiring-exact-spelling",
+      "title": "Update the Home page instant preview natural-language matching to be typo-tolerant by applying the shared normalization (including punctuation removal) and fuzzy similarity matching when scoring/matching against worker category, area, and skills/tags. This must improve matches for misspelled skills without requiring exact spelling.",
+      "reqIds": [
+        "REQ-230"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-microphone-button-inside-the-main-search-input-ui-so-users-can-trigger-voice-search-on-mobile-browsers-this-must-be-integrated-into-the-existing-home-page-natural-language-search-input-frontend-src-pages-homepage-tsx-without-requiring-login",
+      "title": "Add a microphone button inside the main search input UI so users can trigger voice search on mobile browsers. This must be integrated into the existing Home page natural-language search input (frontend/src/pages/HomePage.tsx) without requiring login.",
+      "reqIds": [
+        "REQ-231"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-speech-to-text-voice-recognition-so-that-when-the-microphone-button-is-tapped-1-speech-recognition-starts-2-speech-is-converted-to-text-3-the-recognized-text-auto-fills-the-search-input-and-4-search-is-automatically-triggered-using-the-existing-search-submit-navigation-behavior",
+      "title": "Implement speech-to-text voice recognition so that when the microphone button is tapped: (1) speech recognition starts, (2) speech is converted to text, (3) the recognized text auto-fills the search input, and (4) search is automatically triggered using the existing search submit/navigation behavior.",
+      "reqIds": [
+        "REQ-232"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-support-both-tamil-and-english-speech-recognition-for-voice-search-configure-recognition-to-work-for-typical-user-utterances-in-tamil-english-mixed-queries-examples-include-tindivanam-plumber-irukana-painting-work-venum-ac-repair-near-me-samayal-aunty-venum-nalaiku",
+      "title": "Support both Tamil and English speech recognition for voice search. Configure recognition to work for typical user utterances in Tamil/English mixed queries (examples include: \"tindivanam plumber irukana\", \"painting work venum\", \"AC repair near me\", \"samayal aunty venum nalaiku\").",
+      "reqIds": [
+        "REQ-233"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-provide-a-safe-fallback-behavior-on-browsers-that-do-not-support-web-speech-api-speech-recognition-disable-or-hide-the-microphone-button-and-optionally-show-a-simple-english-only-message-indicating-voice-search-is-not-supported-on-this-browser-without-affecting-normal-typed-search",
+      "title": "Provide a safe fallback behavior on browsers that do not support Web Speech API speech recognition: disable or hide the microphone button and (optionally) show a simple English-only message indicating voice search is not supported on this browser, without affecting normal typed search.",
+      "reqIds": [
+        "REQ-234"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-voice-search-integrates-cleanly-with-existing-search-ui-behaviors-debounced-preview-matching-on-home-page-and-navigation-to-search-and-does-not-introduce-new-authentication-booking-payment-or-in-app-chat-functionality",
+      "title": "Ensure voice search integrates cleanly with existing search UI behaviors (debounced preview matching on Home page and navigation to /search) and does not introduce new authentication, booking, payment, or in-app chat functionality.",
+      "reqIds": [
+        "REQ-235"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -1699,12 +1867,6 @@
       "status": "pending"
     },
     {
-      "id": "AR-63",
-      "summary": "Enforce admin-approval gating: newly submitted worker listings must remain hidden (pending) until an admin approves them for public display",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
       "id": "AR-66",
       "summary": "Keep the admin panel protected by Internet Identity login and admin authorization; removing the login requirement must apply only to worker submissions, not to admin review/approval actions.",
       "reqIds": [
@@ -1812,14 +1974,6 @@
       "id": "AR-90",
       "summary": "Add/extend Tailoring category subcategories so items like Blouse Stitching and Saree Work appear as selectable subcategory dropdown options under Tailoring (and similar large categories) in registration + filters",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-93",
-      "summary": "Keep admin-approval gating for public visibility: ensure newly submitted worker registrations remain non-public (pending) and are not returned by any public worker browsing/search endpoints until an admin approves them.",
-      "reqIds": [
-        "REQ-92"
-      ],
       "status": "pending"
     },
     {
@@ -2042,6 +2196,74 @@
         "REQ-207"
       ],
       "status": "in_progress"
+    },
+    {
+      "id": "AR-152",
+      "summary": "Worker registration form (simple, no chat/AI): fields Name, Phone, Area/Location, Category, Skills/Tags (comma-separated), Available time, Experience; save worker in database and show success message after submit",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-154",
+      "summary": "Update backend persistence in backend/main.mo so worker registration can be saved with exactly the requested fields (Name, Phone, Area/Location, Category, Skills/Tags, Available time, Experience) and does not require subcategory or photo. Ensure worker records are stored in canister state and remain pending/not publicly visible until admin approval (existing status gating).",
+      "reqIds": [
+        "REQ-212"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-155",
+      "summary": "Remove admin approval + pending state for worker registrations: on submit, save worker into public \"workers\" collection with status=active by default and immediately include in category pages and search results (no moderation).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-156",
+      "summary": "Enable live refresh so newly submitted active workers appear instantly in the UI (category pages/search results) without manual reload.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-158",
+      "summary": "Update the backend worker status model and public worker visibility rules so that the app’s public browsing/search only depends on status=active (not approved/pending), and newly created workers are immediately included in public results.",
+      "reqIds": [
+        "REQ-216"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-159",
+      "summary": "Expose a public backend query endpoint that returns the public worker list (stored in the canister’s workers collection) without requiring admin privileges, so Home/Search pages can load workers for anonymous visitors.",
+      "reqIds": [
+        "REQ-217"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-163",
+      "summary": "Add a conditional migration for existing worker records so the canister remains upgrade-safe if the Worker.status variant changes to support status=active, ensuring existing stored workers are preserved and mapped to a safe status value.",
+      "reqIds": [
+        "REQ-221"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-164",
+      "summary": "Add an AI-style natural-language search box on the homepage titled \"Ask for a worker\" with subtitle \"Type like talking to a person\"; accept full-sentence Tamil/English queries, extract skill + location keywords, match against worker tags/category/area, and show matching workers instantly; if none found show \"No workers found — try another word\"; chat-style big rounded input + green search button; mobile-friendly; no login required",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-165",
+      "summary": "Improve universal worker search with smart fuzzy matching + typo tolerance: normalize query/text (lowercase, trim/condense spaces, remove punctuation; ignore case/spaces) and match by similarity (not exact spelling) across worker name, area, category, and tags (e.g., plumer/plambar/plambing->plumbing; tailar->tailoring; wellding->welding).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-166",
+      "summary": "Add voice search to the search bar: microphone button inside the search input; on tap start mobile browser speech recognition (Tamil + English), convert speech to text, auto-fill the input, and automatically trigger search (no login required).",
+      "reqIds": [],
+      "status": "pending"
     }
   ],
   "gameProjectType": "none",

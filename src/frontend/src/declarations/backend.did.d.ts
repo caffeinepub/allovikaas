@@ -17,29 +17,6 @@ export interface CategoryMapping {
   'category' : string,
   'subcategories' : Array<string>,
 }
-export type ExternalBlob = Uint8Array;
-export interface JobPost {
-  'id' : bigint,
-  'status' : { 'pending' : null } |
-    { 'approved' : null } |
-    { 'rejected' : null },
-  'workType' : string,
-  'salary' : string,
-  'area' : string,
-  'description' : string,
-  'phone' : string,
-  'dateTime' : Time,
-}
-export interface Location { 'lat' : number, 'lon' : number }
-export interface Suggestion {
-  'source' : { 'subcategory' : null } |
-    { 'area' : null } |
-    { 'skill' : null } |
-    { 'category' : null } |
-    { 'workerName' : null },
-  'text' : string,
-}
-export type Time = bigint;
 export interface UserApprovalInfo {
   'status' : ApprovalStatus,
   'principal' : Principal,
@@ -54,26 +31,17 @@ export type UserRole = { 'admin' : null } |
   { 'guest' : null };
 export interface Worker {
   'id' : bigint,
-  'status' : WorkerStatus,
-  'verified' : boolean,
-  'featured' : boolean,
-  'subcategory' : string,
+  'status' : { 'active' : null } |
+    { 'rejected' : string },
   'area' : string,
   'userId' : Principal,
   'name' : string,
   'experience' : string,
-  'workingHours' : string,
+  'availableTime' : string,
   'category' : string,
-  'comments' : [] | [string],
   'phone' : string,
-  'photo' : ExternalBlob,
   'skills' : Array<string>,
-  'lastActive' : [] | [Time],
-  'location' : [] | [Location],
 }
-export type WorkerStatus = { 'pendingVerification' : null } |
-  { 'approved' : null } |
-  { 'rejected' : string };
 export interface _CaffeineStorageCreateCertificateResult {
   'method' : string,
   'blob_hash' : string,
@@ -102,69 +70,25 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'approveJobPost' : ActorMethod<[bigint], boolean>,
-  'approveWorker' : ActorMethod<[bigint], boolean>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'createJobPost' : ActorMethod<
-    [string, string, Time, string, string, string],
-    string
-  >,
-  'featureWorker' : ActorMethod<[bigint], undefined>,
   'getAllCategories' : ActorMethod<[], Array<CategoryMapping>>,
-  'getAllJobPosts' : ActorMethod<[], Array<JobPost>>,
-  'getAllWorkers' : ActorMethod<[], Array<Worker>>,
-  'getApprovedJobs' : ActorMethod<[], Array<JobPost>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCategoryBySubcategory' : ActorMethod<[string], [] | [string]>,
-  'getFeaturedWorkers' : ActorMethod<[], Array<Worker>>,
-  'getJobPostById' : ActorMethod<[bigint], [] | [JobPost]>,
-  'getLiveSearchSuggestions' : ActorMethod<[string], Array<Suggestion>>,
-  'getPendingJobPosts' : ActorMethod<[], Array<JobPost>>,
-  'getPendingWorkers' : ActorMethod<[], Array<Worker>>,
+  'getPublicWorkers' : ActorMethod<[], Array<Worker>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'getWorkerById' : ActorMethod<[bigint], [] | [Worker]>,
-  'getWorkersByCategory' : ActorMethod<[string], Array<Worker>>,
-  'getWorkersBySubcategory' : ActorMethod<[string], Array<Worker>>,
-  'getWorkersWithDistance' : ActorMethod<[Location], Array<Worker>>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isCallerApproved' : ActorMethod<[], boolean>,
   'listApprovals' : ActorMethod<[], Array<UserApprovalInfo>>,
-  'markWorkerVerified' : ActorMethod<[bigint], undefined>,
-  'rejectJobPost' : ActorMethod<[bigint], boolean>,
   'rejectWorker' : ActorMethod<[bigint, string], boolean>,
-  'repairDataIntegrity' : ActorMethod<[], string>,
   'requestApproval' : ActorMethod<[], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'searchApprovedWorkers' : ActorMethod<[string], Array<Worker>>,
-  'searchWorkersByArea' : ActorMethod<[string], Array<Worker>>,
-  'searchWorkersByAreaAndCategory' : ActorMethod<
-    [string, string],
-    Array<Worker>
-  >,
-  'searchWorkersByAreaAndSubcategory' : ActorMethod<
-    [string, string],
-    Array<Worker>
-  >,
   'setApproval' : ActorMethod<[Principal, ApprovalStatus], undefined>,
   'submitWorkerRegistration' : ActorMethod<
-    [
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      ExternalBlob,
-      [] | [string],
-      string,
-      [] | [Location],
-    ],
+    [string, string, string, string, Array<string>, string, string],
     string
   >,
-  'unfeatureWorker' : ActorMethod<[bigint], undefined>,
-  'universalSearch' : ActorMethod<[string], Array<Worker>>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

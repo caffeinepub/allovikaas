@@ -1,61 +1,26 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T02:00:37.700Z",
-  "summary": "Diff adds frontend scripts and docs for clean rebuild, live-only deploy flow, and post-deploy verification against https://areaworkars.caffeine.ai. However, the live deployment itself is only described as a placeholder and there is no concrete implementation shown that would actually publish to the live domain or address NXDOMAIN at the DNS/platform level. Several unrelated changes (notably backend category data and large frontend feature summaries) appear outside the scope of the redeploy/build/deploy verification request.",
+  "generatedAt": "2026-02-16T05:55:16.279Z",
+  "summary": "Diff adds a VoiceSearchButton component, a useSpeechRecognition hook using the Web Speech API, and integrates the mic button + speech-to-text flow into HomePage to auto-fill the search input and navigate to /search. Most requirements appear implemented; Tamil/English support may be only partially addressed because recognition language is configured only as ta-IN in HomePage.",
   "missing_requirements": [
     {
-      "id": "REQ-209",
-      "requirement": "Deploy the clean production build directly to the live environment so the live domain https://areaworkars.caffeine.ai is created and serves the app; do not create or publish any draft/preview deployment as part of this redeploy.",
-      "reason": "The added deploy script explicitly states the deployment command is a placeholder and that the actual deployment is expected to be performed by Caffeine’s build system; no concrete deploy command/config is shown that would actually publish to live or ensure no draft/preview is created.",
+      "id": "REQ-233",
+      "requirement": "Support both Tamil and English speech recognition for voice search, configured to work for typical Tamil/English mixed queries.",
+      "reason": "HomePage configures speech recognition language as only 'ta-IN' (with a comment claiming it will understand English too), but the diff does not show any explicit configuration or strategy to ensure English recognition (e.g., switching/dual-pass, user locale-based selection, or explicit 'en-IN'). The hook supports multiple language options, but the actual integration shown uses only Tamil.",
       "evidence": [
-        "frontend/scripts/deploy-live.sh"
-      ]
-    },
-    {
-      "id": "REQ-209",
-      "requirement": "DNS for areaworkars.caffeine.ai resolves (no NXDOMAIN) and https://areaworkars.caffeine.ai loads the application in a browser after deployment.",
-      "reason": "No changes in the diff demonstrate DNS or platform configuration updates; verification checks HTTP/HTML after deployment but does not implement or fix DNS resolution (NXDOMAIN).",
-      "evidence": [
-        "frontend/scripts/deploy-live.sh",
-        "frontend/scripts/verify-live-deploy.sh"
-      ]
-    },
-    {
-      "id": "REQ-208",
-      "requirement": "Perform a forced clean production rebuild of the current codebase (clear frontend caches/build artifacts) and ensure the production build completes successfully (no build errors).",
-      "reason": "A clean-build script is added to clear caches/artifacts and run a build, but the diff cannot prove that the production build actually completes successfully in CI/CD (no build logs or pipeline/config changes shown).",
-      "evidence": [
-        "frontend/scripts/clean-production-build.sh"
+        "frontend/src/pages/HomePage.tsx",
+        "frontend/src/hooks/useSpeechRecognition.ts"
       ]
     }
   ],
-  "hallucinated_features": [
-    {
-      "description": "Backend data/model change expanding/altering normalizedCategories and related category/subcategory lists.",
-      "reason": "BuildRequest is focused on clean rebuild, live deploy, and verification; it explicitly discourages new product features or backend changes unless strictly required for build/deploy, and the diff does not show this is necessary for deployment.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "Large changes/updates to frontend feature summary metadata describing routes, pages, UI design system, bilingual components, etc.",
-      "reason": "Not requested by the redeploy/build/deploy verification requirements and appears unrelated to fixing NXDOMAIN or performing a clean production rebuild/deploy.",
-      "evidence": [
-        "frontend-file-summaries.txt",
-        "project_state.json"
-      ]
-    }
-  ],
-  "confidence": 0.74,
+  "hallucinated_features": [],
+  "confidence": 0.68,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/DEPLOYMENT_CLEAN_REBUILD.md",
-    "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
-    "frontend/scripts/clean-production-build.sh",
-    "frontend/scripts/deploy-live.sh",
-    "frontend/scripts/verify-live-deploy.sh",
+    "frontend/src/components/search/VoiceSearchButton.tsx",
+    "frontend/src/hooks/useSpeechRecognition.ts",
+    "frontend/src/pages/HomePage.tsx",
     "project_state.json"
   ]
 }

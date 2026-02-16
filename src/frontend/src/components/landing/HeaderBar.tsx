@@ -3,14 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { useI18n } from '@/components/i18n/I18nProvider';
-import BilingualText from '@/components/i18n/BilingualText';
 
 export default function HeaderBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { t } = useI18n();
 
-  const appName = t('app.name');
+  const navHome = t('nav.home');
   const navBrowse = t('nav.browse');
   const navPostJob = t('nav.postJob');
   const navRegister = t('nav.register');
@@ -23,134 +22,117 @@ export default function HeaderBar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-card/95 backdrop-blur-md shadow-sm">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex h-16 md:h-20 items-center justify-between">
+    <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <button
             onClick={() => handleNavigation('/')}
-            className="flex items-center space-x-2 group"
+            className="text-xl md:text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
           >
-            <div className="text-xl md:text-2xl font-bold text-primary group-hover:text-primary-dark transition-colors">
-              {appName?.en || 'AREA WORKARS'}
-            </div>
+            AREA WORKARS
           </button>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2">
+          <nav className="hidden md:flex items-center gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => handleNavigation('/')}
+              className="text-foreground hover:text-primary"
+            >
+              {navHome.en}
+            </Button>
             <Button
               variant="ghost"
               onClick={() => handleNavigation('/search')}
-              className="text-base hover:text-primary hover:bg-primary/10"
+              className="text-foreground hover:text-primary"
             >
-              {navBrowse?.en || 'Browse'}
+              {navBrowse.en}
             </Button>
             <Button
               variant="ghost"
               onClick={() => handleNavigation('/post-job')}
-              className="text-base hover:text-primary hover:bg-primary/10"
+              className="text-foreground hover:text-primary"
             >
-              {navPostJob?.en || 'Post Job'}
+              {navPostJob.en}
             </Button>
             <Button
               variant="ghost"
               onClick={() => handleNavigation('/blog')}
-              className="text-base hover:text-primary hover:bg-primary/10"
+              className="text-foreground hover:text-primary"
             >
-              {navBlog?.en || 'Blog'}
+              {navBlog.en}
             </Button>
             <Button
-              onClick={() => handleNavigation('/register-worker')}
+              onClick={() => handleNavigation('/register')}
               className="bg-primary hover:bg-primary-dark text-primary-foreground font-semibold"
             >
-              {navRegister?.en || 'Register'}
+              {navRegister.en}
             </Button>
             <Button
               variant="outline"
               onClick={() => handleNavigation('/admin')}
-              className="border-2 hover:border-primary hover:text-primary"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
-              {navAdmin?.en || 'Admin'}
+              {navAdmin.en}
             </Button>
           </nav>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
+            className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6 text-foreground" />
-            ) : (
-              <Menu className="h-6 w-6 text-foreground" />
-            )}
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-2 border-t border-border/60">
+          <nav className="md:hidden py-4 space-y-2 border-t border-border">
+            <Button
+              variant="ghost"
+              onClick={() => handleNavigation('/')}
+              className="w-full justify-start text-foreground hover:text-primary"
+            >
+              {navHome.en}
+            </Button>
             <Button
               variant="ghost"
               onClick={() => handleNavigation('/search')}
-              className="w-full justify-start text-base hover:bg-primary/10"
+              className="w-full justify-start text-foreground hover:text-primary"
             >
-              <BilingualText
-                english={<span>{navBrowse?.en || 'Browse'}</span>}
-                regional={<span className="text-sm">{navBrowse?.regional || ''}</span>}
-                containerClassName="flex flex-col items-start"
-                regionalClassName="text-sm opacity-80"
-              />
+              {navBrowse.en}
             </Button>
             <Button
               variant="ghost"
               onClick={() => handleNavigation('/post-job')}
-              className="w-full justify-start text-base hover:bg-primary/10"
+              className="w-full justify-start text-foreground hover:text-primary"
             >
-              <BilingualText
-                english={<span>{navPostJob?.en || 'Post Job'}</span>}
-                regional={<span className="text-sm">{navPostJob?.regional || ''}</span>}
-                containerClassName="flex flex-col items-start"
-                regionalClassName="text-sm opacity-80"
-              />
+              {navPostJob.en}
             </Button>
             <Button
               variant="ghost"
               onClick={() => handleNavigation('/blog')}
-              className="w-full justify-start text-base hover:bg-primary/10"
+              className="w-full justify-start text-foreground hover:text-primary"
             >
-              <BilingualText
-                english={<span>{navBlog?.en || 'Blog'}</span>}
-                regional={<span className="text-sm">{navBlog?.regional || ''}</span>}
-                containerClassName="flex flex-col items-start"
-                regionalClassName="text-sm opacity-80"
-              />
+              {navBlog.en}
             </Button>
             <Button
-              onClick={() => handleNavigation('/register-worker')}
-              className="w-full bg-primary hover:bg-primary-dark text-primary-foreground"
+              onClick={() => handleNavigation('/register')}
+              className="w-full bg-primary hover:bg-primary-dark text-primary-foreground font-semibold"
             >
-              <BilingualText
-                english={<span>{navRegister?.en || 'Register'}</span>}
-                regional={<span className="text-sm">{navRegister?.regional || ''}</span>}
-                containerClassName="flex flex-col"
-                regionalClassName="text-sm"
-              />
+              {navRegister.en}
             </Button>
             <Button
               variant="outline"
               onClick={() => handleNavigation('/admin')}
-              className="w-full border-2"
+              className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
-              <BilingualText
-                english={<span>{navAdmin?.en || 'Admin'}</span>}
-                regional={<span className="text-sm">{navAdmin?.regional || ''}</span>}
-                containerClassName="flex flex-col"
-                regionalClassName="text-sm"
-              />
+              {navAdmin.en}
             </Button>
-          </div>
+          </nav>
         )}
       </div>
     </header>

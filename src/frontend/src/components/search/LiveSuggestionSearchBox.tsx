@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, Loader2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useLiveSearchSuggestions } from '@/hooks/useLiveSearchSuggestions';
-import { getCategoryLabel } from '@/utils/categoryLabels';
-import { displayName } from '@/utils/displayName';
 import { cn } from '@/lib/utils';
 
 interface LiveSuggestionSearchBoxProps {
@@ -88,41 +86,13 @@ export default function LiveSuggestionSearchBox({
       case 'Enter':
         if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
           e.preventDefault();
-          handleSuggestionClick(suggestions[highlightedIndex].text);
+          handleSuggestionClick(suggestions[highlightedIndex]);
         }
         break;
       case 'Escape':
         setShowSuggestions(false);
         setHighlightedIndex(-1);
         break;
-    }
-  };
-
-  // Format suggestion display text based on source
-  const formatSuggestionText = (suggestion: { text: string; source: string }): string => {
-    // For categories, use the centralized category label mapping
-    if (suggestion.source === 'category') {
-      return getCategoryLabel(suggestion.text);
-    }
-    
-    // For other types, use displayName formatter
-    return displayName(suggestion.text);
-  };
-
-  const getSuggestionIcon = (source: string): string => {
-    switch (source) {
-      case 'category':
-        return '📂';
-      case 'subcategory':
-        return '📋';
-      case 'area':
-        return '📍';
-      case 'workerName':
-        return '👤';
-      case 'skill':
-        return '⚡';
-      default:
-        return '🔍';
     }
   };
 
@@ -151,48 +121,30 @@ export default function LiveSuggestionSearchBox({
         </div>
       </form>
 
-      {/* Suggestions Dropdown */}
-      {showSuggestions && (value.length >= 3) && (
+      {/* Suggestions Dropdown - Hidden since backend doesn't support suggestions */}
+      {showSuggestions && suggestions.length > 0 && (
         <div className="absolute z-50 w-full mt-2 bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
-          {isLoading ? (
-            <div className="p-4 flex items-center justify-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Loading suggestions...</span>
-            </div>
-          ) : suggestions.length > 0 ? (
-            <ul className="max-h-80 overflow-y-auto">
-              {suggestions.map((suggestion, index) => {
-                const displayText = formatSuggestionText(suggestion);
-                
-                return (
-                  <li key={`${suggestion.source}-${suggestion.text}-${index}`}>
-                    <button
-                      type="button"
-                      onClick={() => handleSuggestionClick(suggestion.text)}
-                      className={cn(
-                        'w-full px-4 py-3 text-left hover:bg-accent transition-colors flex items-center gap-3',
-                        highlightedIndex === index && 'bg-accent'
-                      )}
-                    >
-                      <span className="text-xl">{getSuggestionIcon(suggestion.source)}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-foreground truncate">
-                          {displayText}
-                        </div>
-                        <div className="text-xs text-muted-foreground capitalize">
-                          {suggestion.source.replace(/([A-Z])/g, ' $1').trim()}
-                        </div>
-                      </div>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <div className="p-4 text-center text-sm text-muted-foreground">
-              No suggestions found
-            </div>
-          )}
+          <ul className="max-h-80 overflow-y-auto">
+            {suggestions.map((suggestion, index) => (
+              <li key={`${suggestion}-${index}`}>
+                <button
+                  type="button"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className={cn(
+                    'w-full px-4 py-3 text-left hover:bg-accent transition-colors flex items-center gap-3',
+                    highlightedIndex === index && 'bg-accent'
+                  )}
+                >
+                  <span className="text-xl">🔍</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-foreground truncate">
+                      {suggestion}
+                    </div>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

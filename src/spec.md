@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Redeploy a clean production build to the live domain https://areaworkars.caffeine.ai to fix NXDOMAIN and ensure the site is reachable and rendering correctly.
+**Goal:** Add Tamil/English voice search to the Home page search bar via a microphone button that converts speech to text and runs the existing search flow.
 
 **Planned changes:**
-- Perform a forced clean production rebuild (clear prior build artifacts/caches) and ensure the production build completes without errors.
-- Deploy the fresh production build directly to the live environment (no draft/preview deployment) so https://areaworkars.caffeine.ai serves the app.
-- Add a post-deploy verification step that checks https://areaworkars.caffeine.ai responds successfully and renders the app shell (not a blank page).
+- Add a tap-friendly microphone icon button positioned inside the Home page main search input UI (frontend/src/pages/HomePage.tsx), visible and usable on mobile browsers without requiring login.
+- Implement client-side speech-to-text using the browser’s Web Speech API: start recognition on tap, fill the search input with the final transcript, and automatically trigger the existing Home page search navigation to `/search` with `q=<recognized text>`.
+- Configure recognition to support Tamil and English (including mixed/transliterated queries) and pass the transcript into the existing search pipeline unchanged except for trimming.
+- Add safe fallback behavior for unsupported browsers (hide/disable mic button and optionally show a simple English-only message) without impacting typed search or causing runtime errors.
 
-**User-visible outcome:** Visiting https://areaworkars.caffeine.ai resolves correctly (no NXDOMAIN) and loads the application after a successful live redeploy.
+**User-visible outcome:** Users can tap a microphone inside the Home page search box to speak in Tamil/English, see the recognized text fill the search field, and be taken to the search results automatically; on unsupported browsers, typed search still works normally.

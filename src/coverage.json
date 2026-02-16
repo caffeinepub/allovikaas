@@ -1,69 +1,90 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T02:00:37.709Z",
+  "generatedAt": "2026-02-16T05:55:16.290Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 5,
+    "implemented": 5,
     "items": [
       {
-        "id": "REQ-208",
-        "summary": "Perform a forced clean production rebuild of the current codebase (clear frontend caches/build artifacts) and ensure the production build completes successfully (no build errors).",
+        "id": "REQ-231",
+        "summary": "Add a microphone button inside the main search input UI so users can trigger voice search on mobile browsers. This must be integrated into the existing Home page natural-language search input (frontend/src/pages/HomePage.tsx) without requiring login.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/scripts/clean-production-build.sh",
-          "frontend/DEPLOYMENT_CLEAN_REBUILD.md"
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/components/search/VoiceSearchButton.tsx"
         ],
         "matchedFiles": [
-          "frontend/scripts/clean-production-build.sh",
-          "frontend/DEPLOYMENT_CLEAN_REBUILD.md"
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/components/search/VoiceSearchButton.tsx"
         ]
       },
       {
-        "id": "REQ-209",
-        "summary": "Deploy the clean production build directly to the live environment so the live domain https://areaworkars.caffeine.ai is created and serves the app; do not create or publish any draft/preview deployment as part of this redeploy.",
+        "id": "REQ-232",
+        "summary": "Implement speech-to-text voice recognition so that when the microphone button is tapped: (1) speech recognition starts, (2) speech is converted to text, (3) the recognized text auto-fills the search input, and (4) search is automatically triggered using the existing search submit/navigation behavior.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/scripts/deploy-live.sh",
-          "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md"
+          "frontend/src/hooks/useSpeechRecognition.ts",
+          "frontend/src/components/search/VoiceSearchButton.tsx",
+          "frontend/src/pages/HomePage.tsx"
         ],
         "matchedFiles": [
-          "frontend/scripts/deploy-live.sh",
-          "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md"
+          "frontend/src/hooks/useSpeechRecognition.ts",
+          "frontend/src/components/search/VoiceSearchButton.tsx",
+          "frontend/src/pages/HomePage.tsx"
         ]
       },
       {
-        "id": "REQ-210",
-        "summary": "Add a deployment verification step after the live deploy that checks the live URL (https://areaworkars.caffeine.ai) returns a successful response and renders the app shell (not a blank page) so deployment failures are detected immediately.",
+        "id": "REQ-233",
+        "summary": "Support both Tamil and English speech recognition for voice search. Configure recognition to work for typical user utterances in Tamil/English mixed queries (examples include: \"tindivanam plumber irukana\", \"painting work venum\", \"AC repair near me\", \"samayal aunty venum nalaiku\").",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/scripts/verify-live-deploy.sh",
-          "frontend/scripts/deploy-live.sh",
-          "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md"
+          "frontend/src/hooks/useSpeechRecognition.ts",
+          "frontend/src/pages/HomePage.tsx"
         ],
         "matchedFiles": [
-          "frontend/scripts/verify-live-deploy.sh",
-          "frontend/scripts/deploy-live.sh",
-          "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md"
+          "frontend/src/hooks/useSpeechRecognition.ts",
+          "frontend/src/pages/HomePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-234",
+        "summary": "Provide a safe fallback behavior on browsers that do not support Web Speech API speech recognition: disable or hide the microphone button and (optionally) show a simple English-only message indicating voice search is not supported on this browser, without affecting normal typed search.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useSpeechRecognition.ts",
+          "frontend/src/pages/HomePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useSpeechRecognition.ts",
+          "frontend/src/pages/HomePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-235",
+        "summary": "Ensure voice search integrates cleanly with existing search UI behaviors (debounced preview matching on Home page and navigation to /search) and does not introduce new authentication, booking, payment, or in-app chat functionality.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/HomePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/HomePage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/DEPLOYMENT_CLEAN_REBUILD.md",
-    "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
-    "frontend/scripts/clean-production-build.sh",
-    "frontend/scripts/deploy-live.sh",
-    "frontend/scripts/verify-live-deploy.sh",
+    "frontend/src/components/search/VoiceSearchButton.tsx",
+    "frontend/src/hooks/useSpeechRecognition.ts",
+    "frontend/src/pages/HomePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

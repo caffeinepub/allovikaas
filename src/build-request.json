@@ -1,72 +1,122 @@
 {
   "kind": "build_request",
-  "title": "Redeploy clean production build to live domain (fix NXDOMAIN)",
-  "priority": "high",
+  "title": "Add Tamil/English voice search to the search bar with a microphone button",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-208",
-      "text": "Perform a forced clean production rebuild of the current codebase (clear frontend caches/build artifacts) and ensure the production build completes successfully (no build errors).",
+      "id": "REQ-231",
+      "text": "Add a microphone button inside the main search input UI so users can trigger voice search on mobile browsers. This must be integrated into the existing Home page natural-language search input (frontend/src/pages/HomePage.tsx) without requiring login.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-messages-4"
         ],
         "quotes": [
-          "Please redeploy the project and ensure the production build completes successfully."
+          "Add a microphone button inside the search box."
         ]
       },
       "acceptanceCriteria": [
-        "A clean rebuild is executed such that prior build artifacts and caches are cleared before building.",
-        "The production build finishes successfully and produces fresh build artifacts (e.g., a new dist/ output) with no errors."
+        "Home page search input renders a tap-friendly microphone icon button positioned inside the input field (not outside the search area).",
+        "The microphone button is visible and usable on mobile browsers.",
+        "No login is required to see or use the microphone button."
       ]
     },
     {
-      "id": "REQ-209",
-      "text": "Deploy the clean production build directly to the live environment so the live domain https://areaworkars.caffeine.ai is created and serves the app; do not create or publish any draft/preview deployment as part of this redeploy.",
-      "target": "both",
+      "id": "REQ-232",
+      "text": "Implement speech-to-text voice recognition so that when the microphone button is tapped: (1) speech recognition starts, (2) speech is converted to text, (3) the recognized text auto-fills the search input, and (4) search is automatically triggered using the existing search submit/navigation behavior.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-messages-4"
         ],
         "quotes": [
-          "The domain areaworkars.caffeine.ai is not created (NXDOMAIN).",
-          "Do a fresh production deployment, not draft preview."
+          "When tapped:\nStart speech recognition\nConvert speech to text\nAuto-fill the search input\nAutomatically trigger search"
         ]
       },
       "acceptanceCriteria": [
-        "The live deployment completes successfully without creating/publishing a draft/preview deployment.",
-        "DNS for areaworkars.caffeine.ai resolves (no NXDOMAIN) and https://areaworkars.caffeine.ai loads the application in a browser after deployment."
+        "Tapping the microphone starts speech recognition and captures the user’s voice.",
+        "After recognition returns a final transcript, the search input value is replaced/filled with the recognized transcript.",
+        "After filling the input, the app automatically triggers the same search flow as pressing the existing Search submit (i.e., navigates to /search with search: { q: <recognized text> } on Home page).",
+        "The implementation does not crash the page if speech recognition errors, is cancelled, or returns an empty transcript."
       ]
     },
     {
-      "id": "REQ-210",
-      "text": "Add a deployment verification step after the live deploy that checks the live URL (https://areaworkars.caffeine.ai) returns a successful response and renders the app shell (not a blank page) so deployment failures are detected immediately.",
-      "target": "unknown",
+      "id": "REQ-233",
+      "text": "Support both Tamil and English speech recognition for voice search. Configure recognition to work for typical user utterances in Tamil/English mixed queries (examples include: \"tindivanam plumber irukana\", \"painting work venum\", \"AC repair near me\", \"samayal aunty venum nalaiku\").",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-messages-4"
         ],
         "quotes": [
-          "The production deployment failed."
+          "Support Tamil and English speech."
         ]
       },
       "acceptanceCriteria": [
-        "After the live deploy, an explicit verification is performed against https://areaworkars.caffeine.ai.",
-        "Verification confirms the site is reachable and the app renders (not an error page and not a blank white screen)."
+        "Voice search recognizes English speech and produces an English transcript for common queries like \"AC repair near me\".",
+        "Voice search recognizes Tamil (and Tamil transliteration/mixed) speech and produces a transcript usable by the existing fuzzy/natural-language matching for queries like \"painting work venum\" and \"tindivanam plumber irukana\".",
+        "The recognized transcript is passed through the existing search pipeline unchanged except for normal trimming (no forced translation and no login)."
+      ]
+    },
+    {
+      "id": "REQ-234",
+      "text": "Provide a safe fallback behavior on browsers that do not support Web Speech API speech recognition: disable or hide the microphone button and (optionally) show a simple English-only message indicating voice search is not supported on this browser, without affecting normal typed search.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-4"
+        ],
+        "quotes": [
+          "Works on mobile browsers."
+        ]
+      },
+      "acceptanceCriteria": [
+        "On browsers where speech recognition is unavailable, the app does not throw runtime errors when rendering the search bar.",
+        "Typed search continues to work exactly as before when voice search is unavailable.",
+        "Any new user-visible fallback text introduced for unsupported browsers is English-only (no new Tamil-first copy added as part of this feature)."
+      ]
+    },
+    {
+      "id": "REQ-235",
+      "text": "Ensure voice search integrates cleanly with existing search UI behaviors (debounced preview matching on Home page and navigation to /search) and does not introduce new authentication, booking, payment, or in-app chat functionality.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages-4"
+        ],
+        "quotes": [
+          "No login required.\nWorks on mobile browsers."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Voice search does not require Internet Identity login and does not call any admin-only APIs.",
+        "After voice recognition, the existing Home page instant preview updates based on the filled text (via the existing state + debounced matching).",
+        "No new booking/payment/chat flows are introduced as part of voice search."
       ]
     }
   ],
   "constraints": [
-    "Deploy to the live domain https://areaworkars.caffeine.ai (not a draft/preview).",
-    "Use English for any user-facing text in this build request."
+    "Use only the existing frontend stack (React + TypeScript + Tailwind + React Query); do not introduce external speech-to-text services or APIs.",
+    "Keep all new user-facing text (if any) in English for this change request.",
+    "Do not edit immutable frontend paths listed in SYSTEM_CONTEXT (compose existing components instead)."
   ],
   "nonGoals": [
-    "No UI/UX changes beyond what is required to produce a successful production build and live deployment.",
-    "No new product features or backend schema changes unless required strictly to fix build/deploy failure.",
-    "No custom domain setup; only the Caffeine subdomain areaworkars.caffeine.ai is in scope."
+    "Adding server-side speech recognition or storing voice recordings on the backend.",
+    "Adding a language switcher UI specifically for voice search.",
+    "Changing the existing search relevance algorithm or taxonomy beyond feeding it the recognized text."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

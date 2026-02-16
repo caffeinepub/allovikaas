@@ -1,75 +1,66 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { MapPin } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import LiveSuggestionSearchBox from '@/components/search/LiveSuggestionSearchBox';
-import WorkerCard from '@/components/workers/WorkerCard';
+import { Search } from 'lucide-react';
 import SafeIconImage from '@/components/common/SafeIconImage';
 import { useI18n } from '@/components/i18n/I18nProvider';
-import { useBrowserGeolocation } from '@/hooks/useBrowserGeolocation';
-import { useNearbyWorkers } from '@/hooks/useNearbyWorkers';
 import { useWorkerTaxonomy } from '@/hooks/useWorkerTaxonomy';
 import { getBilingualCategoryLabel } from '@/utils/bilingualTaxonomy';
 import { getMainCategoryIcon } from '@/utils/mainCategoryIcons';
-import { calculateDistance } from '@/utils/workerDistance';
-import type { Location } from '@/backend';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { useNaturalLanguageWorkerMatch } from '@/hooks/useNaturalLanguageWorkerMatch';
+import HomeWorkerResultsPreview from '@/components/search/HomeWorkerResultsPreview';
+import VoiceSearchButton from '@/components/search/VoiceSearchButton';
+import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { toast } from 'sonner';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { t } = useI18n();
-  const [hasRequestedLocation, setHasRequestedLocation] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
-  // Request geolocation on mount
-  const { coords, requestLocation, isGranted } = useBrowserGeolocation(false);
+  // Debounce search input for instant matching
+  const debouncedQuery = useDebouncedValue(searchValue, 400);
 
-  useEffect(() => {
-    if (!hasRequestedLocation) {
-      requestLocation();
-      setHasRequestedLocation(true);
-    }
-  }, [hasRequestedLocation, requestLocation]);
-
-  // Fetch nearby workers if location is available
-  const userLocation: Location | null = coords
-    ? { lat: coords.latitude, lon: coords.longitude }
-    : null;
-
-  const { data: nearbyWorkers = [] } = useNearbyWorkers({
-    location: userLocation,
-    limit: 50,
-  });
-
-  // Sort nearby workers by distance
-  const sortedNearbyWorkers = nearbyWorkers
-    .map((worker) => {
-      if (!worker.location || !coords) return { worker, distance: Infinity };
-      const distance = calculateDistance(
-        { latitude: coords.latitude, longitude: coords.longitude },
-        { latitude: worker.location.lat, longitude: worker.location.lon }
-      );
-      return { worker, distance };
-    })
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 6)
-    .map((item) => item.worker);
+  // Get instant matches using natural language search
+  const { matches, isLoading: matchesLoading } = useNaturalLanguageWorkerMatch(debouncedQuery, 8);
 
   // Fetch categories
   const taxonomy = useWorkerTaxonomy();
 
-  const handleSearchSubmit = (query: string) => {
-    navigate({
-      to: '/search',
-      search: { q: query },
-    });
-  };
+  // Voice search integration
+  const { isSupported, isListening, startListening, stopListening } = useSpeechRecognition({
+    language: 'ta-IN', // Tamil (India) as primary, but will understand English too
+    onTranscript: (transcript) => {
+      const trimmedTranscript = transcript.trim();
+      if (trimmedTranscript) {
+        // Fill the search input with the transcript
+        setSearchValue(trimmedTranscript);
+        
+        // Automatically trigger search after a short delay to allow preview to update
+        setTimeout(() => {
+          navigate({
+            to: '/search',
+            search: { q: trimmedTranscript },
+          });
+        }, 300);
+      }
+    },
+    onError: (error) => {
+      toast.error(error);
+    },
+  });
 
-  const handleSuggestionSelect = (suggestion: string) => {
-    navigate({
-      to: '/search',
-      search: { q: suggestion },
-    });
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchValue.trim()) {
+      navigate({
+        to: '/search',
+        search: { q: searchValue.trim() },
+      });
+    }
   };
 
   const handleCategoryClick = (category: string) => {
@@ -79,19 +70,15 @@ export default function HomePage() {
     });
   };
 
-  const handleRegisterClick = () => {
-    navigate({ to: '/register' });
-  };
-
   // Get translated strings
-  const heroTitle = t('home.hero.title');
-  const heroSubtitle = t('home.hero.subtitle');
-  const searchPlaceholder = t('home.search.placeholder');
-  const categoriesTitle = t('home.categories.title');
+  const heroTitle = t('home.nlSearch.title');
+  const heroSubtitle = t('home.nlSearch.subtitle');
+  const searchPlaceholder = t('home.nlSearch.placeholder');
+  const categoriesTitle = t('home.categoriesHeading');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-      {/* Hero Section */}
+      {/* Hero Section with AI-style Natural Language Search */}
       <section className="relative py-16 px-4">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div>
@@ -101,18 +88,68 @@ export default function HomePage() {
             <p className="text-xl text-muted-foreground">
               {heroSubtitle.en}
             </p>
+            <p className="text-lg text-muted-foreground/80 mt-2">
+              {heroSubtitle.regional}
+            </p>
           </div>
 
-          {/* Search Box */}
+          {/* AI-style Chat Search Box with Voice Search */}
           <div className="max-w-2xl mx-auto">
-            <LiveSuggestionSearchBox
-              value={searchValue}
-              onChange={setSearchValue}
-              onSubmit={handleSearchSubmit}
-              onSuggestionSelect={handleSuggestionSelect}
-              placeholder={searchPlaceholder.en}
-              className="w-full"
+            <form onSubmit={handleSearchSubmit} className="space-y-2">
+              <div className="flex gap-3">
+                <div className="relative flex-1">
+                  <Input
+                    type="text"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    placeholder={searchPlaceholder.en}
+                    className="h-14 text-lg rounded-full px-6 pr-14 shadow-lg border-2 border-border focus:border-primary"
+                  />
+                  <VoiceSearchButton
+                    isListening={isListening}
+                    isSupported={isSupported}
+                    onStart={startListening}
+                    onStop={stopListening}
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="px-8 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg"
+                >
+                  <Search className="h-5 w-5 mr-2" />
+                  Search
+                </Button>
+              </div>
+            </form>
+
+            {/* Instant Results Preview */}
+            <HomeWorkerResultsPreview
+              matches={matches}
+              query={debouncedQuery}
+              isLoading={matchesLoading}
             />
+          </div>
+
+          {/* Example queries */}
+          <div className="max-w-2xl mx-auto">
+            <p className="text-sm text-muted-foreground mb-3">Try examples:</p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {[
+                'tindivanam plumber irukana',
+                'AC repair near me',
+                'cooking aunty venum nalaiku',
+                'painting work venum',
+              ].map((example) => (
+                <button
+                  key={example}
+                  onClick={() => setSearchValue(example)}
+                  className="px-4 py-2 text-sm bg-background/80 hover:bg-background border border-border rounded-full transition-colors"
+                >
+                  "{example}"
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -158,29 +195,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Nearby Workers Section */}
-      {sortedNearbyWorkers.length > 0 && (
-        <section className="py-12 px-4 bg-background/50">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center gap-2 mb-8">
-              <MapPin className="h-6 w-6 text-primary" />
-              <h2 className="text-3xl font-bold text-foreground">
-                Workers Near You
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedNearbyWorkers.map((worker) => (
-                <WorkerCard
-                  key={worker.id.toString()}
-                  worker={worker}
-                  userLocation={coords}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Worker Registration CTA */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto">
@@ -189,14 +203,14 @@ export default function HomePage() {
               <h2 className="text-3xl md:text-4xl font-bold">
                 Are you a skilled worker?
               </h2>
-              <p className="text-xl opacity-90">
-                Register now and connect with customers in your area
+              <p className="text-lg opacity-90">
+                Register now and connect with people looking for your services
               </p>
               <Button
+                onClick={() => navigate({ to: '/register' })}
                 size="lg"
                 variant="secondary"
-                onClick={handleRegisterClick}
-                className="rounded-full px-8 py-6 text-lg font-semibold"
+                className="text-lg px-8 py-6"
               >
                 Register as Worker
               </Button>

@@ -1,70 +1,111 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Clean production rebuild + live-only deploy + post-deploy verification for areaworkars.caffeine.ai",
+  "title": "Tamil/English voice search for Home page search bar",
   "requirements": [
     {
-      "id": "REQ-208",
-      "summary": "Ensure a forced clean production rebuild clears caches/artifacts and completes successfully with fresh dist/ output.",
+      "id": "REQ-231",
+      "summary": "Add an in-input microphone button to the existing Home page natural-language search UI without requiring login.",
       "acceptanceCriteria": [
-        "A clean rebuild is executed such that prior build artifacts and caches are cleared before building.",
-        "The production build finishes successfully and produces fresh build artifacts (e.g., a new dist/ output) with no errors."
+        "Home page search input renders a tap-friendly microphone icon button positioned inside the input field (not outside the search area).",
+        "The microphone button is visible and usable on mobile browsers.",
+        "No login is required to see or use the microphone button."
       ],
       "file_operations": [
         {
-          "path": "frontend/scripts/clean-production-build.sh",
+          "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Harden the clean rebuild script to reliably remove common build caches/artifacts (e.g., Vite cache and dist) and run the production build deterministically; ensure it exits non-zero on any failure and prints the expected dist/ location."
+          "description": "Wrap the existing search Input in a relative container and render a microphone icon button inside the input area (adjust input right-padding so text doesn’t overlap). Ensure the mic button is reachable/tap-friendly on mobile and does not add any authentication gating."
         },
         {
-          "path": "frontend/DEPLOYMENT_CLEAN_REBUILD.md",
-          "operation": "modify",
-          "description": "Fix and complete the clean rebuild documentation (currently truncated) so it includes the exact command to run the clean rebuild script, what it clears, and how to confirm fresh dist/ artifacts were produced."
+          "path": "frontend/src/components/search/VoiceSearchButton.tsx",
+          "operation": "create",
+          "description": "Create a small, reusable microphone button component designed to sit inside an input field (icon-only, accessible label, disabled/loading visuals) and expose callbacks for start/stop and transcript delivery."
         }
       ]
     },
     {
-      "id": "REQ-209",
-      "summary": "Deploy the clean production build to the live environment only (no draft/preview) for https://areaworkars.caffeine.ai.",
+      "id": "REQ-232",
+      "summary": "Implement speech-to-text so tapping the mic fills the Home search input and triggers the existing /search navigation flow; handle errors safely.",
       "acceptanceCriteria": [
-        "The live deployment completes successfully without creating/publishing a draft/preview deployment.",
-        "DNS for areaworkars.caffeine.ai resolves (no NXDOMAIN) and https://areaworkars.caffeine.ai loads the application in a browser after deployment."
+        "Tapping the microphone starts speech recognition and captures the user’s voice.",
+        "After recognition returns a final transcript, the search input value is replaced/filled with the recognized transcript.",
+        "After filling the input, the app automatically triggers the same search flow as pressing the existing Search submit (i.e., navigates to /search with search: { q: <recognized text> } on Home page).",
+        "The implementation does not crash the page if speech recognition errors, is cancelled, or returns an empty transcript."
       ],
       "file_operations": [
         {
-          "path": "frontend/scripts/deploy-live.sh",
+          "path": "frontend/src/hooks/useSpeechRecognition.ts",
           "operation": "create",
-          "description": "Add a dedicated live-only deployment script that performs (or requires) a clean build artifact and then runs the project’s live deployment command path (explicitly avoiding any preview/draft flags), targeting areaworkars.caffeine.ai."
+          "description": "Add a Web Speech API-based hook that manages recognition lifecycle (start/stop), exposes support status + listening state, returns the final transcript via callback, and guards all browser API access to prevent runtime crashes (including errors/cancel/empty transcript)."
         },
         {
-          "path": "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
+          "path": "frontend/src/components/search/VoiceSearchButton.tsx",
           "operation": "modify",
-          "description": "Fix and complete the live-only deployment documentation (currently truncated) to specify: (1) run clean rebuild, (2) run the live deploy script, (3) explicitly note that preview/draft deploys must not be created/published, and (4) expected live URL https://areaworkars.caffeine.ai."
+          "description": "Wire the button component to the speech recognition hook: on tap start recognition; when a final transcript is produced, call the provided callback so the Home page can set the input value and trigger the existing submit/navigation behavior."
+        },
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Integrate the voice transcript flow into existing Home search state: setSearchValue(transcript.trim()) and then trigger the same navigate-to-/search behavior used by the current submit handler (without duplicating a new search pathway). Ensure empty transcripts do nothing and errors don’t break typed search."
         }
       ]
     },
     {
-      "id": "REQ-210",
-      "summary": "Add an explicit post-deploy verification step that checks https://areaworkars.caffeine.ai is reachable and renders the app shell (not blank).",
+      "id": "REQ-233",
+      "summary": "Configure voice recognition to support both Tamil and English (including mixed/transliterated queries) and pass transcript through the existing search pipeline with only trimming.",
       "acceptanceCriteria": [
-        "After the live deploy, an explicit verification is performed against https://areaworkars.caffeine.ai.",
-        "Verification confirms the site is reachable and the app renders (not an error page and not a blank white screen)."
+        "Voice search recognizes English speech and produces an English transcript for common queries like \"AC repair near me\".",
+        "Voice search recognizes Tamil (and Tamil transliteration/mixed) speech and produces a transcript usable by the existing fuzzy/natural-language matching for queries like \"painting work venum\" and \"tindivanam plumber irukana\".",
+        "The recognized transcript is passed through the existing search pipeline unchanged except for normal trimming (no forced translation and no login)."
       ],
       "file_operations": [
         {
-          "path": "frontend/scripts/verify-live-deploy.sh",
-          "operation": "create",
-          "description": "Create a verification script that fetches https://areaworkars.caffeine.ai and fails if the response is non-success or if the HTML does not include the expected app shell marker (e.g., the root mount element id='root' from frontend/index.html)."
+          "path": "frontend/src/hooks/useSpeechRecognition.ts",
+          "operation": "modify",
+          "description": "Set recognition configuration for Tamil/English support (BCP-47 language selection and sensible defaults like interimResults, continuous=false, maxAlternatives) and implement a safe strategy for mixed queries (e.g., primary language plus optional fallback attempt) while ensuring the transcript is returned unchanged except trimming."
         },
         {
-          "path": "frontend/scripts/deploy-live.sh",
+          "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Wire the post-deploy verification script to run immediately after the live deployment step so failures are detected right away and the overall script exits non-zero if verification fails."
+          "description": "Ensure the transcript from voice recognition is only trimmed before being set as the Home search input value and used for navigation, with no translation or additional text transformations."
+        }
+      ]
+    },
+    {
+      "id": "REQ-234",
+      "summary": "Provide safe fallback on browsers without Web Speech API recognition: hide/disable mic and optionally show an English-only unsupported message without affecting typed search.",
+      "acceptanceCriteria": [
+        "On browsers where speech recognition is unavailable, the app does not throw runtime errors when rendering the search bar.",
+        "Typed search continues to work exactly as before when voice search is unavailable.",
+        "Any new user-visible fallback text introduced for unsupported browsers is English-only (no new Tamil-first copy added as part of this feature)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useSpeechRecognition.ts",
+          "operation": "modify",
+          "description": "Detect Web Speech API availability safely (including vendor-prefixed implementations) and expose an isSupported flag; ensure hook functions no-op safely when unsupported."
         },
         {
-          "path": "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
+          "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Document the post-deploy verification step and the expected pass/fail behavior (including that it validates reachability and app shell rendering at https://areaworkars.caffeine.ai)."
+          "description": "Conditionally render the in-input mic button as disabled/hidden when voice recognition is unsupported; if adding fallback copy, display a simple English-only message near the search UI while keeping the typed search behavior unchanged."
+        }
+      ]
+    },
+    {
+      "id": "REQ-235",
+      "summary": "Ensure voice search integrates with existing Home debounced preview + /search navigation and does not introduce auth, booking, payment, or chat functionality.",
+      "acceptanceCriteria": [
+        "Voice search does not require Internet Identity login and does not call any admin-only APIs.",
+        "After voice recognition, the existing Home page instant preview updates based on the filled text (via the existing state + debounced matching).",
+        "No new booking/payment/chat flows are introduced as part of voice search."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Keep voice search purely client-side: update the existing searchValue state so the existing debounced matching (instant preview) reacts naturally, and reuse the current navigate-to-/search behavior; do not add any Internet Identity checks or unrelated flows."
         }
       ]
     }

@@ -1,96 +1,27 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import { Worker, JobPost, UserProfile, Time } from '@/backend';
+import { Worker, UserProfile } from '@/backend';
 import { logError } from '@/utils/errors';
 
-export function useGetApprovedJobs() {
-  const { actor, isFetching } = useActor();
+// Query key for public workers list - used for invalidation after registration
+export const PUBLIC_WORKERS_QUERY_KEY = ['public-workers'];
 
-  return useQuery<JobPost[]>({
-    queryKey: ['approved-jobs'],
-    queryFn: async () => {
-      if (!actor) return [];
-      try {
-        const jobs = await actor.getApprovedJobs();
-        return Array.isArray(jobs) ? jobs : [];
-      } catch (error) {
-        logError('useGetApprovedJobs', error);
-        return [];
-      }
-    },
-    enabled: !!actor && !isFetching,
-  });
-}
-
-export function useGetPendingWorkers() {
+/**
+ * Fetches all active workers visible to the public (including anonymous users).
+ * This is the primary query for browsing/searching workers.
+ */
+export function useGetPublicWorkers() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Worker[]>({
-    queryKey: ['pending-workers'],
+    queryKey: PUBLIC_WORKERS_QUERY_KEY,
     queryFn: async () => {
       if (!actor) return [];
       try {
-        const workers = await actor.getPendingWorkers();
+        const workers = await actor.getPublicWorkers();
         return Array.isArray(workers) ? workers : [];
       } catch (error) {
-        logError('useGetPendingWorkers', error);
-        return [];
-      }
-    },
-    enabled: !!actor && !isFetching,
-  });
-}
-
-export function useGetAllWorkers() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<Worker[]>({
-    queryKey: ['all-workers'],
-    queryFn: async () => {
-      if (!actor) return [];
-      try {
-        const workers = await actor.getAllWorkers();
-        return Array.isArray(workers) ? workers : [];
-      } catch (error) {
-        logError('useGetAllWorkers', error);
-        return [];
-      }
-    },
-    enabled: !!actor && !isFetching,
-  });
-}
-
-export function useGetPendingJobPosts() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<JobPost[]>({
-    queryKey: ['pending-jobs'],
-    queryFn: async () => {
-      if (!actor) return [];
-      try {
-        const jobs = await actor.getPendingJobPosts();
-        return Array.isArray(jobs) ? jobs : [];
-      } catch (error) {
-        logError('useGetPendingJobPosts', error);
-        return [];
-      }
-    },
-    enabled: !!actor && !isFetching,
-  });
-}
-
-export function useGetAllJobPosts() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<JobPost[]>({
-    queryKey: ['all-jobs'],
-    queryFn: async () => {
-      if (!actor) return [];
-      try {
-        const jobs = await actor.getAllJobPosts();
-        return Array.isArray(jobs) ? jobs : [];
-      } catch (error) {
-        logError('useGetAllJobPosts', error);
+        logError('useGetPublicWorkers', error);
         return [];
       }
     },
@@ -160,55 +91,5 @@ export function useGetWorkerById(workerId: bigint) {
     },
     enabled: !!actor && !isFetching && workerId > BigInt(0),
     retry: false,
-  });
-}
-
-// Mutation hook for creating job posts
-export function useCreateJobPost() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      workType,
-      area,
-      dateTime,
-      salary,
-      description,
-      phone,
-    }: {
-      workType: string;
-      area: string;
-      dateTime: Time;
-      salary: string;
-      description: string;
-      phone: string;
-    }) => {
-      if (!actor) {
-        throw new Error('Actor not available');
-      }
-      try {
-        const result = await actor.createJobPost(
-          workType,
-          area,
-          dateTime,
-          salary,
-          description,
-          phone
-        );
-        return result;
-      } catch (error) {
-        logError('useCreateJobPost', error);
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['approved-jobs'] });
-      queryClient.invalidateQueries({ queryKey: ['pending-jobs'] });
-      queryClient.invalidateQueries({ queryKey: ['all-jobs'] });
-    },
-    onError: (error) => {
-      logError('useCreateJobPost.onError', error);
-    },
   });
 }
