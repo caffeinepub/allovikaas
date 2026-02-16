@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 101,
+  "projectStateVersion": 107,
   "summary": "Build a production-ready multilingual hyperlocal services platform named “AREA WORKARS” (always uppercase) connecting (1) people searching for workers, (2) workers listing services, and (3) businesses posting job requirements. Mobile-first, premium colorful corporate-but-rural-friendly UI. Search by area/pincode and by free-text skill tags; browse categories with meaningful local SVG icons, view worker cards with direct Call/WhatsApp (no booking). Includes worker registration (with Skills/Work Tags), public job request posting + job board, and an admin approval panel for workers and job posts. Bilingual everywhere with Tamil as primary line and English as secondary smaller line shown below (no language switch).",
   "architectural_notes": [
     "Brand style: trustworthy, simple, rural+urban friendly; not corporate, not ecommerce; community-service feel",
@@ -1371,6 +1371,86 @@
         "REQ-200"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-replace-the-current-hardcoded-i18n-dictionary-implementation-with-a-local-json-based-loader-that-correctly-loads-both-english-and-tamil-translations-at-build-time-and-expose-them-through-the-existing-usei18n-t-key-api-without-introducing-any-external-i18n-loaders",
+      "title": "Replace the current hardcoded i18n dictionary implementation with a local JSON-based loader that correctly loads both English and Tamil translations at build time, and expose them through the existing `useI18n().t(key)` API without introducing any external i18n loaders.",
+      "reqIds": [
+        "REQ-201"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-harden-the-i18n-fallback-behavior-so-that-if-a-translation-is-missing-the-app-falls-back-to-a-readable-english-label-humanized-and-never-returns-or-displays-raw-i18n-keys-e-g-dotted-keys-like-register-field-name-in-any-user-visible-text",
+      "title": "Harden the i18n fallback behavior so that if a translation is missing, the app falls back to a readable English label (humanized) and never returns or displays raw i18n keys (e.g., dotted keys like `register.field.name`) in any user-visible text.",
+      "reqIds": [
+        "REQ-202"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-rebuild-and-enforce-centralized-category-display-name-mapping-so-category-values-coming-from-the-backend-url-including-casing-variants-like-homeimprovement-always-render-as-proper-labels-using-the-existing-strict-mapping-helper-and-never-render-raw-slugs-camelcase-tokens-anywhere-in-the-ui",
+      "title": "Rebuild and enforce centralized category display-name mapping so category values coming from the backend/URL (including casing variants like `Homeimprovement`) always render as proper labels using the existing strict mapping helper, and never render raw slugs/camelCase tokens anywhere in the UI.",
+      "reqIds": [
+        "REQ-203"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-the-corrected-i18n-label-mapping-layer-across-categories-forms-buttons-and-suggestions-so-that-all-user-visible-strings-in-these-surfaces-resolve-to-real-text-or-safe-humanized-fallbacks-instead-of-keys-or-raw-taxonomy-tokens",
+      "title": "Apply the corrected i18n + label mapping layer across categories, forms, buttons, and suggestions so that all user-visible strings in these surfaces resolve to real text (or safe humanized fallbacks) instead of keys or raw taxonomy tokens.",
+      "reqIds": [
+        "REQ-204"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-lightweight-audit-guardrail-in-the-i18n-and-label-formatting-utilities-so-that-any-string-that-still-looks-like-a-raw-key-e-g-contains-dot-separated-segments-is-automatically-replaced-with-a-readable-fallback-before-being-returned-to-the-ui",
+      "title": "Add a lightweight audit/guardrail in the i18n and label-formatting utilities so that any string that still looks like a raw key (e.g., contains dot-separated segments) is automatically replaced with a readable fallback before being returned to the UI.",
+      "reqIds": [
+        "REQ-205"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-perform-a-forced-full-redeploy-that-clears-any-build-runtime-caches-and-produces-a-clean-production-build-of-the-current-codebase",
+      "title": "Perform a forced full redeploy that clears any build/runtime caches and produces a clean production build of the current codebase.",
+      "reqIds": [
+        "REQ-206"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-deploy-the-clean-production-build-directly-to-the-live-domain-environment-and-do-not-create-or-publish-a-draft-deployment-version-as-part-of-this-operation",
+      "title": "Deploy the clean production build directly to the live domain/environment and do not create or publish a draft deployment/version as part of this operation.",
+      "reqIds": [
+        "REQ-207"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-perform-a-forced-clean-production-rebuild-of-the-current-codebase-clear-frontend-caches-build-artifacts-and-ensure-the-production-build-completes-successfully-no-build-errors",
+      "title": "Perform a forced clean production rebuild of the current codebase (clear frontend caches/build artifacts) and ensure the production build completes successfully (no build errors).",
+      "reqIds": [
+        "REQ-208"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-deploy-the-clean-production-build-directly-to-the-live-environment-so-the-live-domain-https-areaworkars-caffeine-ai-is-created-and-serves-the-app-do-not-create-or-publish-any-draft-preview-deployment-as-part-of-this-redeploy",
+      "title": "Deploy the clean production build directly to the live environment so the live domain https://areaworkars.caffeine.ai is created and serves the app; do not create or publish any draft/preview deployment as part of this redeploy.",
+      "reqIds": [
+        "REQ-209"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-deployment-verification-step-after-the-live-deploy-that-checks-the-live-url-https-areaworkars-caffeine-ai-returns-a-successful-response-and-renders-the-app-shell-not-a-blank-page-so-deployment-failures-are-detected-immediately",
+      "title": "Add a deployment verification step after the live deploy that checks the live URL (https://areaworkars.caffeine.ai) returns a successful response and renders the app shell (not a blank page) so deployment failures are detected immediately.",
+      "reqIds": [
+        "REQ-210"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -1953,6 +2033,15 @@
       "summary": "Implement strict CATEGORY_LABELS display mapping for category slugs: always render human-readable labels via dictionary (no auto-guessing); never show raw slugs; fallback to capitalized words when unmapped; apply everywhere (category cards, search results, worker profile, suggestions, filters) without changing stored DB values",
       "reqIds": [],
       "status": "pending"
+    },
+    {
+      "id": "AR-151",
+      "summary": "Redeploy production build to live domain (not draft) and ensure areaworkars.caffeine.ai is created/serving (fix NXDOMAIN deployment failure)",
+      "reqIds": [
+        "REQ-206",
+        "REQ-207"
+      ],
+      "status": "in_progress"
     }
   ],
   "gameProjectType": "none",

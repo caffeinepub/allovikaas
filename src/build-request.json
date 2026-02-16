@@ -1,87 +1,72 @@
 {
   "kind": "build_request",
-  "title": "Introduce strict CATEGORY_LABELS mapping for taxonomy slugs and use it everywhere in UI",
-  "priority": "normal",
+  "title": "Redeploy clean production build to live domain (fix NXDOMAIN)",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-198",
-      "text": "Create a strict, centralized category display-label mapping system in the frontend by introducing a `CATEGORY_LABELS` dictionary that maps category slugs to human-readable labels, and a single helper function that UI code must call to render category labels. The dictionary must include (at minimum) the exact mappings provided by the user: construction→Construction, agriculture→Agriculture, homeservices→Home Services, transport→Transport, homeimprovement→Home Improvement, specializedcleaning→Specialized Cleaning, generalservices→General Services, woodmetal→Wood & Metal Works, treework→Tree Cutting & Coconut Climbing, householdservices→Household Services, vehicleservices→Vehicle Services, tailoring→Tailoring, aariwork→Aari Work, catering→Cooking / Catering, eventservices→Event Services, printing→Printing & Flex, repair→Repair Services, electrical→Electrical, plumbing→Plumbing, painting→Painting, carpenter→Carpentry, welding→Welding. The helper must normalize incoming slugs (case/whitespace/punctuation tolerant) for lookup.",
+      "id": "REQ-208",
+      "text": "Perform a forced clean production rebuild of the current codebase (clear frontend caches/build artifacts) and ensure the production build completes successfully (no build errors).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "Create a CATEGORY_LABELS dictionary and always use it in UI.\n\nExample mapping:\n\nconstruction: Construction\n...\nwelding: Welding"
+          "Please redeploy the project and ensure the production build completes successfully."
         ]
       },
       "acceptanceCriteria": [
-        "A `CATEGORY_LABELS` constant exists in the frontend codebase and contains the exact user-provided slug→label mappings.",
-        "There is exactly one shared helper used to convert a raw category slug into a display label, and it normalizes input before dictionary lookup (e.g., casing differences do not break mapping).",
-        "The helper returns a human-readable string for every input category slug, never the raw slug."
+        "A clean rebuild is executed such that prior build artifacts and caches are cleared before building.",
+        "The production build finishes successfully and produces fresh build artifacts (e.g., a new dist/ output) with no errors."
       ]
     },
     {
-      "id": "REQ-199",
-      "text": "Enforce the rendering rules for category slugs across the UI: (1) the UI must never render the raw category slug string; (2) if the slug is not found in `CATEGORY_LABELS`, render a safe fallback that is capitalized words (human-readable), not the original raw slug; (3) database values and navigation/search params must remain unchanged (mapping is display-only).",
-      "target": "frontend",
+      "id": "REQ-209",
+      "text": "Deploy the clean production build directly to the live environment so the live domain https://areaworkars.caffeine.ai is created and serves the app; do not create or publish any draft/preview deployment as part of this redeploy.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "Rules:\n1) UI must NEVER show raw slug\n2) If slug not found → show capitalized words (fallback)\n\nDatabase values must remain unchanged.\nOnly UI display text uses CATEGORY_LABELS."
+          "The domain areaworkars.caffeine.ai is not created (NXDOMAIN).",
+          "Do a fresh production deployment, not draft preview."
         ]
       },
       "acceptanceCriteria": [
-        "If a category slug is not in `CATEGORY_LABELS`, the displayed label is a capitalized-words fallback (e.g., derived from slug formatting), and the raw slug is never shown.",
-        "No changes are made to stored backend values or the values used in URL params/search filters; only the displayed text changes.",
-        "There are no user-visible instances of raw slugs like \"homeimprovement\" or \"specializedcleaning\" in the app UI."
+        "The live deployment completes successfully without creating/publishing a draft/preview deployment.",
+        "DNS for areaworkars.caffeine.ai resolves (no NXDOMAIN) and https://areaworkars.caffeine.ai loads the application in a browser after deployment."
       ]
     },
     {
-      "id": "REQ-200",
-      "text": "Apply the strict category label mapping helper everywhere category slugs can become user-visible, specifically covering: Home page category cards, Search Results page titles and any category labels, Worker Profile page work/category badges, Live suggestions dropdown display text, and category/filter UI (including any chips/buttons/headings that show category values). Replace any current usage that relies on auto-guessing (e.g., heuristics/title-casing directly on raw values) for category slugs with the centralized mapping helper.",
-      "target": "frontend",
+      "id": "REQ-210",
+      "text": "Add a deployment verification step after the live deploy that checks the live URL (https://areaworkars.caffeine.ai) returns a successful response and renders the app shell (not a blank page) so deployment failures are detected immediately.",
+      "target": "unknown",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "Apply mapping everywhere:\n   - category cards\n   - search results\n   - worker profile\n   - suggestions\n   - filters"
+          "The production deployment failed."
         ]
       },
       "acceptanceCriteria": [
-        "Home page category cards render category names using the centralized `CATEGORY_LABELS` mapping helper (no direct rendering of raw `taxonomy.categories` values).",
-        "Search Results page title and grouped section headings do not display raw category slugs; any category shown uses the centralized mapping helper.",
-        "Worker Profile page work/category badge never displays a raw slug and uses the centralized mapping helper when showing category-derived text.",
-        "LiveSuggestionSearchBox suggestions render category-like values using the centralized mapping helper (display-only), while still submitting/navigating using the original suggestion value.",
-        "SearchEmptyRecovery and any filter UI elements that show category values use the centralized mapping helper so raw slugs are never visible."
+        "After the live deploy, an explicit verification is performed against https://areaworkars.caffeine.ai.",
+        "Verification confirms the site is reachable and the app renders (not an error page and not a blank white screen)."
       ]
     }
   ],
   "constraints": [
-    "Frontend immutable paths must not be edited: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
-    "Do not change database/stored taxonomy values in the backend; mapping is display-only.",
-    "User-facing text in this change request must remain English-only (do not introduce new Tamil-first copy as part of this mapping change)."
+    "Deploy to the live domain https://areaworkars.caffeine.ai (not a draft/preview).",
+    "Use English for any user-facing text in this build request."
   ],
   "nonGoals": [
-    "Do not modify backend taxonomy schema, stored worker/job records, or any Motoko APIs as part of this change.",
-    "Do not change routing, URL parameter formats, or search behavior; only change displayed labels.",
-    "Do not redesign layouts or restyle components; scope is label rendering consistency only."
+    "No UI/UX changes beyond what is required to produce a successful production build and live deployment.",
+    "No new product features or backend schema changes unless required strictly to fix build/deploy failure.",
+    "No custom domain setup; only the Caffeine subdomain areaworkars.caffeine.ai is in scope."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

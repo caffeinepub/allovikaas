@@ -331,8 +331,9 @@ actor {
     "We will verify and publish";
   };
 
-  // New query endpoint to fetch workers based on distance from a location
-  public query ({ caller }) func getWorkersWithDistance(location : Location) : async [Worker] {
+  // Public query endpoint to fetch workers based on distance from a location
+  // No authorization required - public search feature for all users including guests
+  public query func getWorkersWithDistance(location : Location) : async [Worker] {
     let filteredWorkers = workers.values().toArray().filter(
       func(w) { w.status == #approved and w.location != null }
     );

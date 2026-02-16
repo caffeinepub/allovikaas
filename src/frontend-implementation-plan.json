@@ -1,90 +1,70 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Centralize strict CATEGORY_LABELS mapping and enforce category label rendering across UI",
+  "title": "Clean production rebuild + live-only deploy + post-deploy verification for areaworkars.caffeine.ai",
   "requirements": [
     {
-      "id": "REQ-198",
-      "summary": "Introduce a strict CATEGORY_LABELS dictionary and a single shared helper that normalizes category slugs before rendering display labels.",
+      "id": "REQ-208",
+      "summary": "Ensure a forced clean production rebuild clears caches/artifacts and completes successfully with fresh dist/ output.",
       "acceptanceCriteria": [
-        "A `CATEGORY_LABELS` constant exists in the frontend codebase and contains the exact user-provided slug→label mappings.",
-        "There is exactly one shared helper used to convert a raw category slug into a display label, and it normalizes input before dictionary lookup (e.g., casing differences do not break mapping).",
-        "The helper returns a human-readable string for every input category slug, never the raw slug."
+        "A clean rebuild is executed such that prior build artifacts and caches are cleared before building.",
+        "The production build finishes successfully and produces fresh build artifacts (e.g., a new dist/ output) with no errors."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/categoryLabels.ts",
+          "path": "frontend/scripts/clean-production-build.sh",
+          "operation": "modify",
+          "description": "Harden the clean rebuild script to reliably remove common build caches/artifacts (e.g., Vite cache and dist) and run the production build deterministically; ensure it exits non-zero on any failure and prints the expected dist/ location."
+        },
+        {
+          "path": "frontend/DEPLOYMENT_CLEAN_REBUILD.md",
+          "operation": "modify",
+          "description": "Fix and complete the clean rebuild documentation (currently truncated) so it includes the exact command to run the clean rebuild script, what it clears, and how to confirm fresh dist/ artifacts were produced."
+        }
+      ]
+    },
+    {
+      "id": "REQ-209",
+      "summary": "Deploy the clean production build to the live environment only (no draft/preview) for https://areaworkars.caffeine.ai.",
+      "acceptanceCriteria": [
+        "The live deployment completes successfully without creating/publishing a draft/preview deployment.",
+        "DNS for areaworkars.caffeine.ai resolves (no NXDOMAIN) and https://areaworkars.caffeine.ai loads the application in a browser after deployment."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/scripts/deploy-live.sh",
           "operation": "create",
-          "description": "Create centralized `CATEGORY_LABELS` mapping with the exact user-provided slug→label pairs and export a single helper (e.g., `getCategoryLabel`) that normalizes input (case/whitespace/punctuation tolerant) before lookup and always returns a human-readable string (mapping result or safe fallback)."
+          "description": "Add a dedicated live-only deployment script that performs (or requires) a clean build artifact and then runs the project’s live deployment command path (explicitly avoiding any preview/draft flags), targeting areaworkars.caffeine.ai."
         },
         {
-          "path": "frontend/src/utils/bilingualTaxonomy.ts",
+          "path": "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
           "operation": "modify",
-          "description": "Update category-label generation to use the new centralized category label helper for category display text (especially for fallback behavior), while keeping stored values and i18n keying/navigation values unchanged (display-only)."
+          "description": "Fix and complete the live-only deployment documentation (currently truncated) to specify: (1) run clean rebuild, (2) run the live deploy script, (3) explicitly note that preview/draft deploys must not be created/published, and (4) expected live URL https://areaworkars.caffeine.ai."
         }
       ]
     },
     {
-      "id": "REQ-199",
-      "summary": "Enforce category rendering rules so raw slugs are never shown and unknown slugs use a capitalized-words fallback without changing stored/URL values.",
+      "id": "REQ-210",
+      "summary": "Add an explicit post-deploy verification step that checks https://areaworkars.caffeine.ai is reachable and renders the app shell (not blank).",
       "acceptanceCriteria": [
-        "If a category slug is not in `CATEGORY_LABELS`, the displayed label is a capitalized-words fallback (e.g., derived from slug formatting), and the raw slug is never shown.",
-        "No changes are made to stored backend values or the values used in URL params/search filters; only the displayed text changes.",
-        "There are no user-visible instances of raw slugs like \"homeimprovement\" or \"specializedcleaning\" in the app UI."
+        "After the live deploy, an explicit verification is performed against https://areaworkars.caffeine.ai.",
+        "Verification confirms the site is reachable and the app renders (not an error page and not a blank white screen)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/categoryLabels.ts",
-          "operation": "modify",
-          "description": "Ensure the category label helper implements the strict rendering rules: never return the raw slug; when not found in `CATEGORY_LABELS`, return a safe capitalized-words fallback derived from the input (slug/case/whitespace/punctuation tolerant normalization is for lookup only; do not mutate the underlying value used elsewhere)."
+          "path": "frontend/scripts/verify-live-deploy.sh",
+          "operation": "create",
+          "description": "Create a verification script that fetches https://areaworkars.caffeine.ai and fails if the response is non-success or if the HTML does not include the expected app shell marker (e.g., the root mount element id='root' from frontend/index.html)."
         },
         {
-          "path": "frontend/src/utils/displayName.ts",
+          "path": "frontend/scripts/deploy-live.sh",
           "operation": "modify",
-          "description": "Add documentation and guardrails to clarify that category display must go through the centralized category label helper (and not directly render raw slugs), while keeping `displayName()` as a general-purpose humanizer for non-category taxonomy values (subcategories/skills/etc.)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-200",
-      "summary": "Replace all user-visible category slug rendering in required UI locations with the centralized category label helper (display-only), covering home category cards, search results titles/labels, worker profile badges, live suggestions, and filter/recovery UI.",
-      "acceptanceCriteria": [
-        "Home page category cards render category names using the centralized `CATEGORY_LABELS` mapping helper (no direct rendering of raw `taxonomy.categories` values).",
-        "Search Results page title and grouped section headings do not display raw category slugs; any category shown uses the centralized mapping helper.",
-        "Worker Profile page work/category badge never displays a raw slug and uses the centralized mapping helper when showing category-derived text.",
-        "LiveSuggestionSearchBox suggestions render category-like values using the centralized mapping helper (display-only), while still submitting/navigating using the original suggestion value.",
-        "SearchEmptyRecovery and any filter UI elements that show category values use the centralized mapping helper so raw slugs are never visible."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "modify",
-          "description": "Ensure category card titles use the centralized category label helper (directly or via updated bilingual taxonomy helper) for any category-derived display text, while keeping the clicked/navigated category value unchanged."
+          "description": "Wire the post-deploy verification script to run immediately after the live deployment step so failures are detected right away and the overall script exits non-zero if verification fails."
         },
         {
-          "path": "frontend/src/pages/WorkerSearchResultsPage.tsx",
+          "path": "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
           "operation": "modify",
-          "description": "Update search results title construction to render category values via the centralized category label helper (subcategory labels can continue using existing taxonomy formatting), ensuring no raw category slugs appear while leaving URL/search params unchanged."
-        },
-        {
-          "path": "frontend/src/pages/WorkerProfilePage.tsx",
-          "operation": "modify",
-          "description": "Update the worker profile work/category badge rendering so that when the display derives from a category slug it uses the centralized category label helper (subcategory/skills can continue using existing formatting), ensuring raw slugs are never shown."
-        },
-        {
-          "path": "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
-          "operation": "modify",
-          "description": "Render live suggestions with the centralized category label helper when the suggestion source indicates a category-like value, while preserving the original suggestion text for submission/navigation (display-only mapping)."
-        },
-        {
-          "path": "frontend/src/components/search/SearchEmptyRecovery.tsx",
-          "operation": "modify",
-          "description": "Update recovery suggestions UI so any category labels displayed use the centralized category label helper (including suggested parent category or popular category chips), while continuing to navigate/search using the original underlying values."
-        },
-        {
-          "path": "frontend/src/components/workers/WorkerCard.tsx",
-          "operation": "modify",
-          "description": "Ensure any category-derived text displayed in worker cards (e.g., when falling back to category for the main badge/label) uses the centralized category label helper so raw slugs never appear."
+          "description": "Document the post-deploy verification step and the expected pass/fail behavior (including that it validates reachability and app shell rendering at https://areaworkars.caffeine.ai)."
         }
       ]
     }

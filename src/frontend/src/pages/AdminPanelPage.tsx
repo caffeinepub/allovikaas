@@ -11,8 +11,8 @@ export default function AdminPanelPage() {
   
   const adminTitle = t('admin.title');
   const adminSubtitle = t('admin.subtitle');
-  const tabWorkers = t('admin.tab.workers');
-  const tabJobs = t('admin.tab.jobs');
+  const tabWorkers = t('admin.tabs.workers');
+  const tabJobs = t('admin.tabs.jobs');
 
   return (
     <AdminGuard>

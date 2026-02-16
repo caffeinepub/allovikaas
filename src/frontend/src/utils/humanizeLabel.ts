@@ -16,7 +16,7 @@ export function humanizeKey(input: string): string {
   
   // Remove common prefixes
   let cleaned = input;
-  const prefixes = ['category.', 'subcategory.', 'field.', 'job.', 'subgroup.'];
+  const prefixes = ['category.', 'subcategory.', 'field.', 'job.', 'subgroup.', 'register.'];
   for (const prefix of prefixes) {
     if (cleaned.startsWith(prefix)) {
       cleaned = cleaned.substring(prefix.length);
@@ -43,6 +43,25 @@ export function createBilingualFallback(input: string): { en: string; regional: 
 }
 
 /**
+ * Checks if a string looks like a raw i18n key (contains dots and multiple segments)
+ */
+export function looksLikeRawKey(text: string): boolean {
+  if (!text) return false;
+  
+  // Check for dotted key pattern (e.g., "register.field.name")
+  if (text.includes('.') && text.split('.').length > 1) {
+    return true;
+  }
+  
+  // Check for bracketed placeholder pattern
+  if (text.startsWith('[') && text.endsWith(']')) {
+    return true;
+  }
+  
+  return false;
+}
+
+/**
  * Checks if a translation result is valid (not a raw key or bracketed placeholder)
  */
 export function isValidTranslation(translation: { en: string; regional: string }, originalKey: string): boolean {
@@ -61,9 +80,23 @@ export function isValidTranslation(translation: { en: string; regional: string }
   }
   
   // Check for raw i18n key patterns (contains dots)
-  if (translation.en.includes('.') && translation.en.split('.').length > 1) {
+  if (looksLikeRawKey(translation.en) || looksLikeRawKey(translation.regional)) {
     return false;
   }
   
   return true;
+}
+
+/**
+ * Sanitizes any text to ensure it's not a raw key
+ * If it looks like a raw key, humanizes it
+ */
+export function safeText(text: string): string {
+  if (!text) return '';
+  
+  if (looksLikeRawKey(text)) {
+    return humanizeKey(text);
+  }
+  
+  return text;
 }

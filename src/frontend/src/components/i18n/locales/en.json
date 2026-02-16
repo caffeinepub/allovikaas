@@ -1,0 +1,189 @@
+{
+  "app": {
+    "name": "AREA WORKARS",
+    "tagline": "Find People Who Work Near You"
+  },
+  "home": {
+    "hero": {
+      "title": "Find Local Workers",
+      "subtitle": "Connect with skilled workers in your area",
+      "searchPlaceholder": "Search work or area",
+      "searchButton": "Search"
+    },
+    "search": {
+      "placeholder": "Search work or area"
+    },
+    "browseCategories": "Browse by Category",
+    "categories": {
+      "title": "Browse by Category"
+    }
+  },
+  "nav": {
+    "browse": "Browse Workers",
+    "postJob": "Post Job",
+    "register": "Register as Worker",
+    "admin": "Admin",
+    "blog": "Blog"
+  },
+  "register": {
+    "title": "Register as Worker",
+    "subtitle": "Join our network of skilled workers",
+    "field": {
+      "name": "Name",
+      "phone": "Phone Number",
+      "category": "Category",
+      "subcategory": "Sub Category",
+      "area": "Area",
+      "experience": "Experience",
+      "workingHours": "Working Hours",
+      "photo": "Photo",
+      "skills": "Description",
+      "comments": "Comments"
+    },
+    "placeholder": {
+      "name": "Enter your full name",
+      "phone": "Enter 10-digit phone number",
+      "area": "Enter your area or locality",
+      "experience": "e.g., 5 years",
+      "workingHours": "e.g., 9 AM - 6 PM",
+      "skills": "Describe your work and skills",
+      "comments": "Any additional information"
+    },
+    "select": {
+      "category": "Select a category",
+      "subcategory": "Select a subcategory",
+      "categoryFirst": "Select category first"
+    },
+    "loading": {
+      "categories": "Loading categories..."
+    },
+    "button": {
+      "choosePhoto": "Choose Photo",
+      "submit": "Submit Registration",
+      "submitting": "Submitting..."
+    },
+    "error": {
+      "nameRequired": "Name is required",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Please enter a valid 10-digit phone number",
+      "categoryRequired": "Category is required",
+      "subcategoryRequired": "Subcategory is required",
+      "areaRequired": "Area is required",
+      "photoRequired": "Photo is required"
+    },
+    "helper": "Fill in your details to join our worker network",
+    "form": {
+      "name": "Name",
+      "phone": "Phone Number",
+      "category": "Category",
+      "subcategory": "Sub Category",
+      "area": "Area",
+      "experience": "Experience",
+      "workingHours": "Working Hours",
+      "photo": "Photo",
+      "skills": "Description",
+      "comments": "Comments",
+      "submit": "Submit Registration"
+    }
+  },
+  "worker": {
+    "availability": {
+      "callToConfirm": "Call to confirm availability"
+    },
+    "trust": {
+      "verified": "Verified",
+      "recentlyActive": "Recently Active"
+    },
+    "action": {
+      "call": "Call",
+      "whatsapp": "WhatsApp"
+    },
+    "profile": {
+      "name": "Name",
+      "work": "Work",
+      "area": "Area",
+      "experience": "Experience",
+      "workDescription": "Work Description",
+      "availableTime": "Available Time",
+      "languages": "Languages Spoken",
+      "loading": "Loading worker profile...",
+      "notFound": "Worker not found"
+    }
+  },
+  "search": {
+    "title": "Search Results",
+    "noResults": "No workers found",
+    "loading": "Searching..."
+  },
+  "job": {
+    "post": {
+      "title": "Post a Job",
+      "subtitle": "Find workers for your needs",
+      "form": {
+        "workType": "Work Type",
+        "area": "Area",
+        "dateTime": "Date & Time",
+        "salary": "Salary",
+        "description": "Description",
+        "phone": "Phone",
+        "submit": "Post Job"
+      }
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "Manage workers and job posts",
+    "tabs": {
+      "workers": "Workers",
+      "jobs": "Jobs"
+    },
+    "tab": {
+      "workers": "Workers",
+      "jobs": "Jobs"
+    }
+  },
+  "footer": {
+    "attribution": "Built with love using caffeine.ai",
+    "contact": "Contact Us",
+    "community": "Community Platform for Local Workers",
+    "nomiddleman": "No Middleman",
+    "nocommission": "No Commission"
+  },
+  "category": {
+    "construction": "Construction",
+    "agriculture": "Agriculture",
+    "homeservices": "Home Services",
+    "homeServices": "Home Services",
+    "transport": "Transport",
+    "eventWork": "Events & Cooking",
+    "dailyHelpers": "Daily Helpers",
+    "repairs": "Repairs",
+    "supplies": "Supplies",
+    "tailoring": "Tailoring",
+    "localSkilledWorkers": "Local Skilled Workers",
+    "homeimprovement": "Home Improvement",
+    "specializedcleaning": "Specialized Cleaning",
+    "skilledtrades": "Skilled Trades",
+    "electronicsappliances": "Electronics & Appliances",
+    "pestcontrol": "Pest Control",
+    "beautywellness": "Beauty & Wellness",
+    "fitnessservices": "Fitness Services",
+    "securityservices": "Security Services",
+    "householdservices": "Household Services",
+    "vehicleservices": "Vehicle Services",
+    "generalservices": "General Services",
+    "woodmetal": "Wood & Metal Works",
+    "treework": "Tree Cutting & Coconut Climbing",
+    "aariwork": "Aari Work",
+    "catering": "Cooking / Catering",
+    "eventservices": "Event Services",
+    "printing": "Printing & Flex",
+    "repair": "Repair Services",
+    "electrical": "Electrical",
+    "plumbing": "Plumbing",
+    "painting": "Painting",
+    "carpenter": "Carpentry",
+    "welding": "Welding",
+    "healthcarewellness": "Healthcare & Wellness"
+  }
+}

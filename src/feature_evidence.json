@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-create-a-strict-centralized-category-display-label-mapping-system-in-the-frontend-by-introducing-a-category-labels-dictionary-that-maps-category-slugs-to-human-readable-labels-and-a-single-helper-function-that-ui-code-must-call-to-render-category-labels-the-dictionary-must-include-at-minimum-the-exact-mappings-provided-by-the-user-construction-construction-agriculture-agriculture-homeservices-home-services-transport-transport-homeimprovement-home-improvement-specializedcleaning-specialized-cleaning-generalservices-general-services-woodmetal-wood-metal-works-treework-tree-cutting-coconut-climbing-householdservices-household-services-vehicleservices-vehicle-services-tailoring-tailoring-aariwork-aari-work-catering-cooking-catering-eventservices-event-services-printing-printing-flex-repair-repair-services-electrical-electrical-plumbing-plumbing-painting-painting-carpenter-carpentry-welding-welding-the-helper-must-normalize-incoming-slugs-case-whitespace-punctuation-tolerant-for-lookup",
-      "featureTitle": "Create a strict, centralized category display-label mapping system in the frontend by introducing a `CATEGORY_LABELS` dictionary that maps category slugs to human-readable labels, and a single helper function that UI code must call to render category labels. The dictionary must include (at minimum) the exact mappings provided by the user: construction→Construction, agriculture→Agriculture, homeservices→Home Services, transport→Transport, homeimprovement→Home Improvement, specializedcleaning→Specialized Cleaning, generalservices→General Services, woodmetal→Wood & Metal Works, treework→Tree Cutting & Coconut Climbing, householdservices→Household Services, vehicleservices→Vehicle Services, tailoring→Tailoring, aariwork→Aari Work, catering→Cooking / Catering, eventservices→Event Services, printing→Printing & Flex, repair→Repair Services, electrical→Electrical, plumbing→Plumbing, painting→Painting, carpenter→Carpentry, welding→Welding. The helper must normalize incoming slugs (case/whitespace/punctuation tolerant) for lookup.",
+      "featureId": "feature-perform-a-forced-clean-production-rebuild-of-the-current-codebase-clear-frontend-caches-build-artifacts-and-ensure-the-production-build-completes-successfully-no-build-errors",
+      "featureTitle": "Perform a forced clean production rebuild of the current codebase (clear frontend caches/build artifacts) and ensure the production build completes successfully (no build errors).",
       "files": [
-        "frontend/src/utils/bilingualTaxonomy.ts",
-        "frontend/src/utils/categoryLabels.ts"
+        "frontend/DEPLOYMENT_CLEAN_REBUILD.md",
+        "frontend/scripts/clean-production-build.sh"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -19,16 +19,16 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-198"
+        "REQ-208"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-enforce-the-rendering-rules-for-category-slugs-across-the-ui-1-the-ui-must-never-render-the-raw-category-slug-string-2-if-the-slug-is-not-found-in-category-labels-render-a-safe-fallback-that-is-capitalized-words-human-readable-not-the-original-raw-slug-3-database-values-and-navigation-search-params-must-remain-unchanged-mapping-is-display-only",
-      "featureTitle": "Enforce the rendering rules for category slugs across the UI: (1) the UI must never render the raw category slug string; (2) if the slug is not found in `CATEGORY_LABELS`, render a safe fallback that is capitalized words (human-readable), not the original raw slug; (3) database values and navigation/search params must remain unchanged (mapping is display-only).",
+      "featureId": "feature-deploy-the-clean-production-build-directly-to-the-live-environment-so-the-live-domain-https-areaworkars-caffeine-ai-is-created-and-serves-the-app-do-not-create-or-publish-any-draft-preview-deployment-as-part-of-this-redeploy",
+      "featureTitle": "Deploy the clean production build directly to the live environment so the live domain https://areaworkars.caffeine.ai is created and serves the app; do not create or publish any draft/preview deployment as part of this redeploy.",
       "files": [
-        "frontend/src/utils/categoryLabels.ts",
-        "frontend/src/utils/displayName.ts"
+        "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
+        "frontend/scripts/deploy-live.sh"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -41,17 +41,17 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-199"
+        "REQ-209"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-apply-the-strict-category-label-mapping-helper-everywhere-category-slugs-can-become-user-visible-specifically-covering-home-page-category-cards-search-results-page-titles-and-any-category-labels-worker-profile-page-work-category-badges-live-suggestions-dropdown-display-text-and-category-filter-ui-including-any-chips-buttons-headings-that-show-category-values-replace-any-current-usage-that-relies-on-auto-guessing-e-g-heuristics-title-casing-directly-on-raw-values-for-category-slugs-with-the-centralized-mapping-helper",
-      "featureTitle": "Apply the strict category label mapping helper everywhere category slugs can become user-visible, specifically covering: Home page category cards, Search Results page titles and any category labels, Worker Profile page work/category badges, Live suggestions dropdown display text, and category/filter UI (including any chips/buttons/headings that show category values). Replace any current usage that relies on auto-guessing (e.g., heuristics/title-casing directly on raw values) for category slugs with the centralized mapping helper.",
+      "featureId": "feature-add-a-deployment-verification-step-after-the-live-deploy-that-checks-the-live-url-https-areaworkars-caffeine-ai-returns-a-successful-response-and-renders-the-app-shell-not-a-blank-page-so-deployment-failures-are-detected-immediately",
+      "featureTitle": "Add a deployment verification step after the live deploy that checks the live URL (https://areaworkars.caffeine.ai) returns a successful response and renders the app shell (not a blank page) so deployment failures are detected immediately.",
       "files": [
-        "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
-        "frontend/src/components/search/SearchEmptyRecovery.tsx",
-        "frontend/src/pages/HomePage.tsx"
+        "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
+        "frontend/scripts/deploy-live.sh",
+        "frontend/scripts/verify-live-deploy.sh"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -64,7 +64,7 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-200"
+        "REQ-210"
       ],
       "confidence": "high"
     }

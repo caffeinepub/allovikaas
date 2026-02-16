@@ -83,6 +83,12 @@ export default function HomePage() {
     navigate({ to: '/register' });
   };
 
+  // Get translated strings
+  const heroTitle = t('home.hero.title');
+  const heroSubtitle = t('home.hero.subtitle');
+  const searchPlaceholder = t('home.search.placeholder');
+  const categoriesTitle = t('home.categories.title');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
       {/* Hero Section */}
@@ -90,10 +96,10 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Find Local Workers
+              {heroTitle.en}
             </h1>
             <p className="text-xl text-muted-foreground">
-              Connect with skilled workers in your area
+              {heroSubtitle.en}
             </p>
           </div>
 
@@ -104,7 +110,7 @@ export default function HomePage() {
               onChange={setSearchValue}
               onSubmit={handleSearchSubmit}
               onSuggestionSelect={handleSuggestionSelect}
-              placeholder="Search for workers, skills, or services..."
+              placeholder={searchPlaceholder.en}
               className="w-full"
             />
           </div>
@@ -115,7 +121,7 @@ export default function HomePage() {
       <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
-            Browse by Category
+            {categoriesTitle.en}
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {taxonomy.categories.map((categoryName) => {

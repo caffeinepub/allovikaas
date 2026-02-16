@@ -1,54 +1,61 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T23:35:00.393Z",
-  "summary": "Implemented a new centralized category label mapping utility (CATEGORY_LABELS) and began adopting it in some UI components (LiveSuggestionSearchBox, SearchEmptyRecovery). However, the diff does not show comprehensive application across all required UI surfaces (Home page cards, Search Results page, Worker Profile badges, filters), and SearchEmptyRecovery appears to change the value used for navigation in one fallback path (sending display labels instead of stored slugs).",
+  "generatedAt": "2026-02-16T02:00:37.700Z",
+  "summary": "Diff adds frontend scripts and docs for clean rebuild, live-only deploy flow, and post-deploy verification against https://areaworkars.caffeine.ai. However, the live deployment itself is only described as a placeholder and there is no concrete implementation shown that would actually publish to the live domain or address NXDOMAIN at the DNS/platform level. Several unrelated changes (notably backend category data and large frontend feature summaries) appear outside the scope of the redeploy/build/deploy verification request.",
   "missing_requirements": [
     {
-      "id": "REQ-199",
-      "requirement": "Category rendering must be display-only: UI must never render raw slugs; unknown slugs must use a capitalized-words fallback; and URL params/search filters must remain unchanged (original stored values).",
-      "reason": "SearchEmptyRecovery builds a fallback list of popular categories using human-readable labels (e.g., \"Construction\") and then navigates with `search: { category: value }` where `value` is that label, not a stored slug. This violates the requirement that navigation/search params remain unchanged and display-only.",
+      "id": "REQ-209",
+      "requirement": "Deploy the clean production build directly to the live environment so the live domain https://areaworkars.caffeine.ai is created and serves the app; do not create or publish any draft/preview deployment as part of this redeploy.",
+      "reason": "The added deploy script explicitly states the deployment command is a placeholder and that the actual deployment is expected to be performed by Caffeine’s build system; no concrete deploy command/config is shown that would actually publish to live or ensure no draft/preview is created.",
       "evidence": [
-        "frontend/src/components/search/SearchEmptyRecovery.tsx"
+        "frontend/scripts/deploy-live.sh"
       ]
     },
     {
-      "id": "REQ-200",
-      "requirement": "Apply the centralized category label mapping helper everywhere category slugs can become user-visible, specifically including Home page category cards, Search Results page titles/labels/headings, Worker Profile badges, live suggestions dropdown, and category/filter UI (chips/buttons/headings).",
-      "reason": "Only LiveSuggestionSearchBox and SearchEmptyRecovery are shown updated to use `getCategoryLabel()`. The diff summary does not show any changes to Search Results pages, Worker Profile pages, or filter UI components, and HomePage still imports `getBilingualCategoryLabel` (not the strict mapping helper) with no evidence that category cards were updated to use the new helper.",
+      "id": "REQ-209",
+      "requirement": "DNS for areaworkars.caffeine.ai resolves (no NXDOMAIN) and https://areaworkars.caffeine.ai loads the application in a browser after deployment.",
+      "reason": "No changes in the diff demonstrate DNS or platform configuration updates; verification checks HTTP/HTML after deployment but does not implement or fix DNS resolution (NXDOMAIN).",
       "evidence": [
-        "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
-        "frontend/src/components/search/SearchEmptyRecovery.tsx",
-        "frontend/src/pages/HomePage.tsx"
+        "frontend/scripts/deploy-live.sh",
+        "frontend/scripts/verify-live-deploy.sh"
+      ]
+    },
+    {
+      "id": "REQ-208",
+      "requirement": "Perform a forced clean production rebuild of the current codebase (clear frontend caches/build artifacts) and ensure the production build completes successfully (no build errors).",
+      "reason": "A clean-build script is added to clear caches/artifacts and run a build, but the diff cannot prove that the production build actually completes successfully in CI/CD (no build logs or pipeline/config changes shown).",
+      "evidence": [
+        "frontend/scripts/clean-production-build.sh"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Introduced a new `formatTaxonomyLabel` router utility that detects known categories and routes to `getCategoryLabel`, otherwise uses `displayName`.",
-      "reason": "The BuildRequest only asked for a strict CATEGORY_LABELS mapping and a single helper for categories, applied across UI. It did not request adding a separate general taxonomy formatter utility.",
+      "description": "Backend data/model change expanding/altering normalizedCategories and related category/subcategory lists.",
+      "reason": "BuildRequest is focused on clean rebuild, live deploy, and verification; it explicitly discourages new product features or backend changes unless strictly required for build/deploy, and the diff does not show this is necessary for deployment.",
       "evidence": [
-        "frontend/src/utils/formatTaxonomyLabel.ts"
+        "backend/main.mo"
       ]
     },
     {
-      "description": "Expanded `CATEGORY_LABELS` with many additional category keys/aliases beyond the minimum user-provided mappings (e.g., dailyhelpers, supplies, skilledtrades, electronicsappliances, etc.).",
-      "reason": "The request required the mapping include at minimum the provided slug→label pairs. Adding extra entries was not requested and may undermine the notion of a \"strict\" mapping depending on interpretation.",
+      "description": "Large changes/updates to frontend feature summary metadata describing routes, pages, UI design system, bilingual components, etc.",
+      "reason": "Not requested by the redeploy/build/deploy verification requirements and appears unrelated to fixing NXDOMAIN or performing a clean production rebuild/deploy.",
       "evidence": [
-        "frontend/src/utils/categoryLabels.ts"
+        "frontend-file-summaries.txt",
+        "project_state.json"
       ]
     }
   ],
-  "confidence": 0.68,
+  "confidence": 0.74,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
-    "frontend/src/components/search/SearchEmptyRecovery.tsx",
-    "frontend/src/pages/HomePage.tsx",
-    "frontend/src/utils/bilingualTaxonomy.ts",
-    "frontend/src/utils/categoryLabels.ts",
-    "frontend/src/utils/displayName.ts",
-    "frontend/src/utils/formatTaxonomyLabel.ts",
+    "frontend/DEPLOYMENT_CLEAN_REBUILD.md",
+    "frontend/DEPLOYMENT_LIVE_NO_DRAFT.md",
+    "frontend/scripts/clean-production-build.sh",
+    "frontend/scripts/deploy-live.sh",
+    "frontend/scripts/verify-live-deploy.sh",
     "project_state.json"
   ]
 }
