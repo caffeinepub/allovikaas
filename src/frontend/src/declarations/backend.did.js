@@ -84,10 +84,14 @@ export const idlService = IDL.Service({
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'getAllCategories' : IDL.Func([], [IDL.Vec(CategoryMapping)], []),
+  'getAllCategories' : IDL.Func([], [IDL.Vec(CategoryMapping)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-  'getCategoryBySubcategory' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
+  'getCategoryBySubcategory' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(IDL.Text)],
+      ['query'],
+    ),
   'getPublicWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
@@ -196,10 +200,14 @@ export const idlFactory = ({ IDL }) => {
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'getAllCategories' : IDL.Func([], [IDL.Vec(CategoryMapping)], []),
+    'getAllCategories' : IDL.Func([], [IDL.Vec(CategoryMapping)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-    'getCategoryBySubcategory' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
+    'getCategoryBySubcategory' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(IDL.Text)],
+        ['query'],
+      ),
     'getPublicWorkers' : IDL.Func([], [IDL.Vec(Worker)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],

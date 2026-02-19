@@ -1,31 +1,47 @@
 import { useMemo } from 'react';
 import { useSearch } from '@tanstack/react-router';
 import { useGetPublicWorkers } from '@/hooks/useQueries';
+import { useIntentWorkerSearch } from '@/hooks/useIntentWorkerSearch';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import WorkerCard from '@/components/workers/WorkerCard';
 import PageShell from '@/components/layout/PageShell';
-import { sortWorkersByRelevance } from '@/utils/workerRelevanceSort';
+import { searchWorkers } from '@/utils/smartWorkerSearch';
 import { groupWorkersBySubcategory } from '@/utils/workerSubgrouping';
 import { formatTaxonomyLabel } from '@/utils/formatTaxonomyLabel';
 import { workerMatchesFuzzyQuery, normalizeForSearch } from '@/utils/fuzzyWorkerSearch';
-import { Worker } from '@/backend';
+import SearchEmptyRecovery from '@/components/search/SearchEmptyRecovery';
 
 export default function WorkerSearchResultsPage() {
   const { t } = useI18n();
   const search = useSearch({ from: '/search' }) as any;
   const { area, category, subcategory, q } = search;
 
-  // Get public workers (active only)
-  const { data: allWorkers = [], isLoading, error } = useGetPublicWorkers();
+  // Get public workers (active only) - used for category/area filtering
+  const { data: allWorkers = [], isLoading: isLoadingAll, error: errorAll } = useGetPublicWorkers();
 
-  // Filter workers client-side
+  // Use intent-based search for text queries
+  const { 
+    data: intentResults = [], 
+    isLoading: isLoadingIntent, 
+    error: errorIntent 
+  } = useIntentWorkerSearch(q || '', { limit: 100, minResults: 3 });
+
+  // Determine which data source to use
+  const isLoading = q ? isLoadingIntent : isLoadingAll;
+  const error = q ? errorIntent : errorAll;
+
+  // Filter and rank workers
   const filteredWorkers = useMemo(() => {
+    // If we have a text query, use intent search results
+    if (q) {
+      return intentResults;
+    }
+
+    // Otherwise apply category/area filters with fuzzy matching
     if (!allWorkers || allWorkers.length === 0) return [];
     
-    // Only show active workers (already filtered by backend, but double-check)
     let filtered = allWorkers.filter(w => w.status.__kind__ === 'active');
     
-    // Filter by category (fuzzy match)
     if (category) {
       const normalizedCategory = normalizeForSearch(category);
       filtered = filtered.filter(w => 
@@ -37,7 +53,6 @@ export default function WorkerSearchResultsPage() {
       );
     }
     
-    // Filter by area (fuzzy match)
     if (area) {
       const normalizedArea = normalizeForSearch(area);
       filtered = filtered.filter(w => 
@@ -49,37 +64,15 @@ export default function WorkerSearchResultsPage() {
       );
     }
     
-    // Filter by search query (fuzzy match across all fields)
-    if (q) {
-      filtered = filtered.filter(w => 
-        workerMatchesFuzzyQuery(
-          {
-            name: w.name,
-            category: w.category,
-            area: w.area,
-            skills: w.skills,
-          },
-          q,
-          0.75
-        )
-      );
-    }
-    
     return filtered;
-  }, [allWorkers, area, category, q]);
-
-  // Sort workers by relevance
-  const sortedWorkers = useMemo(() => {
-    if (!filteredWorkers || filteredWorkers.length === 0) return [];
-    return sortWorkersByRelevance(filteredWorkers, q || category || '');
-  }, [filteredWorkers, q, category]);
+  }, [allWorkers, intentResults, area, category, q]);
 
   // Group workers if category requires it
   const groupedWorkers = useMemo(() => {
-    if (!category || sortedWorkers.length === 0) return null;
-    const groups = groupWorkersBySubcategory(sortedWorkers);
+    if (!category || filteredWorkers.length === 0) return null;
+    const groups = groupWorkersBySubcategory(filteredWorkers);
     return groups.length > 0 ? groups : null;
-  }, [sortedWorkers, category]);
+  }, [filteredWorkers, category]);
 
   // Build search context for worker cards
   const searchContext = useMemo(() => {
@@ -133,27 +126,36 @@ export default function WorkerSearchResultsPage() {
     );
   }
 
-  if (sortedWorkers.length === 0) {
+  // Show empty recovery only when there are truly zero workers in the system
+  const hasQuery = !!(q || category || area);
+  const hasWorkers = filteredWorkers.length > 0;
+
+  if (!hasWorkers && hasQuery && allWorkers.length === 0) {
     return (
       <PageShell>
         <div className="max-w-7xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold text-foreground mb-6">{pageTitle}</h1>
-          <div className="bg-muted/50 rounded-xl p-12 text-center">
-            <p className="text-lg text-muted-foreground">No workers found matching your search</p>
-            <p className="text-sm text-muted-foreground mt-2">Try adjusting your search criteria</p>
-          </div>
+          <SearchEmptyRecovery
+            searchQuery={q}
+            category={category}
+            subcategory={subcategory}
+            area={area}
+          />
         </div>
       </PageShell>
     );
   }
 
+  // Always show results when we have workers (intent search guarantees non-empty fallback)
   return (
     <PageShell>
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">{pageTitle}</h1>
           <p className="text-muted-foreground">
-            Found {sortedWorkers.length} worker{sortedWorkers.length !== 1 ? 's' : ''}
+            {hasWorkers && filteredWorkers.length < 10 && q
+              ? `Showing ${filteredWorkers.length} best match${filteredWorkers.length !== 1 ? 'es' : ''}`
+              : `Found ${filteredWorkers.length} worker${filteredWorkers.length !== 1 ? 's' : ''}`}
           </p>
         </div>
 
@@ -180,7 +182,7 @@ export default function WorkerSearchResultsPage() {
         ) : (
           // Flat display
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedWorkers.map((worker) => (
+            {filteredWorkers.map((worker) => (
               <WorkerCard
                 key={worker.id.toString()}
                 worker={worker}

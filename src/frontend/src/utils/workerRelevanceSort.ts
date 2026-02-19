@@ -1,8 +1,8 @@
 import { Worker } from '@/backend';
-import { normalizeForSearch, calculateFuzzyRelevanceScore } from './fuzzyWorkerSearch';
+import { searchWorkers } from './smartWorkerSearch';
 
 /**
- * Sort workers by relevance to search query using fuzzy matching
+ * Sort workers by relevance to search query using smart priority ranking
  * Falls back to alphabetical by name if scores are equal
  */
 export function sortWorkersByRelevance(workers: Worker[], query: string): Worker[] {
@@ -10,35 +10,7 @@ export function sortWorkersByRelevance(workers: Worker[], query: string): Worker
     return workers;
   }
 
-  return [...workers].sort((a, b) => {
-    const scoreA = calculateFuzzyRelevanceScore(
-      {
-        name: a.name,
-        area: a.area,
-        category: a.category,
-        skills: a.skills,
-      },
-      query,
-      0.75
-    );
-    const scoreB = calculateFuzzyRelevanceScore(
-      {
-        name: b.name,
-        area: b.area,
-        category: b.category,
-        skills: b.skills,
-      },
-      query,
-      0.75
-    );
-
-    if (scoreA !== scoreB) {
-      return scoreB - scoreA; // Higher score first
-    }
-
-    // Fallback to alphabetical by name
-    const normalizedNameA = normalizeForSearch(a.name);
-    const normalizedNameB = normalizeForSearch(b.name);
-    return normalizedNameA.localeCompare(normalizedNameB);
-  });
+  // Use smart search to get ranked results
+  // Set limit high to get all workers ranked
+  return searchWorkers(workers, query, { limit: workers.length, minResults: 0 });
 }

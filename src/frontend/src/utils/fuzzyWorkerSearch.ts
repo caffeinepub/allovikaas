@@ -1,16 +1,18 @@
 /**
  * Centralized fuzzy matching and normalization utilities for worker search.
  * Provides typo-tolerant matching across name, area, category, and skills.
+ * Updated to be Tamil-safe (preserve non-Latin characters).
  */
 
 /**
- * Normalize text for search: lowercase, remove punctuation, collapse whitespace, trim
+ * Normalize text for search: lowercase, trim, collapse whitespace
+ * Tamil-safe: does NOT remove non-Latin characters
  */
 export function normalizeForSearch(text: string | undefined | null): string {
   if (!text) return '';
   return text
     .toLowerCase()
-    .replace(/[^\w\s]/g, '') // Remove punctuation
+    .replace(/[^\w\s\u0B80-\u0BFF]/g, '') // Remove punctuation but preserve Tamil Unicode range
     .replace(/\s+/g, ' ') // Collapse whitespace
     .trim();
 }

@@ -1,90 +1,46 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T05:55:16.290Z",
+  "generatedAt": "2026-02-19T12:15:14.158Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 5,
+    "total": 2,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-231",
-        "summary": "Add a microphone button inside the main search input UI so users can trigger voice search on mobile browsers. This must be integrated into the existing Home page natural-language search input (frontend/src/pages/HomePage.tsx) without requiring login.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/components/search/VoiceSearchButton.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/components/search/VoiceSearchButton.tsx"
-        ]
+        "id": "REQ-1",
+        "summary": "Modify the backend to automatically grant admin privileges to the currently authenticated user's principal ID when they access any admin endpoint",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-232",
-        "summary": "Implement speech-to-text voice recognition so that when the microphone button is tapped: (1) speech recognition starts, (2) speech is converted to text, (3) the recognized text auto-fills the search input, and (4) search is automatically triggered using the existing search submit/navigation behavior.",
+        "id": "REQ-2",
+        "summary": "Remove the access denied state from AdminGuard component by ensuring the isAdmin check passes for the current user",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useSpeechRecognition.ts",
-          "frontend/src/components/search/VoiceSearchButton.tsx",
-          "frontend/src/pages/HomePage.tsx"
+          "frontend/src/components/admin/AdminGuard.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useSpeechRecognition.ts",
-          "frontend/src/components/search/VoiceSearchButton.tsx",
-          "frontend/src/pages/HomePage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-233",
-        "summary": "Support both Tamil and English speech recognition for voice search. Configure recognition to work for typical user utterances in Tamil/English mixed queries (examples include: \"tindivanam plumber irukana\", \"painting work venum\", \"AC repair near me\", \"samayal aunty venum nalaiku\").",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useSpeechRecognition.ts",
-          "frontend/src/pages/HomePage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useSpeechRecognition.ts",
-          "frontend/src/pages/HomePage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-234",
-        "summary": "Provide a safe fallback behavior on browsers that do not support Web Speech API speech recognition: disable or hide the microphone button and (optionally) show a simple English-only message indicating voice search is not supported on this browser, without affecting normal typed search.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useSpeechRecognition.ts",
-          "frontend/src/pages/HomePage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useSpeechRecognition.ts",
-          "frontend/src/pages/HomePage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-235",
-        "summary": "Ensure voice search integrates cleanly with existing search UI behaviors (debounced preview matching on Home page and navigation to /search) and does not introduce new authentication, booking, payment, or in-app chat functionality.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HomePage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HomePage.tsx"
+          "frontend/src/components/admin/AdminGuard.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/search/VoiceSearchButton.tsx",
-    "frontend/src/hooks/useSpeechRecognition.ts",
-    "frontend/src/pages/HomePage.tsx",
+    "frontend/src/components/admin/AdminGuard.tsx",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActor } from './useActor';
+import { useInternetIdentity } from './useInternetIdentity';
 import { Worker, UserProfile } from '@/backend';
 import { logError } from '@/utils/errors';
 
@@ -30,10 +31,11 @@ export function useGetPublicWorkers() {
 }
 
 export function useIsCallerAdmin() {
-  const { actor, isFetching } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity, isInitializing } = useInternetIdentity();
 
-  return useQuery<boolean>({
-    queryKey: ['is-admin'],
+  const query = useQuery<boolean>({
+    queryKey: ['is-admin', identity?.getPrincipal().toString()],
     queryFn: async () => {
       if (!actor) return false;
       try {
@@ -44,8 +46,16 @@ export function useIsCallerAdmin() {
         return false;
       }
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !actorFetching && !isInitializing && !!identity,
+    retry: 1,
+    staleTime: 5000,
   });
+
+  return {
+    ...query,
+    isLoading: actorFetching || isInitializing || query.isLoading,
+    isFetched: !!actor && !actorFetching && !isInitializing && query.isFetched,
+  };
 }
 
 export function useGetCallerUserProfile() {

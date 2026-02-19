@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-microphone-button-inside-the-main-search-input-ui-so-users-can-trigger-voice-search-on-mobile-browsers-this-must-be-integrated-into-the-existing-home-page-natural-language-search-input-frontend-src-pages-homepage-tsx-without-requiring-login",
-      "featureTitle": "Add a microphone button inside the main search input UI so users can trigger voice search on mobile browsers. This must be integrated into the existing Home page natural-language search input (frontend/src/pages/HomePage.tsx) without requiring login.",
+      "featureId": "feature-remove-the-access-denied-state-from-adminguard-component-by-ensuring-the-isadmin-check-passes-for-the-current-user",
+      "featureTitle": "Remove the access denied state from AdminGuard component by ensuring the isAdmin check passes for the current user",
       "files": [
-        "frontend/src/components/search/VoiceSearchButton.tsx",
-        "frontend/src/pages/HomePage.tsx"
+        "frontend/src/components/admin/AdminGuard.tsx",
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -19,95 +19,7 @@
         "user-approval@3.0.0"
       ],
       "testIds": [
-        "REQ-231"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-speech-to-text-voice-recognition-so-that-when-the-microphone-button-is-tapped-1-speech-recognition-starts-2-speech-is-converted-to-text-3-the-recognized-text-auto-fills-the-search-input-and-4-search-is-automatically-triggered-using-the-existing-search-submit-navigation-behavior",
-      "featureTitle": "Implement speech-to-text voice recognition so that when the microphone button is tapped: (1) speech recognition starts, (2) speech is converted to text, (3) the recognized text auto-fills the search input, and (4) search is automatically triggered using the existing search submit/navigation behavior.",
-      "files": [
-        "frontend/src/components/search/VoiceSearchButton.tsx",
-        "frontend/src/hooks/useSpeechRecognition.ts",
-        "frontend/src/pages/HomePage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-232"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-support-both-tamil-and-english-speech-recognition-for-voice-search-configure-recognition-to-work-for-typical-user-utterances-in-tamil-english-mixed-queries-examples-include-tindivanam-plumber-irukana-painting-work-venum-ac-repair-near-me-samayal-aunty-venum-nalaiku",
-      "featureTitle": "Support both Tamil and English speech recognition for voice search. Configure recognition to work for typical user utterances in Tamil/English mixed queries (examples include: \"tindivanam plumber irukana\", \"painting work venum\", \"AC repair near me\", \"samayal aunty venum nalaiku\").",
-      "files": [
-        "frontend/src/hooks/useSpeechRecognition.ts",
-        "frontend/src/pages/HomePage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-233"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-provide-a-safe-fallback-behavior-on-browsers-that-do-not-support-web-speech-api-speech-recognition-disable-or-hide-the-microphone-button-and-optionally-show-a-simple-english-only-message-indicating-voice-search-is-not-supported-on-this-browser-without-affecting-normal-typed-search",
-      "featureTitle": "Provide a safe fallback behavior on browsers that do not support Web Speech API speech recognition: disable or hide the microphone button and (optionally) show a simple English-only message indicating voice search is not supported on this browser, without affecting normal typed search.",
-      "files": [
-        "frontend/src/hooks/useSpeechRecognition.ts",
-        "frontend/src/pages/HomePage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-234"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-voice-search-integrates-cleanly-with-existing-search-ui-behaviors-debounced-preview-matching-on-home-page-and-navigation-to-search-and-does-not-introduce-new-authentication-booking-payment-or-in-app-chat-functionality",
-      "featureTitle": "Ensure voice search integrates cleanly with existing search UI behaviors (debounced preview matching on Home page and navigation to /search) and does not introduce new authentication, booking, payment, or in-app chat functionality.",
-      "files": [
-        "frontend/src/pages/HomePage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "user-approval@3.0.0"
-      ],
-      "testIds": [
-        "REQ-235"
+        "REQ-2"
       ],
       "confidence": "high"
     }

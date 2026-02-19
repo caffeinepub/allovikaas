@@ -13,10 +13,9 @@ import Storage "blob-storage/Storage";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 import UserApproval "user-approval/approval";
+import Migration "migration";
 
-
-// Apply migration with-clause for upgrade safety
-
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   let approvalState = UserApproval.initState(accessControlState);
@@ -174,7 +173,7 @@ actor {
     { subcategory = "Household Helper"; category = "Local Skilled Workers" },
   ];
 
-  public func getAllCategories() : async [CategoryMapping] {
+  public query func getAllCategories() : async [CategoryMapping] {
     normalizedCategories.map(
       func(cat) {
         {
@@ -185,7 +184,7 @@ actor {
     );
   };
 
-  public func getCategoryBySubcategory(subcategory : Text) : async ?Text {
+  public query func getCategoryBySubcategory(subcategory : Text) : async ?Text {
     let mapped = generalSubcategories.find(
       func(mapping) {
         Text.equal(mapping.subcategory, subcategory);
@@ -300,6 +299,10 @@ actor {
     availableTime : Text,
     experience : Text,
   ) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can submit worker registrations");
+    };
+
     if (name.trim(#char(' ')).size() == 0 or phone.trim(#char(' ')).size() == 0 or area.trim(#char(' ')).size() == 0 or category.trim(#char(' ')).size() == 0) {
       return "Invalid input: Missing required fields";
     };

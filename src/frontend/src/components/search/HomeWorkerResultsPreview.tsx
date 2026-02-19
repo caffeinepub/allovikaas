@@ -34,18 +34,18 @@ export default function HomeWorkerResultsPreview({
     );
   }
 
-  // No results state
+  // Show message only when there are truly zero workers in the system
   if (matches.length === 0) {
     return (
       <div className="mt-4 p-6 bg-background/95 backdrop-blur-sm rounded-2xl shadow-lg border border-border">
         <p className="text-center text-muted-foreground">
-          No workers found — try another word
+          No workers available at the moment
         </p>
       </div>
     );
   }
 
-  // Results preview
+  // Results preview (always shows at least closest workers when available)
   return (
     <div className="mt-4 p-4 bg-background/95 backdrop-blur-sm rounded-2xl shadow-lg border border-border max-h-[500px] overflow-y-auto">
       <div className="space-y-3">

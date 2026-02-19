@@ -5,9 +5,9 @@
     "searchPlaceholder": "Search by area, skill, or category...",
     "categoriesHeading": "Browse by Category",
     "nlSearch": {
-      "title": "Ask for a worker",
-      "subtitle": "Type like talking to a person",
-      "placeholder": "e.g., tindivanam plumber irukana, AC repair near me...",
+      "title": "Find workers near you",
+      "subtitle": "Talk normally like asking a person",
+      "placeholder": "Eg Tindivanam plumber irukana",
       "noResults": "No workers found — try another word"
     }
   },
@@ -15,7 +15,7 @@
     "home": "Home",
     "browse": "Browse Workers",
     "postJob": "Post Job",
-    "register": "Register as Worker",
+    "registerWorker": "Register as Worker",
     "admin": "Admin",
     "blog": "Blog"
   },

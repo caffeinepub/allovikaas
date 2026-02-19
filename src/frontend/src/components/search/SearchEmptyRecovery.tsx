@@ -34,10 +34,10 @@ export default function SearchEmptyRecovery({
           </div>
           <div>
             <h3 className="text-2xl font-bold text-foreground mb-2">
-              No workers found
+              No workers available
             </h3>
             <p className="text-muted-foreground">
-              We couldn't find any workers matching your search criteria
+              Try different keywords or browse by category below
             </p>
           </div>
           <div className="pt-4">
@@ -51,7 +51,7 @@ export default function SearchEmptyRecovery({
       {/* Search suggestions */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-foreground">
-          Try searching for:
+          Browse by category:
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {['Construction', 'Agriculture', 'Home Services', 'Transport', 'Tailoring', 'Daily Helpers'].map((cat) => (

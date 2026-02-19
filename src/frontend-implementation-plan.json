@@ -1,111 +1,26 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Tamil/English voice search for Home page search bar",
+  "title": "Grant admin role to current account and fix access denied",
   "requirements": [
     {
-      "id": "REQ-231",
-      "summary": "Add an in-input microphone button to the existing Home page natural-language search UI without requiring login.",
+      "id": "REQ-2",
+      "summary": "Remove the access denied state from AdminGuard component by ensuring the isAdmin check passes for the current user",
       "acceptanceCriteria": [
-        "Home page search input renders a tap-friendly microphone icon button positioned inside the input field (not outside the search area).",
-        "The microphone button is visible and usable on mobile browsers.",
-        "No login is required to see or use the microphone button."
+        "AdminGuard component allows access to admin dashboard",
+        "No 'Access Denied' screen is shown for the current user",
+        "Admin panel pages render successfully"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/HomePage.tsx",
+          "path": "frontend/src/components/admin/AdminGuard.tsx",
           "operation": "modify",
-          "description": "Wrap the existing search Input in a relative container and render a microphone icon button inside the input area (adjust input right-padding so text doesn’t overlap). Ensure the mic button is reachable/tap-friendly on mobile and does not add any authentication gating."
+          "description": "Update AdminGuard component to properly handle admin access verification. Ensure the component correctly checks authentication status and admin privileges using the useIsAdmin hook. Verify that loading states are handled before showing access denied, and that the component renders children when admin access is confirmed. Review the conditional rendering logic to prevent premature access denial during authentication initialization."
         },
         {
-          "path": "frontend/src/components/search/VoiceSearchButton.tsx",
-          "operation": "create",
-          "description": "Create a small, reusable microphone button component designed to sit inside an input field (icon-only, accessible label, disabled/loading visuals) and expose callbacks for start/stop and transcript delivery."
-        }
-      ]
-    },
-    {
-      "id": "REQ-232",
-      "summary": "Implement speech-to-text so tapping the mic fills the Home search input and triggers the existing /search navigation flow; handle errors safely.",
-      "acceptanceCriteria": [
-        "Tapping the microphone starts speech recognition and captures the user’s voice.",
-        "After recognition returns a final transcript, the search input value is replaced/filled with the recognized transcript.",
-        "After filling the input, the app automatically triggers the same search flow as pressing the existing Search submit (i.e., navigates to /search with search: { q: <recognized text> } on Home page).",
-        "The implementation does not crash the page if speech recognition errors, is cancelled, or returns an empty transcript."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useSpeechRecognition.ts",
-          "operation": "create",
-          "description": "Add a Web Speech API-based hook that manages recognition lifecycle (start/stop), exposes support status + listening state, returns the final transcript via callback, and guards all browser API access to prevent runtime crashes (including errors/cancel/empty transcript)."
-        },
-        {
-          "path": "frontend/src/components/search/VoiceSearchButton.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Wire the button component to the speech recognition hook: on tap start recognition; when a final transcript is produced, call the provided callback so the Home page can set the input value and trigger the existing submit/navigation behavior."
-        },
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "modify",
-          "description": "Integrate the voice transcript flow into existing Home search state: setSearchValue(transcript.trim()) and then trigger the same navigate-to-/search behavior used by the current submit handler (without duplicating a new search pathway). Ensure empty transcripts do nothing and errors don’t break typed search."
-        }
-      ]
-    },
-    {
-      "id": "REQ-233",
-      "summary": "Configure voice recognition to support both Tamil and English (including mixed/transliterated queries) and pass transcript through the existing search pipeline with only trimming.",
-      "acceptanceCriteria": [
-        "Voice search recognizes English speech and produces an English transcript for common queries like \"AC repair near me\".",
-        "Voice search recognizes Tamil (and Tamil transliteration/mixed) speech and produces a transcript usable by the existing fuzzy/natural-language matching for queries like \"painting work venum\" and \"tindivanam plumber irukana\".",
-        "The recognized transcript is passed through the existing search pipeline unchanged except for normal trimming (no forced translation and no login)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useSpeechRecognition.ts",
-          "operation": "modify",
-          "description": "Set recognition configuration for Tamil/English support (BCP-47 language selection and sensible defaults like interimResults, continuous=false, maxAlternatives) and implement a safe strategy for mixed queries (e.g., primary language plus optional fallback attempt) while ensuring the transcript is returned unchanged except trimming."
-        },
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "modify",
-          "description": "Ensure the transcript from voice recognition is only trimmed before being set as the Home search input value and used for navigation, with no translation or additional text transformations."
-        }
-      ]
-    },
-    {
-      "id": "REQ-234",
-      "summary": "Provide safe fallback on browsers without Web Speech API recognition: hide/disable mic and optionally show an English-only unsupported message without affecting typed search.",
-      "acceptanceCriteria": [
-        "On browsers where speech recognition is unavailable, the app does not throw runtime errors when rendering the search bar.",
-        "Typed search continues to work exactly as before when voice search is unavailable.",
-        "Any new user-visible fallback text introduced for unsupported browsers is English-only (no new Tamil-first copy added as part of this feature)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useSpeechRecognition.ts",
-          "operation": "modify",
-          "description": "Detect Web Speech API availability safely (including vendor-prefixed implementations) and expose an isSupported flag; ensure hook functions no-op safely when unsupported."
-        },
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "modify",
-          "description": "Conditionally render the in-input mic button as disabled/hidden when voice recognition is unsupported; if adding fallback copy, display a simple English-only message near the search UI while keeping the typed search behavior unchanged."
-        }
-      ]
-    },
-    {
-      "id": "REQ-235",
-      "summary": "Ensure voice search integrates with existing Home debounced preview + /search navigation and does not introduce auth, booking, payment, or chat functionality.",
-      "acceptanceCriteria": [
-        "Voice search does not require Internet Identity login and does not call any admin-only APIs.",
-        "After voice recognition, the existing Home page instant preview updates based on the filled text (via the existing state + debounced matching).",
-        "No new booking/payment/chat flows are introduced as part of voice search."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "modify",
-          "description": "Keep voice search purely client-side: update the existing searchValue state so the existing debounced matching (instant preview) reacts naturally, and reuse the current navigate-to-/search behavior; do not add any Internet Identity checks or unrelated flows."
+          "description": "Review and update the useIsAdmin hook to ensure it properly fetches admin status from the backend actor. Verify that the hook correctly handles the actor availability check, includes proper error handling, and returns accurate loading/fetching states. Ensure the query is enabled only when the actor is ready and that it properly invalidates when authentication state changes."
         }
       ]
     }

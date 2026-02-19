@@ -1,13 +1,12 @@
 import { useMemo } from 'react';
 import { useGetPublicWorkers } from './useQueries';
-import { matchWorkers } from '@/utils/nlSearch';
-import { Worker } from '@/backend';
+import { searchWorkers } from '@/utils/smartWorkerSearch';
 
 /**
- * Hook that uses public workers data and nlSearch utilities to compute
+ * Hook that uses public workers data and smart search utilities to compute
  * a ranked, limited list of matching workers for a given query.
  * Does not require authentication and does not mutate URL params.
- * Now uses fuzzy matching for typo tolerance.
+ * Uses smart sentence parsing with spelling correction and priority ranking.
  */
 export function useNaturalLanguageWorkerMatch(query: string, limit: number = 8) {
   const { data: workers = [], isLoading, error } = useGetPublicWorkers();
@@ -17,7 +16,7 @@ export function useNaturalLanguageWorkerMatch(query: string, limit: number = 8) 
       return [];
     }
 
-    return matchWorkers(workers, query, limit);
+    return searchWorkers(workers, query, { limit, minResults: 0 });
   }, [workers, query, limit]);
 
   return {

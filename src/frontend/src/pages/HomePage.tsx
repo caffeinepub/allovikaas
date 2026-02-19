@@ -1,223 +1,151 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Search } from 'lucide-react';
-import SafeIconImage from '@/components/common/SafeIconImage';
 import { useI18n } from '@/components/i18n/I18nProvider';
+import { Button } from '@/components/ui/button';
+import PageShell from '@/components/layout/PageShell';
 import { useWorkerTaxonomy } from '@/hooks/useWorkerTaxonomy';
-import { getBilingualCategoryLabel } from '@/utils/bilingualTaxonomy';
+import { getCategoryLabel } from '@/utils/categoryLabels';
 import { getMainCategoryIcon } from '@/utils/mainCategoryIcons';
+import SafeIconImage from '@/components/common/SafeIconImage';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useNaturalLanguageWorkerMatch } from '@/hooks/useNaturalLanguageWorkerMatch';
 import HomeWorkerResultsPreview from '@/components/search/HomeWorkerResultsPreview';
-import VoiceSearchButton from '@/components/search/VoiceSearchButton';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
-import { toast } from 'sonner';
+import VoiceSearchButton from '@/components/search/VoiceSearchButton';
+import LiveSuggestionSearchBox from '@/components/search/LiveSuggestionSearchBox';
 
 export default function HomePage() {
-  const navigate = useNavigate();
   const { t } = useI18n();
-  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebouncedValue(searchQuery, 300);
 
-  // Debounce search input for instant matching
-  const debouncedQuery = useDebouncedValue(searchValue, 400);
+  // Get worker matches for preview
+  const { matches, isLoading: isLoadingMatches } = useNaturalLanguageWorkerMatch(debouncedQuery, 8);
 
-  // Get instant matches using natural language search
-  const { matches, isLoading: matchesLoading } = useNaturalLanguageWorkerMatch(debouncedQuery, 8);
+  // Voice search
+  const handleVoiceTranscript = useCallback((transcript: string) => {
+    if (transcript.trim()) {
+      // Navigate immediately with the transcript
+      navigate({ to: '/search', search: { q: transcript.trim() } });
+    }
+  }, [navigate]);
 
-  // Fetch categories
-  const taxonomy = useWorkerTaxonomy();
+  const handleVoiceError = useCallback((error: string) => {
+    console.error('Voice recognition error:', error);
+  }, []);
 
-  // Voice search integration
   const { isSupported, isListening, startListening, stopListening } = useSpeechRecognition({
-    language: 'ta-IN', // Tamil (India) as primary, but will understand English too
-    onTranscript: (transcript) => {
-      const trimmedTranscript = transcript.trim();
-      if (trimmedTranscript) {
-        // Fill the search input with the transcript
-        setSearchValue(trimmedTranscript);
-        
-        // Automatically trigger search after a short delay to allow preview to update
-        setTimeout(() => {
-          navigate({
-            to: '/search',
-            search: { q: trimmedTranscript },
-          });
-        }, 300);
-      }
-    },
-    onError: (error) => {
-      toast.error(error);
-    },
+    onTranscript: handleVoiceTranscript,
+    onError: handleVoiceError,
   });
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchValue.trim()) {
-      navigate({
-        to: '/search',
-        search: { q: searchValue.trim() },
-      });
+  // Handle search submission
+  const handleSearch = useCallback((query: string) => {
+    const trimmed = query.trim();
+    if (trimmed) {
+      navigate({ to: '/search', search: { q: trimmed } });
     }
-  };
+  }, [navigate]);
 
+  // Handle category click
   const handleCategoryClick = (category: string) => {
-    navigate({
-      to: '/search',
-      search: { category },
-    });
+    navigate({ to: '/search', search: { category } });
   };
 
-  // Get translated strings
-  const heroTitle = t('home.nlSearch.title');
-  const heroSubtitle = t('home.nlSearch.subtitle');
-  const searchPlaceholder = t('home.nlSearch.placeholder');
-  const categoriesTitle = t('home.categoriesHeading');
+  // Get taxonomy for categories
+  const taxonomy = useWorkerTaxonomy();
+  const categories = taxonomy.categories || [];
+
+  // Get translations
+  const nlSearchTitle = t('nlSearch.title');
+  const nlSearchSubtitle = t('nlSearch.subtitle');
+  const nlSearchPlaceholder = t('nlSearch.placeholder');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-      {/* Hero Section with AI-style Natural Language Search */}
-      <section className="relative py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              {heroTitle.en}
+    <PageShell>
+      <div className="max-w-7xl mx-auto px-4 py-12 space-y-16">
+        {/* Hero Section */}
+        <div className="text-center space-y-8">
+          <div className="space-y-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
+              {nlSearchTitle.en}
             </h1>
-            <p className="text-xl text-muted-foreground">
-              {heroSubtitle.en}
-            </p>
-            <p className="text-lg text-muted-foreground/80 mt-2">
-              {heroSubtitle.regional}
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+              {nlSearchSubtitle.en}
             </p>
           </div>
 
-          {/* AI-style Chat Search Box with Voice Search */}
-          <div className="max-w-2xl mx-auto">
-            <form onSubmit={handleSearchSubmit} className="space-y-2">
-              <div className="flex gap-3">
-                <div className="relative flex-1">
-                  <Input
-                    type="text"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    placeholder={searchPlaceholder.en}
-                    className="h-14 text-lg rounded-full px-6 pr-14 shadow-lg border-2 border-border focus:border-primary"
-                  />
-                  <VoiceSearchButton
-                    isListening={isListening}
-                    isSupported={isSupported}
-                    onStart={startListening}
-                    onStop={stopListening}
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="px-8 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg"
-                >
-                  <Search className="h-5 w-5 mr-2" />
-                  Search
-                </Button>
-              </div>
-            </form>
+          {/* Search Box with Live Suggestions */}
+          <div className="max-w-3xl mx-auto">
+            <LiveSuggestionSearchBox
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={handleSearch}
+              placeholder={nlSearchPlaceholder.en}
+              disabled={isListening}
+            >
+              <VoiceSearchButton
+                isListening={isListening}
+                isSupported={isSupported}
+                onStart={startListening}
+                onStop={stopListening}
+              />
+            </LiveSuggestionSearchBox>
 
-            {/* Instant Results Preview */}
+            {/* Worker Preview */}
             <HomeWorkerResultsPreview
               matches={matches}
               query={debouncedQuery}
-              isLoading={matchesLoading}
+              isLoading={isLoadingMatches}
             />
           </div>
-
-          {/* Example queries */}
-          <div className="max-w-2xl mx-auto">
-            <p className="text-sm text-muted-foreground mb-3">Try examples:</p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {[
-                'tindivanam plumber irukana',
-                'AC repair near me',
-                'cooking aunty venum nalaiku',
-                'painting work venum',
-              ].map((example) => (
-                <button
-                  key={example}
-                  onClick={() => setSearchValue(example)}
-                  className="px-4 py-2 text-sm bg-background/80 hover:bg-background border border-border rounded-full transition-colors"
-                >
-                  "{example}"
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
-      </section>
 
-      {/* Categories Section */}
-      <section className="py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
-            {categoriesTitle.en}
+        {/* Categories Grid */}
+        <div className="space-y-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center">
+            Browse by Category
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {taxonomy.categories.map((categoryName) => {
-              const categoryLabel = getBilingualCategoryLabel(categoryName, t);
-              const iconPath = getMainCategoryIcon(categoryName);
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.map((category) => {
+              const iconPath = getMainCategoryIcon(category);
+              const label = getCategoryLabel(category);
 
               return (
-                <Card
-                  key={categoryName}
-                  className="cursor-pointer hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden"
-                  onClick={() => handleCategoryClick(categoryName)}
+                <Button
+                  key={category}
+                  onClick={() => handleCategoryClick(category)}
+                  variant="outline"
+                  className="h-auto py-6 px-4 flex flex-col items-center gap-3 hover:shadow-lg hover:border-primary transition-all duration-200"
                 >
-                  <CardContent className="p-6 text-center space-y-4">
-                    <div className="flex justify-center">
-                      <SafeIconImage
-                        src={iconPath}
-                        alt={categoryLabel.en}
-                        className="w-20 h-20 object-contain"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground">
-                        {categoryLabel.en}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {categoryLabel.regional}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <SafeIconImage
+                    src={iconPath}
+                    alt={label}
+                    className="w-16 h-16 object-contain"
+                  />
+                  <span className="text-sm font-semibold text-center leading-tight">
+                    {label}
+                  </span>
+                </Button>
               );
             })}
           </div>
         </div>
-      </section>
 
-      {/* Worker Registration CTA */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <Card className="bg-primary text-primary-foreground rounded-2xl shadow-2xl">
-            <CardContent className="p-12 text-center space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold">
-                Are you a skilled worker?
-              </h2>
-              <p className="text-lg opacity-90">
-                Register now and connect with people looking for your services
-              </p>
-              <Button
-                onClick={() => navigate({ to: '/register' })}
-                size="lg"
-                variant="secondary"
-                className="text-lg px-8 py-6"
-              >
-                Register as Worker
-              </Button>
-            </CardContent>
-          </Card>
+        {/* About Section */}
+        <div className="bg-card rounded-3xl p-8 md:p-12 shadow-lg border border-border">
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <h2 className="text-3xl font-bold text-foreground">
+              Find Local Workers Instantly
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Connect directly with skilled workers in your area. No middleman, no commission.
+              Just honest work and fair prices.
+            </p>
+          </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </PageShell>
   );
 }
