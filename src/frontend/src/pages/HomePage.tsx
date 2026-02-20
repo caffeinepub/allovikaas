@@ -57,11 +57,6 @@ export default function HomePage() {
   const taxonomy = useWorkerTaxonomy();
   const categories = taxonomy.categories || [];
 
-  // Get translations
-  const nlSearchTitle = t('nlSearch.title');
-  const nlSearchSubtitle = t('nlSearch.subtitle');
-  const nlSearchPlaceholder = t('nlSearch.placeholder');
-
   return (
     <PageShell>
       <div className="max-w-7xl mx-auto px-4 py-12 space-y-16">
@@ -69,10 +64,10 @@ export default function HomePage() {
         <div className="text-center space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-              {nlSearchTitle.en}
+              Find workers near you
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-              {nlSearchSubtitle.en}
+              ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்
             </p>
           </div>
 
@@ -82,7 +77,7 @@ export default function HomePage() {
               value={searchQuery}
               onChange={setSearchQuery}
               onSubmit={handleSearch}
-              placeholder={nlSearchPlaceholder.en}
+              placeholder="Eg Tindivanam plumber irukana"
               disabled={isListening}
             >
               <VoiceSearchButton

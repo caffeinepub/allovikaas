@@ -1,46 +1,57 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-19T12:15:14.158Z",
+  "generatedAt": "2026-02-20T13:19:11.194Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 1,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Modify the backend to automatically grant admin privileges to the currently authenticated user's principal ID when they access any admin endpoint",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "summary": "Update the homepage title text to 'Find workers near you'",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/HomePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/HomePage.tsx"
+        ]
       },
       {
         "id": "REQ-2",
-        "summary": "Remove the access denied state from AdminGuard component by ensuring the isAdmin check passes for the current user",
+        "summary": "Update the homepage subtitle text to 'ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்' (meaning: 'Search for work as if talking to a person')",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/admin/AdminGuard.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/HomePage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/admin/AdminGuard.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/pages/HomePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Update the search box placeholder text to 'Eg Tindivanam plumber irukana' (meaning: 'Example: Is there a plumber in Tindivanam?')",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/components/search/LiveSuggestionSearchBox.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/HomePage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/admin/AdminGuard.tsx",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/HomePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,48 +1,43 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "AREA WORKARS - A platform to find workers near you with worker registration, admin approval system, and category management",
+  "summary": "A worker/service marketplace platform connecting users with local workers, featuring Tamil language support",
   "architectural_notes": [
-    "App name: AREA WORKARS",
-    "Primary color: green",
-    "Worker registration requires admin approval before public display",
-    "Admin dashboard for worker approval, user management, category management, and post deletion",
-    "Categories: Construction, Agriculture, Home Services, Daily Helpers, Transport, Repair Services, Tailoring, Cooking & Events, Supplies, Local Skilled Workers"
+    "Tamil language support for UI elements",
+    "Local worker search functionality",
+    "User authentication with admin roles"
   ],
-  "known_issues": [
-    "Admin access denied error preventing dashboard access",
-    "Current user account needs super admin role assignment",
-    "Previous build attempts failed with AI implementation errors"
-  ],
+  "known_issues": [],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-remove-the-access-denied-state-from-adminguard-component-by-ensuring-the-isadmin-check-passes-for-the-current-user",
-      "title": "Remove the access denied state from AdminGuard component by ensuring the isAdmin check passes for the current user",
+      "id": "feature-update-the-homepage-title-text-to-find-workers-near-you",
+      "title": "Update the homepage title text to 'Find workers near you'",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-homepage-subtitle-text-to-meaning-search-for-work-as-if-talking-to-a-person",
+      "title": "Update the homepage subtitle text to 'ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்' (meaning: 'Search for work as if talking to a person')",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
-    }
-  ],
-  "new_feature_requests": [
-    {
-      "id": "AR-1",
-      "summary": "Fix admin permissions: grant current account admin role and remove access denied",
-      "reqIds": [],
-      "status": "pending"
     },
     {
-      "id": "AR-2",
-      "summary": "Modify the backend to automatically grant admin privileges to the currently authenticated user's principal ID when they access any admin endpoint",
+      "id": "feature-update-the-search-box-placeholder-text-to-eg-tindivanam-plumber-irukana-meaning-example-is-there-a-plumber-in-tindivanam",
+      "title": "Update the search box placeholder text to 'Eg Tindivanam plumber irukana' (meaning: 'Example: Is there a plumber in Tindivanam?')",
       "reqIds": [
-        "REQ-1"
+        "REQ-3"
       ],
-      "status": "pending"
+      "version": 1
     }
   ],
+  "new_feature_requests": [],
   "gameProjectType": "none",
-  "projectName": "AREA WORKARS",
+  "projectName": "Update homepage text content",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

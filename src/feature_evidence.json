@@ -2,11 +2,31 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-the-access-denied-state-from-adminguard-component-by-ensuring-the-isadmin-check-passes-for-the-current-user",
-      "featureTitle": "Remove the access denied state from AdminGuard component by ensuring the isAdmin check passes for the current user",
+      "featureId": "feature-update-the-homepage-title-text-to-find-workers-near-you",
+      "featureTitle": "Update the homepage title text to 'Find workers near you'",
       "files": [
-        "frontend/src/components/admin/AdminGuard.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-homepage-subtitle-text-to-meaning-search-for-work-as-if-talking-to-a-person",
+      "featureTitle": "Update the homepage subtitle text to 'ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்' (meaning: 'Search for work as if talking to a person')",
+      "files": [
+        "frontend/src/pages/HomePage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -20,6 +40,27 @@
       ],
       "testIds": [
         "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-search-box-placeholder-text-to-eg-tindivanam-plumber-irukana-meaning-example-is-there-a-plumber-in-tindivanam",
+      "featureTitle": "Update the search box placeholder text to 'Eg Tindivanam plumber irukana' (meaning: 'Example: Is there a plumber in Tindivanam?')",
+      "files": [
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "user-approval@3.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
       ],
       "confidence": "high"
     }

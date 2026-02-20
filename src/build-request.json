@@ -1,58 +1,75 @@
 {
   "kind": "build_request",
-  "title": "Grant admin role to current account and fix access denied",
-  "projectName": "AREA WORKARS",
-  "priority": "high",
+  "title": "Update homepage text content",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Modify the backend to automatically grant admin privileges to the currently authenticated user's principal ID when they access any admin endpoint",
-      "target": "backend",
+      "text": "Update the homepage title text to 'Find workers near you'",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "Give my account admin role"
+          "Title: Find workers near you"
         ]
       },
       "acceptanceCriteria": [
-        "Current logged-in user has admin access without manual intervention",
-        "Admin role is persisted across sessions",
-        "No other user accounts are affected"
+        "The main homepage heading displays 'Find workers near you' in English",
+        "The title text is visible and prominent on the landing page"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Remove the access denied state from AdminGuard component by ensuring the isAdmin check passes for the current user",
+      "text": "Update the homepage subtitle text to 'ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்' (meaning: 'Search for work as if talking to a person')",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "Remove access denied for admin page"
+          "Subtitle: ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்"
         ]
       },
       "acceptanceCriteria": [
-        "AdminGuard component allows access to admin dashboard",
-        "No 'Access Denied' screen is shown for the current user",
-        "Admin panel pages render successfully"
+        "The subtitle displays the Tamil text 'ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்' correctly",
+        "Tamil text renders properly without encoding issues",
+        "The subtitle appears below or near the main title"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Update the search box placeholder text to 'Eg Tindivanam plumber irukana' (meaning: 'Example: Is there a plumber in Tindivanam?')",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Search placeholder: Eg Tindivanam plumber irukana"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The search input field placeholder text shows 'Eg Tindivanam plumber irukana'",
+        "Placeholder text is visible when the search field is empty",
+        "Text provides a clear example of natural language search format"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files or features outside of admin access control",
-    "Do not change the admin dashboard UI or worker review functionality",
-    "Do not alter worker registration, categories, or homepage content",
-    "Preserve existing AdminGuard component structure"
+    "Do not rebuild or regenerate the entire project",
+    "Do not regenerate or modify the database",
+    "Do not modify any components, features, or functionality beyond the three text updates",
+    "Preserve all existing styling, layout, and behavior"
   ],
   "nonGoals": [
-    "Creating new admin features",
-    "Modifying admin dashboard layout or components",
-    "Changing worker approval workflows",
-    "Updating category management interface",
-    "Altering user management features"
+    "Modifying any backend code or data structures",
+    "Changing the database schema or existing data",
+    "Updating any other UI elements beyond the specified text",
+    "Changing the search functionality or logic",
+    "Modifying translation files or i18n configuration",
+    "Updating any other pages or components"
   ],
   "imageRequirements": {
     "required": [],

@@ -1,11 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Grant admin role to the current user account and fix access denied error on admin pages.
+**Goal:** Update the homepage text content to use a mix of English and Tamil with a natural language search example.
 
 **Planned changes:**
-- Modify backend to automatically grant admin privileges to the currently authenticated user's principal ID
-- Update AdminGuard component to allow access for the current user
-- Ensure admin role persists across sessions
+- Change the main homepage title to "Find workers near you"
+- Update the subtitle to display Tamil text: "ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்"
+- Replace the search box placeholder with "Eg Tindivanam plumber irukana"
 
-**User-visible outcome:** The current user can access the admin dashboard and admin panel pages without encountering an "Access Denied" screen.
+**User-visible outcome:** Users will see updated homepage text with an English title, Tamil subtitle, and a conversational search example that demonstrates natural language query format.

@@ -1,26 +1,57 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Grant admin role to current account and fix access denied",
+  "title": "Update homepage text content",
   "requirements": [
     {
-      "id": "REQ-2",
-      "summary": "Remove the access denied state from AdminGuard component by ensuring the isAdmin check passes for the current user",
+      "id": "REQ-1",
+      "summary": "Update homepage title to 'Find workers near you'",
       "acceptanceCriteria": [
-        "AdminGuard component allows access to admin dashboard",
-        "No 'Access Denied' screen is shown for the current user",
-        "Admin panel pages render successfully"
+        "The main homepage heading displays 'Find workers near you' in English",
+        "The title text is visible and prominent on the landing page"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/admin/AdminGuard.tsx",
+          "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Update AdminGuard component to properly handle admin access verification. Ensure the component correctly checks authentication status and admin privileges using the useIsAdmin hook. Verify that loading states are handled before showing access denied, and that the component renders children when admin access is confirmed. Review the conditional rendering logic to prevent premature access denial during authentication initialization."
+          "description": "Update the main heading/title text to display 'Find workers near you'. Locate the heading element (likely an <h1> or similar) and replace the existing title text with the new text. Preserve all existing styling, classes, and layout structure."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Update homepage subtitle to Tamil text 'ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்'",
+      "acceptanceCriteria": [
+        "The subtitle displays the Tamil text 'ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்' correctly",
+        "Tamil text renders properly without encoding issues",
+        "The subtitle appears below or near the main title"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Update the subtitle text to 'ஒரு நபரிடம் பேசுவது போல வேலை தேடுங்கள்' (meaning: 'Search for work as if talking to a person'). Locate the subtitle element and replace the existing text with the new Tamil text. Ensure the file is saved with UTF-8 encoding to preserve Tamil characters. Preserve all existing styling, classes, and layout structure."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Update search box placeholder to 'Eg Tindivanam plumber irukana'",
+      "acceptanceCriteria": [
+        "The search input field placeholder text shows 'Eg Tindivanam plumber irukana'",
+        "Placeholder text is visible when the search field is empty",
+        "Text provides a clear example of natural language search format"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "modify",
+          "description": "Update the search box placeholder text to 'Eg Tindivanam plumber irukana'. Locate where the LiveSuggestionSearchBox component is rendered and update its placeholder prop to the new text. If the placeholder is defined inline, replace it directly. Preserve all other props and functionality."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/components/search/LiveSuggestionSearchBox.tsx",
           "operation": "modify",
-          "description": "Review and update the useIsAdmin hook to ensure it properly fetches admin status from the backend actor. Verify that the hook correctly handles the actor availability check, includes proper error handling, and returns accurate loading/fetching states. Ensure the query is enabled only when the actor is ready and that it properly invalidates when authentication state changes."
+          "description": "If the placeholder text is hardcoded as a default value in this component rather than passed as a prop from HomePage, update it here to 'Eg Tindivanam plumber irukana'. Otherwise, skip this change if the placeholder is already controlled by the parent component. Preserve all existing component logic and styling."
         }
       ]
     }
